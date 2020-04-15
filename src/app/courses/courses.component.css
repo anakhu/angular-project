@@ -1,0 +1,22 @@
+.example-card {
+  max-width: 400px;
+  flex: 0 0 30%;
+}
+.example-card img {
+  height: auto;
+}
+
+.mat-card-header {
+  display: inline;
+}
+
+.card-body-wrapper {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+}
+
+mat-card {
+  margin: 10px;
+  text-align: center;
+}

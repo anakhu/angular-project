@@ -1,0 +1,55 @@
+<ng-container *ngIf="course; else notFound">
+  <div class="single-course-wrapper">
+    <mat-card>
+      <mat-card-header>
+        <div mat-card-avatar 
+          class="example-header-image">
+        </div>
+        <mat-card-title>{{course.name}}</mat-card-title>
+        <mat-card-subtitle>by {{course.author}}</mat-card-subtitle>
+      </mat-card-header>
+      <img mat-card-image src="{{course.image}}" alt="course banner">
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item>
+            {{course.content}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            Form: {{course.form}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            Start: {{course.startDate}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            End: {{course.endDate}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            Price: {{course.price === 0 ? 'free' : course.price}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            Lessons: {{course.sessions}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            Students max: {{course.studentsMax}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            Certificate: {{course.certificate ? 'Yes': 'No'}}
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-stroked-button color="accent">LIKE</button>
+        <button mat-stroked-button color="primary">ENROLL</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</ng-container>
+
+<ng-template #notFound>Course doesn't exist</ng-template>

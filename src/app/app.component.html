@@ -1,0 +1,86 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport
+      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'"
+      [opened]="(isHandset$ | async) === false">
+    <mat-toolbar>Menu</mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item href="javascript:void(0)" (click)="onNavLinkClick(1)">
+        <span class="material-icons">
+          home_work
+        </span>
+        Home
+      </a>
+      <a mat-list-item href="javascript:void(0)" (click)="onNavLinkClick(2)">
+        <span class="material-icons">
+          supervised_user_circle
+        </span>
+        About us
+      </a>
+      <!-- <a mat-list-item href="javascript:void(0)" (click)="onNavLinkClick(3)">
+        <span class="material-icons">
+          contacts
+        </span>
+        Contact us
+      </a> -->
+      <span>Logged in users only</span>
+      <a mat-list-item href="javascript:void(0)" (click)="onNavLinkClick(3)">
+        <span class="material-icons">
+          perm_identity
+        </span>
+        My profile
+      </a>
+      <!-- <a mat-list-item href="javascript:void(0)">
+        <span class="material-icons">
+          playlist_add_check
+        </span>
+        My courses
+      </a> -->
+      <!-- <a mat-list-item href="javascript:void(0)">
+        <span class="material-icons">
+          playlist_add
+        </span>
+        Add a course
+      </a> -->
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+        *ngIf="isHandset$ | async">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>OnlineAcademy</span>
+      <span class="space"></span>
+      
+      <a href="javascript:void(0)">
+        <span class="material-icons">
+          account_circle
+        </span>
+      </a>
+    </mat-toolbar>
+    <ng-container [ngSwitch]="displayedComponent">
+      <ng-container *ngSwitchCase="1">
+        <app-courses></app-courses>
+      </ng-container>
+      <ng-container *ngSwitchCase="2">
+        <app-about></app-about>
+      </ng-container>
+      <ng-container *ngSwitchCase="3">
+        <app-user-profile></app-user-profile>
+      </ng-container>
+      <ng-container *ngSwitchDefault>
+        <app-courses></app-courses>
+        <!-- <app-about></app-about> -->
+        <!-- <app-user-profile></app-user-profile> -->
+      </ng-container>
+    </ng-container>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
+<!-- <router-outlet></router-outlet> -->
