@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CoursesService } from '../../shared/services/courses.service';
+import { CoursesService } from '../../shared/services/courses/courses.service';
 import { Course } from '../../shared/models/course';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-courses',
@@ -10,15 +11,16 @@ import { Course } from '../../shared/models/course';
 export class CoursesComponent implements OnInit {
 
   courses: Course[] = [];
-
   selectedCourse: Course;
+  observable: Subscription;
 
   constructor(
     private coursesService: CoursesService,
   ) { }
 
   ngOnInit(): void {
-    this.courses = this.coursesService.getCourses();
+    this.observable = this.coursesService.createSubscription()
+      .subscribe((courses: Course []) => this.courses = courses);
   }
 
   onClick(id: number) {

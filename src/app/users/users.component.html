@@ -1,0 +1,19 @@
+<ng-container *ngIf="users">
+  <ng-container *ngFor="let user of users">
+    <div>
+      <h1>{{ user | json}}</h1>
+    </div>
+    <button 
+      mat-flat-button color="accent"
+      (click)="setUserId(user.id)"
+    >
+      View Profile
+    </button>
+    <br>
+    <button  mat-flat-button color="primary">Follow</button>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="selectedUserId">
+  <app-user-detail [userId]="selectedUserId"></app-user-detail>
+</ng-container>
