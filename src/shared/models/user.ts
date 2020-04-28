@@ -1,7 +1,9 @@
 export interface User {
-  userId: number;
+  id: number;
   name: string;
   authoredCourses: number[];
   enrolledCourses: number[];
   likedCourses: number[];
+  followers?: number[];
+  following?: number[];
 }

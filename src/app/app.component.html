@@ -17,19 +17,21 @@
         </span>
         About us
       </a>
-      <!-- <a mat-list-item href="javascript:void(0)" (click)="onNavLinkClick(3)">
+      <a mat-list-item href="javascript:void(0)" (click)="onNavLinkClick(4)">
         <span class="material-icons">
           contacts
         </span>
-        Contact us
-      </a> -->
-      <span>Logged in users only</span>
-      <a mat-list-item href="javascript:void(0)" (click)="onNavLinkClick(3)">
-        <span class="material-icons">
-          perm_identity
-        </span>
-        My profile
+        Users
       </a>
+      <span>Logged in users only</span>
+      <ng-container *ngIf="isLoggedIn">
+        <a mat-list-item href="javascript:void(0)" (click)="onNavLinkClick(3)">
+          <span class="material-icons">
+            perm_identity
+          </span>
+          My profile
+        </a>
+      </ng-container>
       <!-- <a mat-list-item href="javascript:void(0)">
         <span class="material-icons">
           playlist_add_check
@@ -57,7 +59,10 @@
       <span>OnlineAcademy</span>
       <span class="space"></span>
       
-      <a href="javascript:void(0)">
+      <a href="javascript:void(0)" (click)="fakeLogIn()">
+        <span>
+          Fake login
+        </span>
         <span class="material-icons">
           account_circle
         </span>
@@ -73,8 +78,12 @@
       <ng-container *ngSwitchCase="3">
         <app-user-profile></app-user-profile>
       </ng-container>
+      <ng-container *ngSwitchCase="4">
+        <app-users></app-users>
+      </ng-container>
       <ng-container *ngSwitchDefault>
         <app-courses></app-courses>
+        <!-- <app-users></app-users> -->
         <!-- <app-about></app-about> -->
         <!-- <app-user-profile></app-user-profile> -->
       </ng-container>

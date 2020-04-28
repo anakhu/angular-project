@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,6 +28,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
+import { UsersComponent } from './users/users.component';
+import { UserDetailComponent } from './common/user-detail/user-detail.component';
 
 @NgModule({
   declarations: [
@@ -36,12 +39,15 @@ import { FormsModule } from '@angular/forms';
     AboutComponent,
     UserProfileComponent,
     AddCourseComponent,
+    UsersComponent,
+    UserDetailComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
+    CommonModule,
     MatSidenavModule,
     LayoutModule,
     MatToolbarModule,

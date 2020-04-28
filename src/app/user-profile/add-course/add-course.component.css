@@ -17,3 +17,8 @@ h1 {
 mat-hint {
   color: #ff4081;
 }
+
+
+form {
+  text-align: center;
+}

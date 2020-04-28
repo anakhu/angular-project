@@ -1,9 +1,12 @@
-<h1>Add new course</h1>
-<div class='add-form'>
+<ng-container *ngIf="error">
+  <h1>{{ error }}</h1>
+</ng-container>
+
+<form id='add-form'>
   <p>
     <mat-form-field matInput appearance="outline">
       <mat-label>Name of the course</mat-label>
-      <input [(ngModel)]="name" matInput placeholder="Name of your course">
+      <input [(ngModel)]="newCourse.name" name="name" matInput placeholder="Name of your course">
       <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
       <mat-hint>Type the name of your course here</mat-hint>
     </mat-form-field>
@@ -11,14 +14,14 @@
   <p>
     <mat-form-field matInput appearance="outline">
       <mat-label>Description</mat-label>
-      <textarea [(ngModel)]="content" matInput placeholder="Describe your course"></textarea>
-      <mat-hint>Who is yur course for?</mat-hint>
+      <textarea [(ngModel)]="newCourse.content" name="content" matInput placeholder="Describe your course"></textarea>
+      <mat-hint>Who is your course for?</mat-hint>
     </mat-form-field>
   </p>
   <p>
     <mat-form-field matInput appearance="outline">
       <mat-label>Choose a date</mat-label>
-      <input [(ngModel)]="startDate" matInput [matDatepicker]="picker1">
+      <input [(ngModel)]="newCourse.startDate" name="startDate" matInput [matDatepicker]="picker1">
       <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
       <mat-datepicker #picker1></mat-datepicker>
       <mat-hint>When does your course start?</mat-hint>
@@ -27,7 +30,7 @@
   <p>
     <mat-form-field matInput appearance="outline">
       <mat-label>Choose a date</mat-label>
-      <input [(ngModel)]="endDate" matInput [matDatepicker]="picker2">
+      <input [(ngModel)]="newCourse.endDate" name="endDate" matInput [matDatepicker]="picker2">
       <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
       <mat-datepicker #picker2></mat-datepicker>
       <mat-hint>When does your course end?</mat-hint>
@@ -36,7 +39,7 @@
   <p>
     <mat-form-field matInput appearance="outline">
       <mat-label>Number of lessons</mat-label>
-      <input [(ngModel)]="sessions" matInput placeholder="10">
+      <input [(ngModel)]="newCourse.sessions" name="sessions" matInput placeholder="10">
       <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
       <mat-hint>How many lessons are there in your course?</mat-hint>
     </mat-form-field>
@@ -44,7 +47,7 @@
   <p>
     <mat-form-field matInput appearance="outline">
       <mat-label>Number of students</mat-label>
-      <input [(ngModel)]="studentsMax" matInput placeholder="10">
+      <input [(ngModel)]="newCourse.studentsMax" name="studentsMax" matInput placeholder="10">
       <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
       <mat-hint>How many student can enroll?</mat-hint>
     </mat-form-field>
@@ -52,14 +55,14 @@
   <p>
     <mat-form-field  matInput appearance="outline">
       <mat-label>Price</mat-label>
-      <input [(ngModel)]="price" matInput placeholder="0">
+      <input [(ngModel)]="newCourse.price" name="price" matInput placeholder="0">
       <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
       <mat-hint>Type 0 if the course is free</mat-hint>
     </mat-form-field>
   </p>
   <mat-form-field matInput appearance="outline">
     <mat-label>Certificate</mat-label>
-    <select [(ngModel)]="certificate" matNativeControl required>
+    <select [(ngModel)]="newCourse.certificate" name="certificate" matNativeControl required>
       <option value="true">Yes</option>
       <option value="false">No</option>
     </select>
@@ -67,9 +70,9 @@
     <mat-hint>Does your course provide a certificate?</mat-hint>
   </mat-form-field>
   <button 
-    mat-flat-button color="accent" 
-    (click)="onAddBtnClick()">
+    mat-flat-button color="accent"
+    id="add-course-btn">
     Add
   </button> 
-</div>
+</form>
 
