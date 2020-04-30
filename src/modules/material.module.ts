@@ -18,7 +18,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 
 const MaterialComponents = [
@@ -41,7 +40,6 @@ const MaterialComponents = [
   MatNativeDateModule,
   MatTooltipModule,
   MatBadgeModule,
-  FlexLayoutModule,
 ];
 
 @NgModule({
