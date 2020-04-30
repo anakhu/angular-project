@@ -1,0 +1,19 @@
+<div>
+  <h3>A couple of registered Users</h3>
+  <p>email: 'ola@mail.ru', password: 'ola1234'</p>
+  <p>email: 'lecter@mail.ru', password: 'lecter1234'</p>
+  <p>email: 'dad@mail.ru', password: 'dad1234'</p>
+</div>
+
+<div class="login-container">
+  <div *ngIf="authError">{{ authError }}</div>
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput type="text" [(ngModel)]="email">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Password</mat-label>
+    <input matInput type="text" [(ngModel)]="password">
+  </mat-form-field>
+  <button id="btnLogin">Log in</button>
+</div>

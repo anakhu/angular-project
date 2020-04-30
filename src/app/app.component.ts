@@ -1,63 +1,66 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { CoursesService } from '../shared/services/courses/courses.service';
 import { UsersService } from '../shared/services/users/users.service';
 import { AuthService } from '../shared/services/auth/auth.service';
-import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
-import { User } from 'src/shared/models/user';
-import { USERS } from '../shared/services/mock';
+import { Observable, Subscription } from 'rxjs';
+import { map, shareReplay, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { LikesService } from 'src/shared/services/likes/likes.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit{
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
-  .pipe(
-    map(result => result.matches),
-    shareReplay()
-  );
+export class AppComponent implements OnInit, OnDestroy{
+  isHandset$: Observable<boolean> = this.breakpointObserver
+  .observe(Breakpoints.Handset)
+    .pipe(
+      tap((res) => console.log(res)),
+      map(result => result.matches),
+      shareReplay()
+    );
 
+  mediaSub: Subscription;
+  authSubscription: Subscription;
   displayedComponent: number;
-  isLoggedIn: boolean;
-  authUser: User;
+  authStatus: boolean;
+  authUserId: number;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
     private courseService: CoursesService,
     private usersService: UsersService,
     private authService: AuthService,
+    private likesService: LikesService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
+   this.authSubscription = this.authService.createSubscription()
+    .subscribe((authStatus: boolean) => {
+      this.authStatus = authStatus;
+      if (this.authStatus) {
+        this.authUserId = this.authService.getAuthUserId();
+      }
+    });
    this.initServices();
   }
 
-  initServices() {
+  ngOnDestroy(): void {
+    this.authSubscription.unsubscribe();
+  }
+
+  private initServices() {
     this.courseService.init();
     this.usersService.init();
     this.authService.init();
-
-    this.isLoggedIn = this.authService.isLoggedIn;
-    this.authUser = this.authService.getAuthUser();
+    this.likesService.init();
   }
 
-  // temparary login
-
-  fakeLogIn() {
-    if (!this.isLoggedIn) {
-      this.authService.setUser(USERS[2]);
-      this.isLoggedIn = true;
-    } else {
-      this.authService.setUser(undefined);
-      this.isLoggedIn = false;
-    }
-  }
-
-  onNavLinkClick(contentId: number): void {
-    this.displayedComponent = contentId;
-    console.log(this.displayedComponent);
+  logout(): void {
+    this.authService.logUserOut();
+    this.router.navigate(['/']);
   }
 }

@@ -8,7 +8,7 @@ import { AuthService } from 'src/shared/services/auth/auth.service';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css']
+  styleUrls: ['./user-profile.component.scss']
 })
 export class UserProfileComponent implements OnInit {
 
@@ -23,8 +23,8 @@ export class UserProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authUserId = this.authService.getAuthUser().id;
-    this.authUser = this.authService.getAuthUser();
+    this.authUserId = this.authService.getAuthUserId();
+    // this.authUser = this.authService.getAuthUser();
   }
 
   // addItem(course: Course) {

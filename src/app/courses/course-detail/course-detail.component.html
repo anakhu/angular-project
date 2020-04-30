@@ -6,7 +6,12 @@
           class="example-header-image">
         </div>
         <mat-card-title>{{course.name}}</mat-card-title>
-        <mat-card-subtitle>by {{course.author}}</mat-card-subtitle>
+        <mat-card-subtitle>
+          by 
+          <a [routerLink]="['/users', course.authorId]">
+            {{course.author}}
+          </a>
+        </mat-card-subtitle>
       </mat-card-header>
       <img mat-card-image src="{{course.image}}" alt="course banner">
       <mat-card-content>
@@ -41,7 +46,6 @@
         </mat-list>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-stroked-button color="accent">LIKE</button>
         <button mat-stroked-button color="primary">ENROLL</button>
       </mat-card-actions>
     </mat-card>

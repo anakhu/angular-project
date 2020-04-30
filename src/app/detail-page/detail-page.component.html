@@ -1,0 +1,27 @@
+<div class="detail-page container">
+  <ng-container *ngIf="contentToDisplay && contentToDisplay.length; else noContent">
+    <ng-container [ngSwitch]="true">
+      <div class="row justify-content-center">
+        <ng-container *ngSwitchCase="contentName ==='followings' || contentName === 'followers'">
+          <ng-container *ngFor="let user of contentToDisplay">
+            <app-user class="col-xs-12 col-sm-6 col-md-4 col-lg-4"[user]="user"></app-user>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <ng-container *ngFor="let course of contentToDisplay">
+            <app-course 
+              class="col-xs-12 col-sm-6 col-md-4 col-lg-4"
+              [course]="course"
+              [authUserStatus]="authStatus"
+              ></app-course>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
+  </ng-container>  
+</div>
+
+<ng-template #noContent>
+  <h3>Just an empty page. Some content will be placed here, but a  bit later.</h3>
+  <h3>Isn't implemented yet</h3>
+</ng-template>

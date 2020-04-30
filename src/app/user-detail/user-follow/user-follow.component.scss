@@ -1,0 +1,34 @@
+.followers {
+  margin-top: 10px;
+}
+
+.user-pic-small {
+  text-align: center;
+}
+
+.user-pic-container {
+  max-width: 60px;
+  margin: 0 auto;
+
+  img {
+    border-radius: 60px 60px 0px 60px;
+    vertical-align: super;
+    height: 60px;
+    width: 60px;
+    object-fit: cover;
+  }
+
+  span {
+    padding-top: 5px;
+    font-size: 0.5rem;
+  }
+}
+
+mat-toolbar {
+  margin-bottom: 10px;
+}
+
+
+.example-spacer {
+  flex: 1 1 auto;
+}

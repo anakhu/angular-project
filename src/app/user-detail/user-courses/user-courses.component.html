@@ -1,0 +1,45 @@
+<ng-container *ngIf="courses.length">
+    <div class="container user-courses">
+      <div class="row">
+       <ng-container *ngFor="let course of courses">
+         <ng-container 
+           *ngTemplateOutlet="courseTemplate; context: {course: course}">
+         </ng-container>
+       </ng-container>
+      </div>
+     </div>
+  </ng-container>
+  <ng-container *ngIf="!courses.length">
+    <ng-container
+      *ngTemplateOutlet="noCoursesTemplate; context: {header: header}">
+    </ng-container>
+  </ng-container>
+
+<ng-template #courseTemplate let-course="course">
+  <div class="col-sm-6 col-md-4 col-lg-4 user-course-thumb">
+    <div class="user-course-img-container">
+      <img src="{{course.image}}" alt="course image">
+    </div>
+    <span>
+      <a [routerLink]="['/courses', course.id]">{{course.name}}</a>
+    </span>
+  </div>
+</ng-template>
+
+
+<ng-template #noCoursesTemplate let-header="header">
+  <ng-container [ngSwitch]="header">
+    <h3 class="text-muted" *ngSwitchCase="'Authored Courses'">
+      This user hasn't authored any courses yet
+    </h3>
+    <h3 class="text-muted" *ngSwitchCase="'Enrolled Courses'">
+      This user hasn't enrolled in any courses yet
+    </h3>
+    <h3 class="text-muted" *ngSwitchCase="'Liked Courses'">
+      This user hasn't liked any courses yet
+    </h3>
+    <h3 class="text-muted" *ngSwitchDefault>
+      No courses yet
+    </h3>
+  </ng-container>
+</ng-template>

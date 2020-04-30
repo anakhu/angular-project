@@ -1,15 +1,17 @@
 export interface Course {
-  id?: number;
   name: string;
   content: string;
   author: string;
-  image?: string;
+  authorId: number;
   startDate: string;
   endDate: string;
-  price?: number;
+  price: number;
   sessions: number;
   studentsMax: number;
   certificate: boolean;
+  id?: number;
+  likes?: number;
+  image?: string;
 }
 
 export interface CourseFormData {

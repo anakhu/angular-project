@@ -1,0 +1,20 @@
+.example-card {
+  max-width: 400px;
+  flex: 0 0 30%;
+}
+.example-card img {
+  height: auto;
+}
+
+.mat-card-header {
+  display: inline;
+}
+
+.card-body-wrapper {
+  margin-top: auto;
+}
+
+mat-card {
+  margin: 10px;
+  text-align: center;
+}

@@ -1,23 +1,31 @@
 import { Injectable } from '@angular/core';
-import { User } from '../../models/user';
+import { AUTH_USERS } from '../mock';
+import { AuthUser } from '../../models/authUsers'; 
+import { from, Observable, of, BehaviorSubject } from 'rxjs';
+import { find, mergeMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private authUser: User | undefined;
-  isLoggedIn: boolean;
+  private authUserId: number;
+  private loginStatus = new BehaviorSubject(false);
+  public isLoggedIn: boolean;
 
   constructor() {}
 
-  getAuthUser(): User {
-    return this.authUser;
+  public createSubscription(): Observable<boolean> {
+    return this.loginStatus.asObservable();
   }
 
-  // make private
-  setUser(user: User): void {
-    console.log('setting user');
-    this.authUser = user;
+  public getAuthUserId(): number {
+    return this.authUserId;
+  }
+
+  private setAuthUserId(id: number): void {
+    this.authUserId = id;
+    this.isLoggedIn = true;
+    this.loginStatus.next(this.isLoggedIn);
   }
 
   private loadUser() {
@@ -26,16 +34,51 @@ export class AuthService {
       this.isLoggedIn = false;
     } else {
       try {
-        this.setUser(JSON.parse(user));
-        this.isLoggedIn = true;
+        const id: number = +JSON.parse(user).id;
+        this.setAuthUserId(id);
       } catch (error) {
-        console.log(error.message);
         console.log('failed to load a user');
       }
     }
   }
 
-  init() {
+  public logUserIn({ email, password }: Partial <AuthUser>): Observable <AuthUser | Error> {
+    return from(AUTH_USERS)
+     .pipe(
+       find(({email: userEmail, password: userPassword}: AuthUser) => {
+         return userEmail === email && userPassword === password;
+       }),
+       mergeMap((user: AuthUser | undefined) => {
+          if (!user) {
+            return of(Error('Login failed'));
+          }
+
+          this.setAuthUserId(user.id);
+          this.updateLocalStorage({
+            id: user.id,
+            email: user.email,
+          });
+          return of(user);
+       })
+     );
+  }
+
+  public logUserOut(): void {
+    this.authUserId = undefined;
+    this.isLoggedIn = false;
+    this.loginStatus.next(false);
+    window.localStorage.removeItem('user');
+  }
+
+  public init() {
     this.loadUser();
+  }
+
+  private updateLocalStorage({id, email}: Partial<AuthUser>): void {
+    const user: Partial<AuthUser> = {
+      id,
+      email,
+    };
+    window.localStorage.setItem('user', JSON.stringify(user));
   }
 }

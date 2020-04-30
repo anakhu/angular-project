@@ -1,0 +1,97 @@
+<ng-container *ngIf="user; else noUser">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 user-column">
+
+        <div class="card">
+          <app-user-pic class="card-img-top" [name]="user.name" [image]="user.image"></app-user-pic>
+          <ng-container *ngIf="isUserLoggedIn && !isAuthUser">
+            <div class="card-footer">
+              <app-follow-btn
+              [userId]="user.id"
+              [followerStatus]="isFollowing"
+              (setFollowerStatus)="onFollowStatusToggle($event)">
+              </app-follow-btn>
+            </div>
+          </ng-container>
+        </div>
+        
+        <div>
+          <mat-toolbar>
+            <mat-toolbar-row>
+              <span>Followers</span>
+              <span class="example-spacer"></span>
+              <span><a [routerLink]="['/users', user.id, 'followers']">View All</a></span>
+            </mat-toolbar-row>
+          </mat-toolbar>
+          <app-user-follow 
+          [title]="'Followers'"
+          [followers]="userFollowings.followers"
+          ></app-user-follow>
+        </div>
+
+        <div>
+          <mat-toolbar>
+            <mat-toolbar-row>
+              <span>Followings</span>
+              <span class="example-spacer"></span>
+              <span><a [routerLink]="['/users', user.id, 'followings']">View All</a></span>
+            </mat-toolbar-row>
+          </mat-toolbar>
+          <app-user-follow 
+          [title]="'Following'" 
+          [followers]="userFollowings.followings"
+          ></app-user-follow>
+        </div>
+      
+      </div>
+
+      <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 courses-column">
+        <div>
+          <mat-toolbar>
+            <mat-toolbar-row>
+              <span>Authored Courses</span>
+              <span class="example-spacer"></span>
+              <span><a [routerLink]="['/users', user.id, 'authored-courses']">View All</a></span>
+            </mat-toolbar-row>
+          </mat-toolbar>
+          <app-user-courses 
+          [courses]="userCourses.authoredCourses"
+          [header]="'Authored Courses'" 
+          ></app-user-courses>
+        </div>
+
+        <div>
+          <mat-toolbar>
+            <mat-toolbar-row>
+              <span>Enrolled Courses</span>
+              <span class="example-spacer"></span>
+              <span><a [routerLink]="['/users', user.id, 'enrolled-courses']">View All</a></span>
+            </mat-toolbar-row>
+          </mat-toolbar>
+          <app-user-courses 
+          [courses]="userCourses.enrolledCourses"
+          [header]="'Enrolled Courses'" 
+          ></app-user-courses>
+        </div>
+
+        <div>
+          <mat-toolbar>
+            <mat-toolbar-row>
+              <span>Liked Courses</span>
+              <span class="example-spacer"></span>
+              <span><a [routerLink]="['/users', user.id, 'liked-courses']">View All</a></span>
+            </mat-toolbar-row>
+          </mat-toolbar>
+          <app-user-courses 
+          [courses]="userCourses.likedCourses"
+          [header]="'Liked Courses'" 
+          ></app-user-courses>
+        </div>
+  
+      </div>
+    </div>  
+  </div>
+</ng-container>
+
+<ng-template #noUser>User not found</ng-template>
