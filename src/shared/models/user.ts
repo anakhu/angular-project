@@ -4,6 +4,7 @@ export interface User {
   authoredCourses: number[];
   enrolledCourses: number[];
   likedCourses: number[];
+  image?: string;
   followers?: number[];
   following?: number[];
 }

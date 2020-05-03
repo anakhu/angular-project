@@ -1,59 +1,48 @@
 <div *ngIf="courses.length; else noCourses">
   <mat-tab-group>
     <mat-tab label="All courses">
-      <div class="card-body-wrapper">
-        <ng-container *ngFor="let course of courses">
-          <ng-container 
-            *ngTemplateOutlet="courseTemplate; context: {course: course}">
+      <div class="card-body-wrapper container">
+        <div class="row">
+          <ng-container *ngFor="let course of courses">
+            <app-course 
+            class="col-xs-12 col-sm-12 col-md-6 col-lg-4"
+            [authUserStatus]="authUserStatus"
+            [course]="course"></app-course>
           </ng-container>
-        </ng-container>
+        </div>
       </div>
       </mat-tab>
     <mat-tab label="Free courses">
-      <div class="card-body-wrapper">
-        <ng-container *ngFor="let course of courses">
-          <ng-container *ngIf="course.price == 0">
-            <ng-container 
-              *ngTemplateOutlet="courseTemplate; context: {course: course}">
-            </ng-container>
-          </ng-container>
-        </ng-container>
-      </div>
-      </mat-tab>
-      <mat-tab label="Paid courses">
-        <div class="card-body-wrapper">
+      <div class="card-body-wrapper container">
+        <div class="row">
           <ng-container *ngFor="let course of courses">
-            <ng-container *ngIf="course.price != 0">
-              <ng-container 
-                *ngTemplateOutlet="courseTemplate; context: {course: course}">
-              </ng-container>
+            <ng-container *ngIf="course.price == 0">
+              <app-course
+                class="col-xs-12 col-sm-12 col-md-6 col-lg-4"
+                [authUserStatus]="authUserStatus"
+                [course]="course"></app-course>
             </ng-container>
           </ng-container>
         </div>
+      </div>
+      </mat-tab>
+      <mat-tab label="Paid courses">
+        <div class="card-body-wrapper container">
+          <div class="row">
+            <ng-container *ngFor="let course of courses">
+              <ng-container *ngIf="course.price != 0">
+                <app-course
+                class="col-xs-12 col-sm-12 col-md-6 col-lg-4"
+                [authUserStatus]="authUserStatus"
+                [course]="course"></app-course>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
       </mat-tab>
     </mat-tab-group>
-    <app-course-detail [course]='selectedCourse'></app-course-detail>
 </div>
 
 <ng-template #noCourses>
   <p>No courses yet</p>
-</ng-template>
-
-<ng-template #courseTemplate let-course="course">
-    <mat-card class="example-card">
-      <mat-card-header>
-        <mat-card-title>{{course.name}}</mat-card-title>
-        <mat-card-subtitle>by {{course.author}}</mat-card-subtitle>
-      </mat-card-header>
-      <img mat-card-image 
-        src="{{course.image}}" 
-        alt="Some photo">
-      <mat-card-content>
-        <p>{{course.content}}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-button color="accent">LIKE</button>
-        <button (click)="onClick(course.id)" mat-button color="primary">VIEW</button>
-      </mat-card-actions>
-    </mat-card>
 </ng-template>
