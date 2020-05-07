@@ -1,12 +1,7 @@
 <ng-container *ngIf="user">
   <div class="col-12">
     <div class="card">
-      <app-user-pic 
-        class="card-img-top"
-        [name]="user.name"
-        [image]="user.image"
-      >
-      </app-user-pic>
+      <app-user-pic [user]="user"></app-user-pic>
       <div class="card-footer">
         <button 
           mat-stroked-button color="primary"

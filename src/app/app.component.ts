@@ -7,6 +7,7 @@ import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LikesService } from 'src/shared/services/likes/likes.service';
+import { FollowersService } from 'src/shared/services/followers/followers.service';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,6 @@ export class AppComponent implements OnInit, OnDestroy{
 
   mediaSub: Subscription;
   authSubscription: Subscription;
-  displayedComponent: number;
   authStatus: boolean;
   authUserId: number;
 
@@ -35,6 +35,7 @@ export class AppComponent implements OnInit, OnDestroy{
     private authService: AuthService,
     private likesService: LikesService,
     private router: Router,
+    private followersService: FollowersService,
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +43,7 @@ export class AppComponent implements OnInit, OnDestroy{
     .subscribe((authStatus: boolean) => {
       this.authStatus = authStatus;
       if (this.authStatus) {
+        console.log('getting auth user');
         this.authUserId = this.authService.getAuthUserId();
       }
     });
@@ -57,6 +59,7 @@ export class AppComponent implements OnInit, OnDestroy{
     this.usersService.init();
     this.authService.init();
     this.likesService.init();
+    this.followersService.init();
   }
 
   logout(): void {

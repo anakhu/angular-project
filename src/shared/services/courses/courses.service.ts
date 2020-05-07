@@ -29,7 +29,7 @@ export class CoursesService {
         find(({id: courseId}: Course) => courseId === id),
         switchMap((found: Course | undefined) => {
           if (!found) {
-            return of(new Error('Course not found'));
+            throw Error('Course not found');
           }
           return of(found);
         })

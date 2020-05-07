@@ -50,7 +50,7 @@ export class AuthService {
        }),
        mergeMap((user: AuthUser | undefined) => {
           if (!user) {
-            return of(Error('Login failed'));
+            throw Error('Login failed');
           }
 
           this.setAuthUserId(user.id);

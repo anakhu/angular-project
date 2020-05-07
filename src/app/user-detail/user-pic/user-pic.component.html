@@ -1,7 +1,21 @@
-<div class="card user-card">
-  <img src="./assets/user/background.jpg" class="card-img-top bg-image" alt="...">
-  <img class="card-img-top img-thumbnail" src="{{ image }}" alt="Card image cap">
-  <div class="card-body">
-    <h3 class="card-title">{{ name }}</h3>
-  </div>
-</div>
+<ng-container *ngIf="user">
+  <mat-card class="example-card">
+    <div class="user-pic-header">
+      <span class="lead"><strong>{{ user.name }}</strong></span>
+      <span class="spacer"></span>
+      <span class="flag-icon flag-icon-{{user.country?.code | lowercase}}"></span>
+    </div>
+    <mat-card-content>
+      <img 
+      class="card-img-top img-thumbnail" 
+      src="{{ user.image }}" 
+      alt="user image">
+    </mat-card-content>
+    <mat-card-content>
+      <p class="user-pic-occupation">Occupation</p>
+      <p class="text-muted">{{ user.country?.name }}</p>
+    </mat-card-content>
+    <app-follow-bar [userId]="user.id"></app-follow-bar>
+  </mat-card>
+</ng-container>
+

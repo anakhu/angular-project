@@ -1,0 +1,8 @@
+<div class="user-pic-small">
+  <div class="user-pic-container">
+    <img src="{{user.image}}" alt="user photo">
+  </div>
+  <span class="user-name-url">
+    <a [routerLink]="['/users', user.id]">{{ user.name}}</a>
+  </span>
+</div>

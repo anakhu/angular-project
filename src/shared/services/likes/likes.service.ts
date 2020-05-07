@@ -3,8 +3,8 @@ import { AuthService } from '../auth/auth.service';
 import { Course } from 'src/shared/models/course';
 import { User } from 'src/shared/models/user';
 import { UsersService } from '../users/users.service';
-import { tap, catchError, mergeAll, filter, toArray } from 'rxjs/operators';
-import { EMPTY, of, Subscription } from 'rxjs';
+import { mergeAll, filter, toArray } from 'rxjs/operators';
+import { of, Subscription } from 'rxjs';
 import { CoursesService } from '../courses/courses.service';
 
 @Injectable({
@@ -21,13 +21,6 @@ export class LikesService {
     private coursesService: CoursesService,
   ) { }
 
-  private usersSubscribe(): void {
-    this.userSubscription = this.usersService.createSubscription()
-      .subscribe(() => {
-        this.getAuthUser();
-      });
-  }
-
   private authSubscribe(): void {
     this.authSubscription = this.authService.createSubscription()
       .subscribe((authStatus: boolean) => {
@@ -42,17 +35,6 @@ export class LikesService {
   private getAuthUser(): void {
     const authUserId: number = this.authService.getAuthUserId();
     this.usersService.getUser(authUserId)
-      .pipe(
-        tap((result: User | Error) => {
-          if (result instanceof Error) {
-            throw result;
-            }
-          }),
-        catchError((error: Error) => {
-            console.log(error.message);
-            return EMPTY;
-          })
-        )
       .subscribe((user: User) => this.authUser = user);
   }
 
@@ -95,17 +77,6 @@ export class LikesService {
   private updateCourse(courseId: number, point: number): void {
     let courseToUpdate;
     this.coursesService.getById(courseId)
-      .pipe(
-        tap((result: Course | Error) => {
-          if (result instanceof Error) {
-            throw result;
-          }
-        }),
-        catchError((err: Error) => {
-          console.log(err.message);
-          return EMPTY;
-        })
-      )
       .subscribe((course: Course) => courseToUpdate = {...course});
 
     courseToUpdate.likes += point;
@@ -114,7 +85,6 @@ export class LikesService {
 
   init() {
     this.authSubscribe();
-    this.usersSubscribe();
   }
 }
 

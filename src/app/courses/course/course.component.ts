@@ -57,17 +57,6 @@ export class CourseComponent implements OnInit, OnDestroy {
 
   private getUser(id: number): void {
     this.usersService.getUser(this.course.authorId)
-      .pipe(
-        tap((result: User | Error) => {
-          if (result instanceof Error) {
-            throw result;
-          }
-        }),
-        catchError((error: Error) => {
-          console.log(error.message);
-          return EMPTY;
-        })
-      )
       .subscribe((user: User) => this.author = user);
   }
 

@@ -1,20 +1,45 @@
-.user-card {
-  align-items: center;
+mat-card {
   position: relative;
   z-index: 1;
-  justify-content: flex-start;
+  // width: 250px;
+  flex: 1 0 auto;
+
+  .user-pic-header {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: 10px;
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+  }
+
+  .user-pic-occupation {
+    display: inline-block;
+    padding: 2px 6px;
+    background: cadetblue;
+    color: white;
+    opacity: 0.8;
+    font-weight: 400;
+  }
+
+  mat-card-content {
+    text-align: center;
+  }
 
   .img-thumbnail {
     height: 150px;
     width: 150px;
     border-radius: 50%;
     object-fit: cover;
-  } 
+  }
 
-  .bg-image {
-    position: absolute;
-    filter: contrast(70%);
-    opacity: 0.5;
-    z-index: -1;
+  .mat-card-actions {
+    padding: 8px 0;
+    text-align: center;
+    border: 1px solid cadetblue;
+    opacity: 0.8;
+    vertical-align: middle;
   }
 }
+
