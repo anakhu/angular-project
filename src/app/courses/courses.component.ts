@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CoursesService } from '../../shared/services/courses/courses.service';
 import { Course } from '../../shared/models/course';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, of, from } from 'rxjs';
 import { User } from 'src/shared/models/user';
 import { AuthService } from 'src/shared/services/auth/auth.service';
+import { mergeAll, filter, toArray } from 'rxjs/operators';
 
 @Component({
   selector: 'app-courses',

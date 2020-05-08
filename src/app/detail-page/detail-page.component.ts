@@ -7,7 +7,6 @@ import { mergeAll, mergeMap, toArray } from 'rxjs/operators';
 import { CoursesService } from 'src/shared/services/courses/courses.service';
 import { Course } from 'src/shared/models/course';
 import { AuthService } from 'src/shared/services/auth/auth.service';
-import { ErrorService } from 'src/shared/services/error/error.service';
 import { FollowersService } from 'src/shared/services/followers/followers.service';
 
 const ALIAS = {
@@ -22,7 +21,6 @@ const ALIAS = {
   selector: 'app-detail-page',
   templateUrl: './detail-page.component.html',
   styleUrls: ['./detail-page.component.scss'],
-  providers: [ ErrorService ],
 })
 export class DetailPageComponent implements OnInit, OnDestroy {
 
@@ -35,7 +33,6 @@ export class DetailPageComponent implements OnInit, OnDestroy {
   routeSubscription: Subscription;
   likesSubscription: Subscription;
   authSubscription: Subscription;
-  errorSubscription: Subscription;
 
   constructor(
     private activatedRoute: ActivatedRoute,

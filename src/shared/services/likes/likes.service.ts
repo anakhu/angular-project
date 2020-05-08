@@ -39,6 +39,7 @@ export class LikesService {
   }
 
   public getLikeStatus(courseId: number): boolean {
+    this.getAuthUser();
     const courseIndex = this.authUser.likedCourses.indexOf(courseId);
     return courseIndex === -1 ? false : true;
   }

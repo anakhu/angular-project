@@ -51,16 +51,16 @@ export class UsersService {
     const { id } = user;
     from(this.usersSubject.getValue())
       .pipe(
-        findIndex(({ id: userId }: User) => userId === id)
-        ).subscribe((index: number) => {
-          if (index !== -1 ){
-            const updated = [...this.usersSubject.getValue()];
-            updated.splice(index, 1, user);
-            this.setUsers(updated);
-            // temporary storage update
-            this.updateLocalStorage();
-          } else {
-            console.log('failed to update');
+        findIndex(({ id: userId }: User) => userId === id))
+          .subscribe((index: number) => {
+            if (index !== -1 ){
+              const updated = [...this.usersSubject.getValue()];
+              updated.splice(index, 1, user);
+              this.setUsers(updated);
+              // temporary storage update
+              this.updateLocalStorage();
+            } else {
+              console.log('failed to update');
           }
       });
   }

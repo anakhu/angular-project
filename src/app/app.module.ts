@@ -33,8 +33,6 @@ import {
   FollowersComponent
 } from './followers/index';
 
-
-
 @NgModule({
   declarations: [
     AppComponent,
