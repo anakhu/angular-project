@@ -6,12 +6,12 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./user-pic.component.scss']
 })
 export class UserPicComponent implements OnInit {
+  @Input() user;
+  followersNum: number;
+  followingsNum: number;
 
-  @Input() image;
-  @Input() name;
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
 }

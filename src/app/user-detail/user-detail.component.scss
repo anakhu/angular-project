@@ -13,9 +13,12 @@
 }
 
 app-user-pic {
-  max-width: 200px;
+  width: 100%;
 }
 
-.card {
+section {
+  min-width: 100%;
   align-items: center;
+  margin: 20px auto;
+  box-shadow: 0 0 10px gray;
 }

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UserFollowComponent } from './user-follow.component';
+import { FollowBarComponent } from './follow-bar.component';
 
-describe('UserFollowComponent', () => {
-  let component: UserFollowComponent;
-  let fixture: ComponentFixture<UserFollowComponent>;
+describe('FollowBarComponent', () => {
+  let component: FollowBarComponent;
+  let fixture: ComponentFixture<FollowBarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserFollowComponent ]
+      declarations: [ FollowBarComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UserFollowComponent);
+    fixture = TestBed.createComponent(FollowBarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

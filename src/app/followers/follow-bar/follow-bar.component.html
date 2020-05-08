@@ -1,0 +1,17 @@
+ <ng-container *ngIf="userId">
+  <mat-card-actions>
+    <button mat-button [routerLink]="['/users', userId, 'followers']">
+      <span class="material-icons">
+        supervisor_account
+      </span>
+      Folowers: {{ userFollowers?.followersNum }}
+    </button>
+      <button mat-button [routerLink]="['/users', userId, 'followings']">
+        <span class="material-icons">
+        supervised_user_circle
+      </span>
+      Following:  {{ userFollowers?.followingsNum }}
+    </button>
+  </mat-card-actions>
+ </ng-container>
+ 

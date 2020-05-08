@@ -126,16 +126,18 @@ export const COURSES: Course[] = [
 
 export const USERS: User[] = [
   {
-    id: 1,
+    id: 4,
     name: 'Ola HOla',
+    country: { name: 'Zambia', code: 'ZB'},
     image: './assets/user/user1.jpg',
     authoredCourses: [4],
     enrolledCourses: [2],
     likedCourses: [1, 3],
   },
   {
-    id: 2,
+    id: 1,
     name: 'Node.js Titan',
+    country: { name: 'Brazil', code: 'BR'},
     image: './assets/user/user2.jpg',
     authoredCourses: [1],
     enrolledCourses: [],
@@ -144,14 +146,16 @@ export const USERS: User[] = [
   {
     id: 3,
     name: 'the Pythonist',
+    country: { name: 'Belarus', code: 'By'},
     image: './assets/user/user3.jpg',
     authoredCourses: [3],
     enrolledCourses: [2],
     likedCourses: [1, 3],
   },
   {
-    id: 4,
+    id: 2,
     name: 'Mrs Pencifly',
+    country: { name: 'China', code: 'CN'},
     image: './assets/user/user4.jpg',
     authoredCourses: [2],
     enrolledCourses: [1],
@@ -160,6 +164,7 @@ export const USERS: User[] = [
   {
     id: 5,
     name: 'Dr. Chef',
+    country: { name: 'Russian Federation', code: 'RU'},
     image: './assets/user/user5.jpg',
     authoredCourses: [5],
     enrolledCourses: [1],
@@ -168,6 +173,7 @@ export const USERS: User[] = [
   {
     id: 6,
     name: 'Vader',
+    country: { name: 'Italy', code: 'IT'},
     image: './assets/user/user6.jpg',
     authoredCourses: [6],
     enrolledCourses: [1],
@@ -176,6 +182,7 @@ export const USERS: User[] = [
   {
     id: 7,
     name: 'GodDad',
+    country: { name: 'Italy', code: 'IT'},
     image: './assets/user/user7.jpg',
     authoredCourses: [7],
     enrolledCourses: [1, 5],
@@ -184,6 +191,7 @@ export const USERS: User[] = [
   {
     id: 8,
     name: 'Sean',
+    country: { name: 'Germany', code: 'DE'},
     image: './assets/user/user8.jpg',
     authoredCourses: [8],
     enrolledCourses: [1, 7],
@@ -200,10 +208,10 @@ export const FOLLOWERS: {userId: number, followerId: number}[] = [
 
 
 export const AUTH_USERS: {id: number, email: string, password: string}[] = [
-  { id: 1, email: 'ola@mail.ru', password: 'ola1234' },
-  { id: 2, email: 'titan@mail.ru', password: 'titan1234' },
+  { id: 4, email: 'ola@mail.ru', password: 'ola1234' },
+  { id: 1, email: 'titan@mail.ru', password: 'titan1234' },
   { id: 3, email: 'python@mail.ru', password: 'python1234' },
-  { id: 4, email: 'pen@mail.ru', password: 'pen1234' },
+  { id: 2, email: 'pen@mail.ru', password: 'pen1234' },
   { id: 5, email: 'lecter@mail.ru', password: 'lecter1234' },
   { id: 6, email: 'dart@mail.ru', password: 'dart1234' },
   { id: 7, email: 'dad@mail.ru', password: 'dad1234' },

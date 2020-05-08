@@ -1,22 +1,17 @@
 <ng-container *ngIf="user; else noUser">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 user-column">
 
-        <div class="card">
-          <app-user-pic class="card-img-top" [name]="user.name" [image]="user.image"></app-user-pic>
+      <div class="col-xs-12 col-sm-5 col-md-4 col-lg-4 user-column">
+
+        <section>
+          <app-user-pic [user]="user"></app-user-pic>
           <ng-container *ngIf="isUserLoggedIn && !isAuthUser">
-            <div class="card-footer">
-              <app-follow-btn
-              [userId]="user.id"
-              [followerStatus]="isFollowing"
-              (setFollowerStatus)="onFollowStatusToggle($event)">
-              </app-follow-btn>
-            </div>
+            <app-follow-button [userId]="user.id"></app-follow-button>
           </ng-container>
-        </div>
+        </section>
         
-        <div>
+        <section class="followers-section">
           <mat-toolbar>
             <mat-toolbar-row>
               <span>Followers</span>
@@ -24,13 +19,13 @@
               <span><a [routerLink]="['/users', user.id, 'followers']">View All</a></span>
             </mat-toolbar-row>
           </mat-toolbar>
-          <app-user-follow 
-          [title]="'Followers'"
-          [followers]="userFollowings.followers"
-          ></app-user-follow>
-        </div>
+            <app-followers 
+              [userId]="user.id" 
+              [contentName]="'followers'">
+            </app-followers>
+        </section>
 
-        <div>
+        <section class="followers-section">
           <mat-toolbar>
             <mat-toolbar-row>
               <span>Followings</span>
@@ -38,16 +33,16 @@
               <span><a [routerLink]="['/users', user.id, 'followings']">View All</a></span>
             </mat-toolbar-row>
           </mat-toolbar>
-          <app-user-follow 
-          [title]="'Following'" 
-          [followers]="userFollowings.followings"
-          ></app-user-follow>
-        </div>
-      
+            <app-followers 
+              [userId]="user.id" 
+              [contentName]="'followings'">
+            </app-followers>
+        </section>
+
       </div>
 
-      <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 courses-column">
-        <div>
+      <div class="col-xs-12 col-sm-7 col-md-8 col-lg-8 courses-column">
+        <section>
           <mat-toolbar>
             <mat-toolbar-row>
               <span>Authored Courses</span>
@@ -59,9 +54,9 @@
           [courses]="userCourses.authoredCourses"
           [header]="'Authored Courses'" 
           ></app-user-courses>
-        </div>
+        </section>
 
-        <div>
+        <section>
           <mat-toolbar>
             <mat-toolbar-row>
               <span>Enrolled Courses</span>
@@ -73,9 +68,9 @@
           [courses]="userCourses.enrolledCourses"
           [header]="'Enrolled Courses'" 
           ></app-user-courses>
-        </div>
+        </section>
 
-        <div>
+        <section>
           <mat-toolbar>
             <mat-toolbar-row>
               <span>Liked Courses</span>
@@ -87,7 +82,7 @@
           [courses]="userCourses.likedCourses"
           [header]="'Liked Courses'" 
           ></app-user-courses>
-        </div>
+        </section>
   
       </div>
     </div>  

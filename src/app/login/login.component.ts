@@ -1,20 +1,21 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from 'src/shared/services/auth/auth.service';
-import { fromEvent, EMPTY, Subscription } from 'rxjs';
-import { tap, switchMap, catchError } from 'rxjs/operators';
+import { fromEvent, Subscription, EMPTY } from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
 import { AuthUser } from '../../shared/models/authUsers';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
   email: string;
   password: string;
-  authError: string;
   clickSubscription: Subscription;
+  errorSubscription: Subscription;
+  authError = '';
 
   constructor(
     private auth: AuthService,
@@ -36,30 +37,25 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((event: Event) => {
           this.clearErrors();
-
-          const user: Partial<AuthUser> = {
-            email: this.email,
-            password: this.password,
-          };
-
-          return this.auth.logUserIn(user)
+          return this.auth.logUserIn(this.getFormData())
             .pipe(
-              tap((result: AuthUser | Error) => {
-                if (result instanceof Error) {
-                  throw result;
-                }
-              }),
-              catchError((error: Error) => {
-                this.authError = error.message;
-                return EMPTY;
-              })
+             catchError((error: Error) => {
+              this.authError = error.message;
+              return EMPTY;
+             })
             );
         }),
       )
-      .subscribe((user: AuthUser) => {
-        console.log('Login success');
-        this.router.navigate(['/users', user.id]);
-      });
+      .subscribe((user: AuthUser) => this.router.navigate(['/users', user.id]));
+  }
+
+  private getFormData(): Partial<AuthUser> {
+   const user: Partial<AuthUser> = {
+      email: this.email,
+      password: this.password,
+    };
+
+   return user;
   }
 
   private clearErrors(): void {

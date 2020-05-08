@@ -11,14 +11,44 @@
       src="{{course.image}}" 
       alt="Some photo">
     <mat-card-content>
-      <p>{{course.content}}</p>
-      <p>Likes {{ course.likes }}</p>
+      <p class='text-muted'>{{course.content | slice:0:50}}...</p>
+      <p>
+        <span class="material-icons text-danger">
+          favorite
+        </span>
+        <span>
+          Likes:
+        </span>
+        <span>
+          {{ course.likes }}
+        </span>
+       </p>
     </mat-card-content>
     <mat-card-actions>
       <ng-container *ngIf="authUserStatus">
-        <button mat-button color="accent" (click)="likeCourse()">{{isLiked === true ? 'Unlike' : 'Like'}}</button>
+        <button
+        mat-button color="accent" 
+        (click)="likeCourse()"
+        >
+        <span class="material-icons">
+          {{isLiked === true ? 'thumb_down' : 'thumb_up' }}
+        </span>
+        <span>
+          {{isLiked === true ? 'Unlike' : 'Like'}}
+        </span>
+      </button>
       </ng-container>
-      <button mat-button color="primary" [routerLink]="['/courses', course.id]">VIEW</button>
+        <button 
+          mat-button color="primary"
+          [routerLink]="['/courses', course.id]"
+        >
+        <span class="material-icons">
+          pageview
+        </span>
+        <span>
+          View
+        </span>
+        </button>
     </mat-card-actions>
   </mat-card>
 </ng-container>

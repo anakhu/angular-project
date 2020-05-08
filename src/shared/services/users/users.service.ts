@@ -6,7 +6,6 @@ import {
   from,
   BehaviorSubject,
   Observable,
-  forkJoin
 } from 'rxjs';
 import {
   first,
@@ -14,13 +13,7 @@ import {
   find,
   switchMap,
   findIndex,
-  concatMap,
-  map,
-  toArray,
-  mergeMap
 } from 'rxjs/operators';
-import { FollowersService } from '../followers/followers.service';
-import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,9 +22,7 @@ import { AuthService } from '../auth/auth.service';
 export class UsersService {
   private usersSubject = new BehaviorSubject<User[]>([]);
 
-  constructor(
-    private followersService: FollowersService,
-  ) { }
+  constructor() { }
 
   public createSubscription(): Observable<User[]>{
     return this.usersSubject.asObservable();
@@ -48,7 +39,7 @@ export class UsersService {
       find(({id: userId}: User) => userId === id),
       switchMap((result: User | undefined) => {
         if (!result) {
-          return of(Error('User not found'));
+          throw Error('User not found');
         } else {
           return of(result);
         }
@@ -60,67 +51,22 @@ export class UsersService {
     const { id } = user;
     from(this.usersSubject.getValue())
       .pipe(
-        findIndex(({ id: userId }: User) => userId === id)
-        ).subscribe((index: number) => {
-          if (index !== -1 ){
-            const updated = [...this.usersSubject.getValue()];
-            updated.splice(index, 1, user);
-            this.setUsers(updated);
-            // temporary storage update
-            this.updateLocalStorage();
-          } else {
-            console.log('failed to update');
+        findIndex(({ id: userId }: User) => userId === id))
+          .subscribe((index: number) => {
+            if (index !== -1 ){
+              const updated = [...this.usersSubject.getValue()];
+              updated.splice(index, 1, user);
+              this.setUsers(updated);
+              // temporary storage update
+              this.updateLocalStorage();
+            } else {
+              console.log('failed to update');
           }
       });
   }
 
-  public collectUsers(uid$: Observable<number[]>): Observable<any>{
-    return uid$.pipe(
-      mergeMap((ids: number[]) => {
-        if (!ids.length) {
-          return of([]);
-        }
-
-        return from(ids)
-          .pipe(
-            concatMap((id: number) => this.getUser(id)),
-             map(({id, name, image}: User) => {
-              return {
-                id,
-                name,
-                image,
-              };
-            }),
-            toArray(),
-          );
-        })
-    );
-  }
-
-  public getFollowersObj(userId: number): any {
-    const followersIds$ = this.followersService.getFollowersIds(userId);
-    const followingsIds$ = this.followersService.getFollowingsIds(userId);
-    const followers$ = this.collectUsers(followersIds$);
-    const followings$ = this.collectUsers(followingsIds$);
-
-    return forkJoin({
-      followers: followers$,
-      followings: followings$,
-    });
-  }
-
-  public changeUserFollowingStatus(status: boolean, userId: number, followerId: number): void {
-    if (status) {
-      this.followersService.follow(userId, followerId);
-    } else {
-      this.followersService.unfollow(followerId, userId);
-    }
-  }
-
   init(): void {
-    // this.setUsers(USERS);
     this.loadUsers();
-    this.followersService.init();
   }
 
   // temparary storage

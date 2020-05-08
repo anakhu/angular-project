@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { EMPTY, of, Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { UsersService } from 'src/shared/services/users/users.service';
 import { User } from 'src/shared/models/user';
-import { tap, catchError, mergeAll, mergeMap, toArray } from 'rxjs/operators';
+import { mergeAll, mergeMap, toArray } from 'rxjs/operators';
 import { CoursesService } from 'src/shared/services/courses/courses.service';
 import { Course } from 'src/shared/models/course';
 import { AuthService } from 'src/shared/services/auth/auth.service';
+import { FollowersService } from 'src/shared/services/followers/followers.service';
 
 const ALIAS = {
   'authored-courses': 'authoredCourses',
@@ -19,7 +20,7 @@ const ALIAS = {
 @Component({
   selector: 'app-detail-page',
   templateUrl: './detail-page.component.html',
-  styleUrls: ['./detail-page.component.scss']
+  styleUrls: ['./detail-page.component.scss'],
 })
 export class DetailPageComponent implements OnInit, OnDestroy {
 
@@ -28,6 +29,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
   contentName: string;
   contentToDisplay: any[];
   authStatus: boolean;
+
   routeSubscription: Subscription;
   likesSubscription: Subscription;
   authSubscription: Subscription;
@@ -38,6 +40,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     private usersService: UsersService,
     private coursesService: CoursesService,
     private authService: AuthService,
+    private followersService: FollowersService,
   ) { }
 
   ngOnInit(): void {
@@ -56,13 +59,16 @@ export class DetailPageComponent implements OnInit, OnDestroy {
         this.userId = +paramMap.get('id');
         this.contentName = paramMap.get('detail');
 
-        if (!Object.prototype.hasOwnProperty.call(ALIAS, this.contentName)) {
+        if (!ALIAS[this.contentName] || isNaN(this.userId)) {
           this.redirect();
           return;
         }
 
         if (this.userId) {
           this.getUserbyId(this.userId);
+        }
+
+        if (this.user) {
           this.distinctContent(this.contentName);
         }
     });
@@ -75,32 +81,20 @@ export class DetailPageComponent implements OnInit, OnDestroy {
 
   private getUserbyId(id: number): void {
     this.usersService.getUser(id)
-      .pipe(
-        tap((result: User | Error) =>  {
-          if (result instanceof Error) {
-            throw result;
-          }
-        }),
-        catchError((error: Error) => {
-          console.log(error.message);
-          return EMPTY;
-        })
-      )
-      .subscribe((user: User) => this.user = user);
+      .subscribe(
+        (user: User) => this.user = user,
+        (error: Error) => this.redirect()
+      );
   }
 
   private distinctContent(contentName: string): void {
-    if (contentName.includes('courses')
-      && Object.prototype.hasOwnProperty.call(ALIAS, contentName)
-      ) {
+    if (contentName.includes('courses') && ALIAS[this.contentName]) {
       const key = ALIAS[contentName];
       const coursesIds: number[] = this.user[key];
       this.getCourses(coursesIds);
     }
 
-    if (contentName.includes('follow')
-      && Object.prototype.hasOwnProperty.call(ALIAS, contentName)
-      ) {
+    if (contentName.includes('follow') && ALIAS[this.contentName]) {
       this.getFollowers(contentName);
     }
   }
@@ -116,7 +110,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
   }
 
   private getFollowers(contentName: string): void {
-    this.usersService.getFollowersObj(this.userId)
+    this.followersService.getFollowersObj(this.userId)
       .subscribe((followers: any) => {
         const key = ALIAS[contentName];
         this.contentToDisplay = followers[key];
