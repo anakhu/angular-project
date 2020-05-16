@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AuthService } from 'src/shared/services/auth/auth.service';
 import { fromEvent, Subscription, EMPTY } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators';
+import { switchMap, catchError, pluck } from 'rxjs/operators';
 import { AuthUser } from '../../shared/models/authUsers';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, QueryParamsHandling } from '@angular/router';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -11,54 +12,28 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  email: string;
-  password: string;
-  clickSubscription: Subscription;
-  errorSubscription: Subscription;
-  authError = '';
+  queryParamsSubscription: Subscription;
+  displayedComponent: string | undefined;
 
   constructor(
-    private auth: AuthService,
-    private router: Router,
-  ) { }
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
-    this.createBtnSubscription();
+    this._createQueryParamsSubscription();
   }
 
-  ngOnDestroy(): void {
-    this.clickSubscription.unsubscribe();
-  }
+  ngOnDestroy(): void {}
 
-  private createBtnSubscription(): void {
-    const btn = document.getElementById('btnLogin');
 
-    this.clickSubscription = fromEvent(btn, 'click')
+  private _createQueryParamsSubscription(): void {
+    this.queryParamsSubscription = this.route.queryParamMap
       .pipe(
-        switchMap((event: Event) => {
-          this.clearErrors();
-          return this.auth.logUserIn(this.getFormData())
-            .pipe(
-             catchError((error: Error) => {
-              this.authError = error.message;
-              return EMPTY;
-             })
-            );
-        }),
+        pluck('params'),
+        pluck('action'),
       )
-      .subscribe((user: AuthUser) => this.router.navigate(['/users', user.id]));
-  }
-
-  private getFormData(): Partial<AuthUser> {
-   const user: Partial<AuthUser> = {
-      email: this.email,
-      password: this.password,
-    };
-
-   return user;
-  }
-
-  private clearErrors(): void {
-    this.authError = '';
+    .subscribe((componentName: string) => {
+      this.displayedComponent = componentName;
+    });
   }
 }

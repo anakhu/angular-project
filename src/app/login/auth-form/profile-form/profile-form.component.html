@@ -1,0 +1,59 @@
+<div
+    [formGroup]="form"
+    class="form"
+>
+    <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+
+        <input
+            matInput
+            formControlName="name"
+            type="text"
+            id="name"
+        >
+    </mat-form-field>
+
+    <div *ngIf="name.touched && name.invalid">
+        <mat-hint *ngIf="name.errors?.required">Please, type your name!</mat-hint>
+
+        <mat-hint *ngIf="name.errors?.minlength">Name is too short!</mat-hint>
+
+        <mat-hint *ngIf="name.errors?.maxlength">Name is too long!</mat-hint>
+    </div>
+
+    <app-country-select [formGroup]="form"></app-country-select>
+
+    <div *ngIf="country.touched && country.invalid">
+        <mat-hint *ngIf="country.errors?.required">Please, choose your country!</mat-hint>
+    </div>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Occupation</mat-label>
+
+        <input
+            matInput
+            formControlName="occupation"
+            type="text"
+            id="occupation"
+        >
+    </mat-form-field>
+
+    <div *ngIf="occupation.touched && occupation.invalid">
+        <mat-hint *ngIf="occupation.errors?.required">
+            Please, provide your current occupation!
+        </mat-hint>
+
+        <mat-hint *ngIf="occupation.errors?.maxlength">Name is too long!</mat-hint>
+    </div>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Photo</mat-label>
+
+        <input
+            matInput
+            formControlName="image"
+            type="text"
+            id="image"
+        >
+    </mat-form-field>
+</div>

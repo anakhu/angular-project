@@ -11,19 +11,13 @@
         </span>
         Home
       </a>
-      <a mat-list-item routerLink="/about">
-        <span class="material-icons">
-          supervised_user_circle
-        </span>
-        About us
-      </a>
       <a mat-list-item routerLink="/users">
         <span class="material-icons">
           people_outline
         </span>
        Users
       </a>
-      <ng-container *ngIf="authStatus">
+      <ng-container *ngIf="authUserId">
         <a mat-list-item [routerLink]="['/users', authUserId]">
           <span class="material-icons">
             perm_identity
@@ -45,7 +39,7 @@
       </button>
       <span>OnlineAcademy</span>
       <span class="space"></span>
-      <ng-container *ngIf="authStatus">
+      <ng-container *ngIf="authUserId">
         <a mat-list-item (click)="logout()">
           <span class="material-icons">
             perm_identity
@@ -53,7 +47,7 @@
          Log out
         </a>
       </ng-container>
-      <ng-container *ngIf="!authStatus">
+      <ng-container *ngIf="!authUserId">
         <a mat-list-item routerLink="/login">
           <span class="material-icons">
             perm_identity

@@ -22,23 +22,23 @@ export class FollowBarComponent implements OnInit, OnChanges, OnDestroy{
   ) { }
 
   ngOnInit(): void {
-    this.createFollowersSubscipton();
+    this._createFollowersSubscipton();
   }
 
   ngOnChanges(): void {
-    this.getUsersFollowersTotal();
+    this._getUsersFollowersTotal();
   }
 
   ngOnDestroy(): void {
     this.followersSubscription.unsubscribe();
   }
 
-  private createFollowersSubscipton(): void {
+  private _createFollowersSubscipton(): void {
     this.followersSubscription = this.followersService.createSubscription()
-      .subscribe((followers: Follower[]) => this.getUsersFollowersTotal());
+      .subscribe((followers: Follower[]) => this._getUsersFollowersTotal());
   }
 
-  private getUsersFollowersTotal(): void {
+  private _getUsersFollowersTotal(): void {
     this.userFollowers = this.followersService.getFollowersTotal(this.userId);
   }
 

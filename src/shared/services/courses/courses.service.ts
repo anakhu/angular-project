@@ -1,31 +1,45 @@
 import { Injectable } from '@angular/core';
 import { Course, CourseFormData } from '../../models/course';
-import { COURSES } from '../mock';
-import { Observable, of, BehaviorSubject, from } from 'rxjs';
-import { find, first, mergeAll, switchMap } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject, from, Subject } from 'rxjs';
+import { find, first, mergeAll, switchMap, tap, map } from 'rxjs/operators';
+import { ApiService } from '../api/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class CoursesService {
-  constructor() { }
+  constructor( private api: ApiService) {}
 
-  private coursesSubject = new BehaviorSubject<Course[]>([]);
+  private courses: Course[] = [];
+  private coursesSubject = new Subject<Course[]>();
 
-  private setCourses(coursesArr: Course[]): void {
-    this.coursesSubject.next(coursesArr);
+  public loadCourses(): Observable<Course[]>{
+    return this.api.getAll('courses', true)
+      .pipe(
+        map((result: Course[]) => {
+          this._setCourses(result);
+          return this.courses;
+        }),
+      );
+  }
+
+  public getCourses(): Course[] {
+    return this.courses;
+  }
+
+  private _setCourses(coursesArr: Course[]): void {
+    this.courses = coursesArr;
+    this.coursesSubject.next(this.courses);
   }
 
   public createSubscription(): Observable<any> {
     return this.coursesSubject.asObservable();
   }
 
-  public getById(id: number): Observable<Course | Error> {
-    return from(this.coursesSubject)
+  public getById(id: string): Observable<Course | Error> {
+    return from(this.courses)
       .pipe(
-        first(),
-        mergeAll(),
         find(({id: courseId}: Course) => courseId === id),
         switchMap((found: Course | undefined) => {
           if (!found) {
@@ -38,48 +52,30 @@ export class CoursesService {
 
   public addCourse(course: CourseFormData): Observable<Course | Error> {
     const newCourse = course as Course;
-    newCourse.id = this.coursesSubject.getValue().length + 1;
+    // newCourse.id = this.coursesSubject.getValue().length + 1;
 
-    if (!newCourse.image) {
-      newCourse.image = './assets/images/default.jpg';
-    }
-    this.setCourses([...this.coursesSubject.getValue(), newCourse]);
+    // if (!newCourse.image) {
+    //   newCourse.image = './assets/images/default.jpg';
+    // }
+    // this.setCourses([...this.coursesSubject.getValue(), newCourse]);
 
-    // temporary localStorage update
-    this.updateLocalStorage();
+    // // temporary localStorage update
+    // this.updateLocalStorage();
     return of(newCourse);
   }
 
-  public updateCourse(updatedCourse: Course): void {
-    const courseIndex = this.coursesSubject.getValue()
-      .findIndex((course: Course) => course.id === updatedCourse.id);
-    if (courseIndex !== -1) {
-      const currentCourses = [...this.coursesSubject.getValue()];
-      currentCourses.splice(courseIndex, 1, updatedCourse);
-      this.coursesSubject.next(currentCourses);
-      // temporary
-      this.updateLocalStorage();
-    } else {
-      console.log('failed to update')
-    }
-  }
 
-  public init() {
-    this.loadCourses();
-  }
-
-  // temporary storage
-
-  private loadCourses(): void {
-    const loadedCourses = window.localStorage.getItem('courses');
-    if (loadedCourses) {
-      this.setCourses(JSON.parse(loadedCourses));
-    } else {
-      this.setCourses(COURSES);
-    }
-  }
-
-  private updateLocalStorage(): void {
-    window.localStorage.setItem('courses', JSON.stringify(this.coursesSubject.getValue()));
+  public updateCourse(updatedCourse: Course): Observable<Course> {
+    return this.api.updateItem('courses', updatedCourse)
+      .pipe(
+        map((course: Course) => {
+          const index = this.courses.findIndex((entry: Course) => entry.id === course.id);
+          if (index !== -1) {
+            this.courses.splice(index, 1, course);
+            this.coursesSubject.next(this.courses);
+          }
+          return course;
+        })
+      );
   }
 }

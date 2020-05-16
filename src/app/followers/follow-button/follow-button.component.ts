@@ -16,7 +16,7 @@ import { FollowersService } from 'src/shared/services/followers/followers.servic
 })
 export class FollowButtonComponent implements OnInit, OnDestroy, OnChanges, AfterViewChecked {
 
-  @Input() userId: number;
+  @Input() userId: string;
 
   isFollowedByAuthUser: boolean;
 
@@ -58,6 +58,6 @@ export class FollowButtonComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   private changeFollowersStatus(): void {
     this.isFollowedByAuthUser = !this.isFollowedByAuthUser;
-    this.followersService.changeUserFollowingStatus(this.isFollowedByAuthUser, this.userId);
+    this.followersService.changeUserFollowingStatus(this.userId);
   }
 }

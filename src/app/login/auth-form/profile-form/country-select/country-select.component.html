@@ -1,0 +1,12 @@
+<ng-container [formGroup]="formGroup">
+    <mat-form-field appearance="outline">
+        <mat-label>Country</mat-label>
+
+        <mat-select [formControlName]="'country'">
+            <mat-option
+                *ngFor="let country of countriesSelect"
+                [value]="country.value"
+            >{{country.viewValue}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+</ng-container>

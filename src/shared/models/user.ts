@@ -1,11 +1,12 @@
 export interface User {
-  id: number;
+  id: string;
   name: string;
   country: { name: string, code: string};
-  authoredCourses: number[];
-  enrolledCourses: number[];
-  likedCourses: number[];
+  occupation: string;
   image?: string;
-  followers?: number[];
-  following?: number[];
+  authoredCourses?: string[];
+  enrolledCourses?: string[];
+  likedCourses?: string[];
+  followers?: string[];
+  following?: string[];
 }

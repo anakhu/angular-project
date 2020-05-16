@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoursesService } from '../../shared/services/courses/courses.service';
 import { Course } from '../../shared/models/course';
-import { Observable, Subscription, of, from } from 'rxjs';
-import { User } from 'src/shared/models/user';
+import { Subscription, Observable } from 'rxjs';
 import { AuthService } from 'src/shared/services/auth/auth.service';
-import { mergeAll, filter, toArray } from 'rxjs/operators';
+import { ActivatedRoute, ResolveData } from '@angular/router';
+import { LoginUser } from 'src/shared/services/auth/login.user';
 
 @Component({
   selector: 'app-courses',
@@ -16,20 +16,23 @@ export class CoursesComponent implements OnInit, OnDestroy {
   courses: Course[] = [];
   coursesSubscription: Subscription;
   authSubscription: Subscription;
-  authUserStatus: boolean;
+  authUserId: string;
 
   constructor(
     private coursesService: CoursesService,
     private authService: AuthService,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.createCourseSyubscription();
     this.createAuthSubscription();
+    this.activatedRoute.data
+      .subscribe((data: {CoursesResolver: Course[]}) => {
+        this.courses = data.CoursesResolver;
+      });
   }
 
   ngOnDestroy(): void {
-    this.coursesSubscription.unsubscribe();
     this.authSubscription.unsubscribe();
   }
 
@@ -40,6 +43,6 @@ export class CoursesComponent implements OnInit, OnDestroy {
 
   private createAuthSubscription(): void {
     this.authSubscription = this.authService.createSubscription()
-      .subscribe((authStatus: boolean) => this.authUserStatus = authStatus);
+      .subscribe((user: LoginUser) => this.authUserId = user ? user.id : null);
   }
 }

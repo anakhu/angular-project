@@ -1,0 +1,50 @@
+.form-container {
+    padding: 20px;
+}
+
+.login-form {
+    margin: 50px auto;
+    max-width: 500px;
+    color: rgb(36, 33, 33);
+    background: whitesmoke;
+    border: 1px solid #d8dee2;
+}
+
+.icon-container {
+    text-align: center;
+    .material-icons {
+        font-size: 80px;
+        display: block;
+    }
+}
+
+form {
+    max-width: 400px;
+    padding: 70px 25px;
+    width: 100%;
+    margin: auto;
+    position: relative;
+    input {
+        margin-bottom: 10px;
+        span {
+            background-color: transparent !important;
+        }
+    }
+    button {
+        display: block;
+    }
+}
+
+.mat-form-field {
+    display: block;
+    line-height: 1rem;
+}
+
+.form-content {
+    align-self: center;
+}
+
+.login-form-footer {
+    text-align: center;
+    padding-bottom: 50px;
+}

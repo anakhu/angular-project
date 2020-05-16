@@ -18,6 +18,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 const MaterialComponents = [
@@ -40,6 +41,7 @@ const MaterialComponents = [
   MatNativeDateModule,
   MatTooltipModule,
   MatBadgeModule,
+  MatProgressSpinnerModule,
 ];
 
 @NgModule({

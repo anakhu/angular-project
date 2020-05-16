@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Follower } from '../../models/followers';
-import { FOLLOWERS } from '../mock';
-import { BehaviorSubject, Observable, from, EMPTY, of, forkJoin } from 'rxjs';
-import { pluck, filter, toArray, find, map, mergeAll, tap, mergeMap, concatMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, from, of, forkJoin, Subscription } from 'rxjs';
+import { pluck, filter, toArray, find, map, mergeAll, tap, mergeMap, concatMap,} from 'rxjs/operators';
 import { User } from 'src/shared/models/user';
 import { UsersService } from '../users/users.service';
 import { AuthService } from '../auth/auth.service';
+import { ApiService } from '../api/api.service'; 
+import { LoginUser } from '../auth/login.user';
+import { FireBaseFollower } from './follower';
 
 
 @Injectable({
@@ -13,19 +15,43 @@ import { AuthService } from '../auth/auth.service';
 })
 
 export class FollowersService {
-  private followersSubject = new BehaviorSubject <Follower[]>([]);
+
+  followers: Follower[] = [];
+  followersSubject = new BehaviorSubject<Follower[]>([]);
+  authUserId: string;
+  authSubscription: Subscription;
 
   constructor(
     private usersService: UsersService,
     private authService: AuthService,
-  ) {}
-
-  private setFollowers(followers: Follower[]){
-    this.followersSubject.next(followers);
-    this.updateFollowers(this.followersSubject.getValue());
+    private api: ApiService,
+  ) {
+    this._init();
   }
 
-  private getFollowersIds(uid: number): Observable<number[]> {
+  private _init(): void {
+    this.authSubscription = this.authService.createSubscription()
+      .subscribe((user: LoginUser) => this.authUserId = user ? user.id : null);
+    this._loadFollowers();
+  }
+
+  private _loadFollowers(): void {
+    this._getAllFollowers()
+      .subscribe((followers: Follower[]) => {
+        this._setFollowers(followers);
+      });
+  }
+
+  private _getAllFollowers(): Observable<Follower[]> {
+    return this.api.getAll('followers', true);
+  }
+
+  private _setFollowers(followers: Follower[]){
+    this.followers = followers;
+    this.followersSubject.next(this.followers);
+  }
+
+  private _getFollowersIds(uid: string): Observable<string[]> {
     return from(this.followersSubject.getValue())
       .pipe(
         filter(({ userId }: Follower) => userId === uid ),
@@ -34,7 +60,7 @@ export class FollowersService {
     );
   }
 
-  private getFollowingsIds(uid: number): Observable<number[]> {
+  private _getFollowingsIds(uid: string): Observable<string[]> {
     return from(this.followersSubject.getValue())
       .pipe(
         filter(({ followerId }: Follower) => followerId === uid ),
@@ -43,50 +69,72 @@ export class FollowersService {
     );
   }
 
-  private follow(userId: number, followerId: number): void {
+  private _deleteFollowersEntry(entryId: string): void {
+    this.api.deleteItem('followers', entryId)
+      .subscribe((response: any) => {
+        if (!response) {
+          const index = this.followers
+            .findIndex((entry: FireBaseFollower) => entry.id === entryId);
+          if (index !== 1) {
+            this.followers.splice(index, 1);
+            this._setFollowers(this.followers);
+          }
+        }
+      });
+    // this.followersRef.remove(entryId);
+  }
+
+  private _addFollowersEntry(uId: string, fId: string) {
     const newEntry: Follower = {
-      userId,
-      followerId,
+      userId: uId,
+      followerId: fId,
     };
-    this.setFollowers([...this.followersSubject.getValue(), newEntry]);
+    this.api.addItem('followers', newEntry)
+      .subscribe((data: { name: string}) => {
+        const id = data.name;
+        const entry = new FireBaseFollower(uId, fId, id);
+        this.followers.push(entry);
+        this._setFollowers(this.followers);
+      });
   }
 
-  private unfollow(uId: number, fId: number): void {
-    from(this.followersSubject.getValue())
+
+  private _changeFollowersStatus(uId: string, fId: string): any {
+    return from(this.followersSubject.getValue())
       .pipe(
-        find(({userId, followerId}: Follower) => {
-          return userId === fId && followerId === uId;
+        find(({ userId, followerId }: Follower) => {
+          return userId === uId && followerId === fId;
         }),
-        map((value: Follower | undefined) => {
-          return value
-            ? [...this.followersSubject.getValue()]
-              .filter((entry: Follower ) => entry !== value)
-            : EMPTY;
+        tap((result: FireBaseFollower | undefined) => {
+          if (!result) {
+            this._addFollowersEntry(uId, fId);
+          } else {
+            this._deleteFollowersEntry(result.id);
+          }
         })
-      )
-      .subscribe((result: Follower[]) => this.setFollowers(result));
+      );
   }
 
-  private collectUsers(uid$: Observable<number[]>): Observable<any>{
+  private _collectUsers(uid$: Observable<string[]>): Observable<any>{
     return uid$.pipe(
-      mergeMap((ids: number[]) => {
+      mergeMap((ids: string[]) => {
         if (!ids.length) {
           return of([]);
         }
 
         return from(ids)
           .pipe(
-            concatMap((id: number) => this.usersService.getUser(id)),
-             map(({id, name, image}: User) => {
-              return {
-                id,
-                name,
-                image,
-              };
-            }),
-            toArray(),
-          );
-        })
+            concatMap((id: string) => this.usersService.getUser(id)),
+              map(({id, name, image}: User) => {
+                return {
+                  id,
+                  name,
+                  image,
+                };
+              }),
+              toArray(),
+            );
+          })
     );
   }
 
@@ -95,25 +143,25 @@ export class FollowersService {
   }
 
   public isFollowedbByAuthUser(userId): boolean {
-    const authUserId = this.authService.getAuthUserId();
 
     let followerStatus;
-    this.getFollowingsIds(authUserId)
+    this._getFollowingsIds(this.authUserId)
       .pipe(
         mergeAll(),
-        find((id: number) => id === userId)
-      ).subscribe((result: number | undefined) => {
+        find((id: string) => id === userId)
+      )
+      .subscribe((result: string | undefined) => {
         followerStatus = !!result;
       });
 
     return followerStatus;
   }
 
-  public getFollowersObj(userId: number): any {
-    const followersIds$ = this.getFollowersIds(userId);
-    const followingsIds$ = this.getFollowingsIds(userId);
-    const followers$ = this.collectUsers(followersIds$);
-    const followings$ = this.collectUsers(followingsIds$);
+  public getFollowersObj(userId: string): any {
+    const followersIds$ = this._getFollowersIds(userId);
+    const followingsIds$ = this._getFollowingsIds(userId);
+    const followers$ = this._collectUsers(followersIds$);
+    const followings$ = this._collectUsers(followingsIds$);
 
     return forkJoin({
       followers: followers$,
@@ -122,8 +170,8 @@ export class FollowersService {
   }
 
   public getFollowersTotal(userId): {followersNum: number, followingsNum: number} {
-    const followersIds$ = this.getFollowersIds(userId);
-    const followingsIds$ = this.getFollowingsIds(userId);
+    const followersIds$ = this._getFollowersIds(userId);
+    const followingsIds$ = this._getFollowingsIds(userId);
 
     const followersObj = {
       followersNum: 0,
@@ -131,39 +179,17 @@ export class FollowersService {
     };
 
     followersIds$
-      .subscribe((followersIds: number[]) => followersObj.followersNum = followersIds.length);
+      .subscribe((followersIds: string[]) => followersObj.followersNum = followersIds.length);
 
     followingsIds$
-      .subscribe((followersIds: number[]) => followersObj.followingsNum = followersIds.length);
+      .subscribe((followersIds: string[]) => followersObj.followingsNum = followersIds.length);
 
     return followersObj;
   }
 
-  public changeUserFollowingStatus(status: boolean, userId: number): void {
-    const authUserId = this.authService.getAuthUserId();
-    if (status) {
-      this.follow(userId, authUserId);
-    } else {
-      this.unfollow(authUserId, userId);
-    }
-  }
-
-  public init(): void {
-    this.loadFollowers();
-  }
-
-  // temporary storage
-  private loadFollowers(): void {
-    const followers = window.localStorage.getItem('followers');
-    if (followers && followers.length) {
-      this.setFollowers(JSON.parse(followers));
-    } else {
-      this.setFollowers(FOLLOWERS);
-    }
-  }
-
-  private updateFollowers(followers: Follower[]) {
-    window.localStorage.setItem('followers', JSON.stringify(followers));
+  public changeUserFollowingStatus(userId: string): void {
+    this._changeFollowersStatus(userId, this.authUserId)
+      .subscribe((result) => console.log(result));
   }
 }
 

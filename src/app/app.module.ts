@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { MaterialModule } from '../modules/material.module';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -9,6 +10,7 @@ import {
   CourseComponent,
   CourseDetailComponent,
   CoursesComponent,
+  LikeButtonComponent
 } from './courses/index';
 import {
   UserCoursesComponent,
@@ -19,10 +21,17 @@ import {
   UserComponent,
   UsersComponent
 } from './users/index';
-import { AboutComponent } from './about/about.component';
-// import { UserProfileComponent } from './user-profile/user-profile.component';
-// import { AddCourseComponent } from './user-profile/add-course/add-course.component';
-import { LoginComponent } from './login/login.component';
+
+import {
+  AboutComponent,
+  LoginComponent,
+  LoginFormComponent,
+  AuthFormComponent,
+  CountrySelectComponent,
+  CredentialsFormComponent,
+  ProfileFormComponent,
+} from './login/index';
+
 import { DetailPageComponent } from './detail-page/detail-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { ErrorService } from 'src/shared/services/error/error.service';
@@ -32,6 +41,8 @@ import {
   FollowerComponent,
   FollowersComponent
 } from './followers/index';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { LogInterceptor } from 'src/shared/interceptors/log.interceptor';
 
 @NgModule({
   declarations: [
@@ -39,8 +50,6 @@ import {
     CoursesComponent,
     CourseDetailComponent,
     AboutComponent,
-    // UserProfileComponent,
-    // AddCourseComponent,
     UsersComponent,
     UserDetailComponent,
     UserPicComponent,
@@ -54,14 +63,26 @@ import {
     FollowerComponent,
     FollowButtonComponent,
     FollowBarComponent,
+    LoginFormComponent,
+    AuthFormComponent,
+    CountrySelectComponent,
+    CredentialsFormComponent,
+    ProfileFormComponent,
+    LikeButtonComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
   ],
-  providers: [{provide: ErrorHandler, useClass: ErrorService}],
+  providers: [
+    {provide: ErrorHandler, useClass: ErrorService},
+    {provide: HTTP_INTERCEPTORS, useClass: LogInterceptor, multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

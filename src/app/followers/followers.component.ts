@@ -34,6 +34,7 @@ export class FollowersComponent implements OnInit, OnDestroy, OnChanges{
   }
 
   ngOnDestroy(): void {
+    console.log('destroying followers component');
     this.followersSubscription.unsubscribe();
   }
 

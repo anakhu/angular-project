@@ -3,6 +3,7 @@ import { User } from '../../shared/models/user';
 import { UsersService } from '../../shared/services/users/users.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/shared/services/auth/auth.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-users',
@@ -11,40 +12,28 @@ import { AuthService } from 'src/shared/services/auth/auth.service';
 })
 export class UsersComponent implements OnInit, OnDestroy {
   users: User[];
-  authStatus: boolean;
   usersSubscription: Subscription;
-  authSubscription: Subscription;
 
   constructor(
     private usersService: UsersService,
-    private authService: AuthService,
+    private activatedRoute: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
-   this.createAuthStatusSubscription();
-   this.createUserSubscription();
+    this.activatedRoute.data
+      .subscribe((data: {UsersResolver: User[]}) => {
+        this.users = data.UsersResolver;
+      });
+
+    this.createUserSubscription();
   }
 
   ngOnDestroy(): void {
     this.usersSubscription.unsubscribe();
-    this.authSubscription.unsubscribe();
-  }
-
-  private createAuthStatusSubscription(): void {
-    this.authSubscription = this.authService.createSubscription()
-      .subscribe((authStatus: boolean) => this.authStatus = authStatus);
   }
 
   private createUserSubscription(): void {
     this.usersSubscription = this.usersService.createSubscription()
-      .subscribe((users: User[]) => {
-        if (this.authStatus) {
-          const id = this.authService.getAuthUserId();
-          this.users = users
-            .filter(({id: userId}: User ) => userId !== id);
-        } else {
-          this.users = users;
-        }
-      });
+      .subscribe((users: User[]) => this.users = users);
   }
 }

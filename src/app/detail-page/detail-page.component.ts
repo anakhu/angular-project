@@ -7,6 +7,7 @@ import { mergeAll, mergeMap, toArray } from 'rxjs/operators';
 import { CoursesService } from 'src/shared/services/courses/courses.service';
 import { Course } from 'src/shared/models/course';
 import { AuthService } from 'src/shared/services/auth/auth.service';
+import { LoginUser } from 'src/shared/services/auth/login.user';
 import { FollowersService } from 'src/shared/services/followers/followers.service';
 
 const ALIAS = {
@@ -24,11 +25,11 @@ const ALIAS = {
 })
 export class DetailPageComponent implements OnInit, OnDestroy {
 
-  userId: number;
+  userId: string;
   user: User;
   contentName: string;
   contentToDisplay: any[];
-  authStatus: boolean;
+  authUserId: string;
 
   routeSubscription: Subscription;
   likesSubscription: Subscription;
@@ -56,10 +57,10 @@ export class DetailPageComponent implements OnInit, OnDestroy {
   private createParamMapsubscription(): void {
     this.routeSubscription = this.activatedRoute.paramMap
       .subscribe((paramMap: ParamMap) => {
-        this.userId = +paramMap.get('id');
+        this.userId = paramMap.get('id');
         this.contentName = paramMap.get('detail');
 
-        if (!ALIAS[this.contentName] || isNaN(this.userId)) {
+        if (!ALIAS[this.contentName] || !this.userId) {
           this.redirect();
           return;
         }
@@ -76,10 +77,10 @@ export class DetailPageComponent implements OnInit, OnDestroy {
 
   private createAuthSubscription(): void {
     this.authSubscription = this.authService.createSubscription()
-      .subscribe((authStatus: boolean) => this.authStatus = authStatus);
+      .subscribe((user: LoginUser) => this.authUserId = user ? user.id : null);
   }
 
-  private getUserbyId(id: number): void {
+  private getUserbyId(id: string): void {
     this.usersService.getUser(id)
       .subscribe(
         (user: User) => this.user = user,
@@ -90,7 +91,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
   private distinctContent(contentName: string): void {
     if (contentName.includes('courses') && ALIAS[this.contentName]) {
       const key = ALIAS[contentName];
-      const coursesIds: number[] = this.user[key];
+      const coursesIds: string[] = this.user[key];
       this.getCourses(coursesIds);
     }
 
@@ -99,11 +100,11 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getCourses(ids: number[]): void {
+  private getCourses(ids: string[]): void {
     of(ids)
       .pipe(
         mergeAll(),
-        mergeMap((id: number) => this.coursesService.getById(id)),
+        mergeMap((id: string) => this.coursesService.getById(id)),
         toArray()
       )
     .subscribe((courses: Course[]) => this.contentToDisplay = courses);

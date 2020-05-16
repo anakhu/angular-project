@@ -6,7 +6,7 @@
 
         <section>
           <app-user-pic [user]="user"></app-user-pic>
-          <ng-container *ngIf="isUserLoggedIn && !isAuthUser">
+          <ng-container *ngIf="authUserId && authUserId !== userId">
             <app-follow-button [userId]="user.id"></app-follow-button>
           </ng-container>
         </section>

@@ -2,14 +2,14 @@ export interface Course {
   name: string;
   content: string;
   author: string;
-  authorId: number;
+  authorId: string;
   startDate: string;
   endDate: string;
   price: number;
   sessions: number;
   studentsMax: number;
   certificate: boolean;
-  id?: number;
+  id?: string;
   likes?: number;
   image?: string;
 }

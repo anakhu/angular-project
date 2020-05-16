@@ -8,6 +8,7 @@ import { map, shareReplay, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LikesService } from 'src/shared/services/likes/likes.service';
 import { FollowersService } from 'src/shared/services/followers/followers.service';
+import { LoginUser } from 'src/shared/services/auth/login.user';
 
 @Component({
   selector: 'app-root',
@@ -25,45 +26,29 @@ export class AppComponent implements OnInit, OnDestroy{
 
   mediaSub: Subscription;
   authSubscription: Subscription;
-  authStatus: boolean;
-  authUserId: number;
+  authUserId: string;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private courseService: CoursesService,
-    private usersService: UsersService,
     private authService: AuthService,
-    private likesService: LikesService,
     private router: Router,
-    private followersService: FollowersService,
-  ) {}
+  ) {
+    this.authService.getLoginUserOnAppLoad();
+  }
 
   ngOnInit(): void {
    this.authSubscription = this.authService.createSubscription()
-    .subscribe((authStatus: boolean) => {
-      this.authStatus = authStatus;
-      if (this.authStatus) {
-        console.log('getting auth user');
-        this.authUserId = this.authService.getAuthUserId();
-      }
+    .subscribe((user: LoginUser) => {
+     this.authUserId = user ? user.id : null;
     });
-   this.initServices();
   }
 
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
   }
 
-  private initServices() {
-    this.courseService.init();
-    this.usersService.init();
-    this.authService.init();
-    this.likesService.init();
-    this.followersService.init();
-  }
-
   logout(): void {
-    this.authService.logUserOut();
+    this.authService.logout();
     this.router.navigate(['/']);
   }
 }

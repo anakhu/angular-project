@@ -1,0 +1,17 @@
+<ng-container *ngIf="authUserId">
+  <button
+    [disabled]="isLoading"
+    mat-button color="accent" 
+    (click)="likeCourse($event)"
+    >
+    <span *ngIf="isLoading" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+    <ng-container *ngIf="!isLoading">
+      <span class="material-icons appear">
+        {{isLiked === true ? 'thumb_down' : 'thumb_up' }}
+      </span >
+      <span class="appear">
+        {{isLiked === true ? 'Unlike' : 'Like'}}
+      </span>
+    </ng-container>
+  </button> 
+</ng-container>

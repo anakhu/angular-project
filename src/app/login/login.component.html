@@ -1,19 +1,86 @@
-<div>
-  <h3>A couple of registered Users</h3>
-  <p>email: 'ola@mail.ru', password: 'ola1234'</p>
-  <p>email: 'lecter@mail.ru', password: 'lecter1234'</p>
-  <p>email: 'dad@mail.ru', password: 'dad1234'</p>
-</div>
+<div class="login-page">
+  <ng-container [ngSwitch]="displayedComponent">
+    <div *ngSwitchCase="'sign-in'">
+      <app-login-form></app-login-form>
+    </div>
 
-<div class="login-container">
-  <div *ngIf="authError">{{ authError }}</div>
-  <mat-form-field appearance="fill">
-    <mat-label>Email</mat-label>
-    <input matInput type="text" [(ngModel)]="email">
-  </mat-form-field>
-  <mat-form-field appearance="fill">
-    <mat-label>Password</mat-label>
-    <input matInput type="text" [(ngModel)]="password">
-  </mat-form-field>
-  <button id="btnLogin">Log in</button>
+    <div *ngSwitchCase="'sign-up'">
+      <app-auth-form></app-auth-form>
+    </div>
+
+    <div *ngSwitchDefault>
+      <div class="login-page-main">
+        <div class="login-banner">
+          <div class="login-banner-content">
+            <h1>Welcome to Online Academy!</h1>
+
+            <h5>
+              Join our fast growing community for free!
+            </h5>
+
+            <div class="login-banner-actions">
+              <a
+                mat-flat-button="mat-flat-button"
+                color="accent"
+                [routerLink]="['/login']"
+                [queryParams]="{ action: 'sign-up'}"
+              >Sign Up</a>
+
+              <a
+                mat-flat-button="mat-flat-button"
+                color="accent"
+                [routerLink]="['/login']"
+                [queryParams]="{ action: 'sign-in'}"
+              >Sign In</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-about">
+          <div class="conatainer">
+            <h3 class="title row col-12 justify-content-center">Why Online Academy?</h3>
+            <ul class="row col-12 justify-content-center">
+
+              <li class="login-info-item col-xs-6 col-sm-6 col-md-4 col-lg-2">
+                <img class="img-responsive" src="assets/login/links/logo1.png" alt="">
+                <span>
+                  Variety of courses
+                </span>
+              </li>
+
+              <li class="login-info-item col-xs-6 col-sm-6 col-md-4 col-lg-2">
+                <img class="img-responsive" src="assets/login/links/logo3.png" alt="">
+                <span>
+                  Large community
+                </span>
+              </li>
+
+              <li class="login-info-item col-xs-6 col-sm-6 col-md-4 col-lg-2">
+                <img class="img-responsive" src="assets/login/links/logo2.png" alt="">
+                <span>
+                  Multicultural members
+                </span>
+              </li>
+
+              <li class="login-info-item col-xs-6 col-sm-6 col-md-4 col-lg-2">
+                <img class="img-responsive" src="assets/login/links/logo4.png" alt="">
+                <span>
+                  Hobbies and careers
+                </span>
+              </li>
+
+              <li class="login-info-item col-xs-6 col-sm-6 col-md-4 col-lg-2">
+                <img class="img-responsive" src="assets/login/links/logo5.png" alt="">
+                <span>
+                  Improve your skills
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <app-about></app-about>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </div>

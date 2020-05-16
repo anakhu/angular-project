@@ -1,0 +1,20 @@
+<div class="login-form">
+    <div class="icon-container">
+        <span class="material-icons">
+            school
+        </span>
+        <h1 class="title">Sign up to Online Academy</h1>
+    </div>
+
+    <form [formGroup]="authForm" (ngSubmit)="submit()">
+        <app-profile-form formControlName="profile"></app-profile-form>
+        <app-credentials-form formControlName="credentials"></app-credentials-form>
+        <button [disabled]="authForm.invalid">Sign Up</button>
+    </form>
+
+    <div class="login-form-footer">
+        <h4 class="subheading-1">Already got an account?</h4>
+        <button mat-raised-button color="primary" [routerLink]="['/login']" [queryParams]="{ action: 'sign-in'}">Sign
+            in</button>
+    </div>
+</div>

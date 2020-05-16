@@ -4,9 +4,10 @@ import { Course } from '../../shared/models/course';
 import { CoursesService } from '../../shared/services/courses/courses.service';
 import { UsersService } from 'src/shared/services/users/users.service';
 import { Subscription, from, of } from 'rxjs';
-import { mergeAll, map, mergeMap } from 'rxjs/operators';
+import { mergeAll, map, mergeMap, catchError } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AuthService } from 'src/shared/services/auth/auth.service';
+import { LoginUser } from 'src/shared/services/auth/login.user';
 
 
 @Component({
@@ -15,11 +16,10 @@ import { AuthService } from 'src/shared/services/auth/auth.service';
   styleUrls: ['./user-detail.component.scss'],
 })
 export class UserDetailComponent implements OnInit, OnDestroy {
-  userId: number;
+  userId: string;
   user: User;
+  authUserId: string;
 
-  isAuthUser: boolean;
-  isUserLoggedIn: boolean;
   isFollowing: boolean;
 
   userCourses = {
@@ -29,83 +29,87 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   };
 
   routerSubscription: Subscription;
+  authSubscription: Subscription;
 
   constructor(
     private coursesService: CoursesService,
     private usersService: UsersService,
     private activatedRoute: ActivatedRoute,
-    private authService: AuthService,
     private router: Router,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-   this.subscribeOnParamsChange();
+   this._authSubscribe();
+   this._subscribeOnParamsChange();
   }
 
   ngOnDestroy(): void {
     this.routerSubscription.unsubscribe();
+    this.authSubscription.unsubscribe();
   }
 
-  private subscribeOnParamsChange(): void {
+  private _authSubscribe(): void {
+    this.authSubscription = this.authService.createSubscription()
+      .subscribe((user: LoginUser) => {
+        this.authUserId = user?.id || null;
+      });
+  }
+
+  private _subscribeOnParamsChange(): void {
     this.routerSubscription = this.activatedRoute.paramMap
       .subscribe((paramMap: ParamMap) => {
         if (this.user) {
-          this.refreshUserCourses();
+          this._refreshUserCourses();
         }
-        this.userId = +paramMap.get('id');
-        this.loadUserPage();
+        this.userId = paramMap.get('id');
+        this._loadUserPage();
     });
   }
 
-  private loadUserPage() {
-    this.setUser();
-    this.initUser();
+  private _loadUserPage() {
+    this._setUser();
+    this._initUser();
   }
 
-  private setUser(): void {
+  private _setUser(): void {
     this.usersService
       .getUser(this.userId)
         .subscribe(
-          (user: User) => this.user = user,
+          (user: User) => {
+            this.user = user;
+          },
           (error: Error) => this.router.navigate(['/404']),
       );
   }
 
-  private initUser(): void {
+  private _initUser(): void {
     if (this.user) {
-      this.getUserCourses();
-      this.checkUserAuthStatus();
+      this._getUserCourses();
     }
   }
 
-  private refreshUserCourses(): void {
+  private _refreshUserCourses(): void {
     Object.keys(this.userCourses).forEach((key: string) => {
       this.userCourses[key].length = 0;
     });
   }
 
-  private getUserCourses(): void {
+  private _getUserCourses(): void {
     from(Object.keys(this.userCourses))
       .pipe(
         mergeMap((key: string) => of(this.user[key])
           .pipe(
+            catchError(error => []),
             mergeAll(),
-            mergeMap((id: number) => this.coursesService.getById(id)),
+            mergeMap((id: string) => this.coursesService.getById(id)),
             map((course: Course) => {
               return { key, course };
             })
           ))
       )
-      .subscribe(({key, course}: any) => this.userCourses[key].push(course));
+      .subscribe(
+        ({key, course}: any) => this.userCourses[key].push(course));
   }
 
-  private checkUserAuthStatus(): void {
-    const authUserId = this.authService.getAuthUserId();
-    if (this.userId === authUserId) {
-      this.isAuthUser = true;
-    } else {
-      this.isAuthUser = false;
-    }
-    this.isUserLoggedIn = this.authService.isLoggedIn;
-  }
 }

@@ -6,81 +6,106 @@ import {
   from,
   BehaviorSubject,
   Observable,
+  Subject,
 } from 'rxjs';
 import {
   first,
   mergeAll,
   find,
   switchMap,
-  findIndex,
+  map,
+  tap,
 } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../api/api.service';
+import { NewUser } from './user';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class UsersService {
-  private usersSubject = new BehaviorSubject<User[]>([]);
+  constructor( private api: ApiService) { }
 
-  constructor() { }
+  private users: User[] = [];
+  private userSubject = new Subject<User[]>();
 
   public createSubscription(): Observable<User[]>{
-    return this.usersSubject.asObservable();
+    return this.userSubject.asObservable();
   }
 
-  private setUsers(users: User[]): void {
-    this.usersSubject.next(users);
+  public getUsers(): User[] {
+    return this.users;
   }
 
-  public getUser(id: number): Observable<User | Error> {
-    return from(this.usersSubject).pipe(
-      first(),
-      mergeAll(),
-      find(({id: userId}: User) => userId === id),
-      switchMap((result: User | undefined) => {
-        if (!result) {
-          throw Error('User not found');
-        } else {
-          return of(result);
-        }
-      })
-    );
+  private _setUsers(): void {
+    // this.users = users;
+    this.userSubject.next(this.users);
   }
 
-  public updateUserDetail(user: User): void {
-    const { id } = user;
-    from(this.usersSubject.getValue())
+  public loadUsers(): Observable<User []> {
+    return this.api.getAll('users')
       .pipe(
-        findIndex(({ id: userId }: User) => userId === id))
-          .subscribe((index: number) => {
-            if (index !== -1 ){
-              const updated = [...this.usersSubject.getValue()];
-              updated.splice(index, 1, user);
-              this.setUsers(updated);
-              // temporary storage update
-              this.updateLocalStorage();
-            } else {
-              console.log('failed to update');
+        map((users: User[]) => {
+          this.users = users;
+          this._setUsers();
+          return this.users;
+        })
+      );
+  }
+
+  public getUser(id: string): Observable<User | Error> {
+    return from(this.users)
+      .pipe(
+        find(({id: userId}: User) => userId === id),
+        switchMap((result: User | undefined) => {
+          if (!result) {
+            throw Error('User not found');
+          } else {
+            return of(result);
           }
-      });
+        })
+      );
   }
 
-  init(): void {
-    this.loadUsers();
+  public getUserById(id: string): Observable<User> {
+    return this.api.getItem('users', id);
   }
 
-  // temparary storage
+  public updateUserDetail(updatedUser: User): Observable<User> {
+    return this.api.updateItem('users', updatedUser)
+      .pipe(
+        map((user: User) => {
+          const index = this.users.findIndex((entry: User) => entry.id === user.id);
+          if (index !== -1) {
+            this.users.splice(index, 1, user);
+            this._setUsers();
+            return user;
+          }
+        }),
+      );
+    //   .subscribe((user: User) => {
+    //     const index = this.users
+    //       .findIndex((entry: User) => {
+    //         return entry.id === user.id;
+    //       });
 
-  private loadUsers(): void {
-    const loadedUsers = window.localStorage.getItem('users');
-    if (loadedUsers) {
-      this.setUsers(JSON.parse(loadedUsers));
-    } else {
-      this.setUsers(USERS);
-    }
+    //     if (index !== -1) {
+    //       this.users.splice(index, 1, user);
+    //       this._setUsers();
+    //     }
+    // });
   }
 
-  private updateLocalStorage(): void {
-    window.localStorage.setItem('users', JSON.stringify(this.usersSubject.getValue()));
+  public addUser(payloadData: Partial<User>): Observable<any> {
+    const {id, name, country, occupation, image } = payloadData;
+    const newUser = new NewUser(id, name, country, occupation, image);
+    return this.api.updateItem('users', newUser)
+      .pipe(
+        tap((user: User) => {
+          this.users.push(user);
+          this._setUsers();
+        })
+      );
   }
 }

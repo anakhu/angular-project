@@ -4,8 +4,6 @@ import { User } from 'src/shared/models/user';
 import { UsersService } from 'src/shared/services/users/users.service';
 import { Subscription } from 'rxjs';
 import { CoursesService } from 'src/shared/services/courses/courses.service';
-import { LikesService } from 'src/shared/services/likes/likes.service';
-import { AuthService } from 'src/shared/services/auth/auth.service';
 
 @Component({
   selector: 'app-course',
@@ -15,54 +13,30 @@ import { AuthService } from 'src/shared/services/auth/auth.service';
 export class CourseComponent implements OnInit, OnDestroy {
 
   @Input() course: Course;
-  @Input() authUserStatus: boolean;
-  @Input() isStandAloneComponent: false;
-
   author: User;
 
   coursesSubscription: Subscription;
-  userSubscription: Subscription;
-  authSubscription: Subscription;
-
-  isLiked = false;
 
   constructor(
     private usersService: UsersService,
     private coursesService: CoursesService,
-    private likesService: LikesService,
-    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-    this.getUser(this.course.authorId);
-    this.createAuthSubsciption();
-    if (this.isStandAloneComponent) {
-      this.createCoursesSubscribtion();
-    }
-    // this.getCourseLikeStatus();
+    this._getUser(this.course.authorId);
+    // this._createCoursesSubscribtion();
+  }
+
+  ngOnChnages(): void {
   }
 
   ngOnDestroy(): void {
-    this.authSubscription.unsubscribe();
-    if (this.coursesSubscription) {
-      this.coursesSubscription.unsubscribe();
-    }
+    // if (this.coursesSubscription) {
+    //   this.coursesSubscription.unsubscribe();
+    // }
   }
 
-  private getCourseLikeStatus(): void {
-    this.isLiked = this.likesService.getLikeStatus(this.course.id);
-  }
-
-  private createAuthSubsciption(): void {
-    this.authSubscription = this.authService.createSubscription()
-      .subscribe((authStatus: boolean) => {
-        if (authStatus) {
-          this.getCourseLikeStatus();
-        }
-      });
-  }
-
-  private createCoursesSubscribtion(): void {
+  private _createCoursesSubscribtion(): void {
     this.coursesSubscription = this.coursesService.createSubscription()
       .subscribe((courses: Course[]) => {
         const currentCourse = courses
@@ -70,23 +44,12 @@ export class CourseComponent implements OnInit, OnDestroy {
 
         if (currentCourse) {
           this.course = currentCourse;
-          // console.log('the course is updated');
-          // this.getCourseLikeStatus();
-          // console.log(`the like status of ${this.course.id} is ${this.isLiked}`)
         }
       });
   }
 
-
-  private getUser(id: number): void {
+  private _getUser(id: string): void {
     this.usersService.getUser(this.course.authorId)
       .subscribe((user: User) => this.author = user);
-  }
-
-  likeCourse(): void {
-    // console.log('like status before', this.isLiked);
-    this.likesService.toggleLikeStatus(this.course.id);
-    this.isLiked = !this.isLiked;
-    // console.log('like status after', this.isLiked);
   }
 }
