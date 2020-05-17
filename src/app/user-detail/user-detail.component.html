@@ -9,6 +9,9 @@
           <ng-container *ngIf="authUserId && authUserId !== userId">
             <app-follow-button [userId]="user.id"></app-follow-button>
           </ng-container>
+          <ng-container *ngIf="authUserId && authUserId === userId">
+            <button mat-button [disabled]="true" (click)="deleteAccount($event)">Delete Account</button>
+          </ng-container>
         </section>
         
         <section class="followers-section">

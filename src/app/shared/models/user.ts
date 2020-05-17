@@ -4,6 +4,7 @@ export interface User {
   country: { name: string, code: string};
   occupation: string;
   image?: string;
+  isActive?: boolean;
   authoredCourses?: string[];
   enrolledCourses?: string[];
   likedCourses?: string[];

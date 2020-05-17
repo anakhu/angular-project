@@ -1,13 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { User } from '../../shared/models/user';
-import { Course } from '../../shared/models/course';
-import { CoursesService } from '../../shared/services/courses/courses.service';
-import { UsersService } from 'src/shared/services/users/users.service';
+import { User } from '../shared/models/user';
+import { Course } from '../shared/models/course';
+import { CoursesService } from '../shared/services/courses/courses.service';
+import { UsersService } from 'src/app/shared/services/users/users.service';
 import { Subscription, from, of } from 'rxjs';
-import { mergeAll, map, mergeMap, catchError } from 'rxjs/operators';
+import { mergeAll, map, mergeMap, catchError, concatMap } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { AuthService } from 'src/shared/services/auth/auth.service';
-import { LoginUser } from 'src/shared/services/auth/login.user';
+import { AuthService } from '../shared/services/auth/auth.service';
+import { LoginUser } from '../shared/services/auth/login.user';
+import { FollowersService } from '../shared/services/followers/followers.service';
+import { NotificationsService } from '../shared/services/notifications/notifications.service';
 
 
 @Component({
@@ -36,7 +38,9 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     private usersService: UsersService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private followersService: FollowersService,
+    private notificationService: NotificationsService,
   ) { }
 
   ngOnInit(): void {
@@ -112,4 +116,38 @@ export class UserDetailComponent implements OnInit, OnDestroy {
         ({key, course}: any) => this.userCourses[key].push(course));
   }
 
+  public deleteAccount(e: Event): void {
+    this.authService.deleteUserAccount()
+      .pipe(
+        concatMap((response: any) => {
+          if (response.response.kind) {
+            return this.followersService.deleteAllFollowersEntries(response.localId)
+              .pipe(
+                map((result: any) => {
+                  if (result === null) {
+                    return response.localId;
+                  }
+                })
+              );
+          }
+        }),
+        concatMap((id: string) => {
+          if (id) {
+            return this.usersService.deleteUser(id)
+              .pipe(
+                map((res: any) => {
+                  if (res === null) {
+                    return 'Account was deleted';
+                  }
+                })
+              );
+          }
+        })
+      )
+      .subscribe((message: string) => {
+        this.authService.logout();
+        this.notificationService.createNotification(message);
+        this.router.navigate(['/login']);
+      });
+  }
 }

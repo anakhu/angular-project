@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { UsersService } from 'src/shared/services/users/users.service';
-import { User } from 'src/shared/models/user';
-import { AuthService } from 'src/shared/services/auth/auth.service';
-import { AuthResponse } from 'src/shared/services/auth/auth.response';
+import { AuthService } from '../../shared/services/auth/auth.service';
+import { AuthResponse } from 'src/app/shared/services/auth/auth.response';
 import { Router } from '@angular/router';
+import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
 
 @Component({
   selector: 'app-auth-form',
@@ -18,7 +17,7 @@ export class AuthFormComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private notificationService: NotificationsService
   ) { }
 
   ngOnInit(): void {
@@ -36,7 +35,8 @@ export class AuthFormComponent implements OnInit {
     const { email, password } = this.authForm.controls.credentials.value;
     const payload = this.authForm.controls.profile.value;
     this.authService.signUp(email, password, payload)
-      .subscribe((data: AuthResponse)  => console.log(data));
+      .subscribe((data: AuthResponse)  => {
+        return data ? this.notificationService.createNotification('Sign up success') : null;
+      });
     }
-
 }

@@ -1,6 +1,8 @@
 <button 
     id='btn-follow'
     mat-raised-button color="accent"
+    (click)="handleClick($event)"
+    [disabled]="isLoading"
   >
     {{isFollowedByAuthUser === true ? 'Unfollow' : 'Follow'}}
 </button>

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, OnChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { FollowersService } from 'src/shared/services/followers/followers.service';
-import { Follower } from 'src/shared/models/followers';
+import { FollowersService } from 'src/app/shared/services/followers/followers.service';
+import { Follower } from '../shared/models/followers';
 
 @Component({
   selector: 'app-followers',
@@ -34,7 +34,6 @@ export class FollowersComponent implements OnInit, OnDestroy, OnChanges{
   }
 
   ngOnDestroy(): void {
-    console.log('destroying followers component');
     this.followersSubscription.unsubscribe();
   }
 

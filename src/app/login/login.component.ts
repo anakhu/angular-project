@@ -1,10 +1,7 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { AuthService } from 'src/shared/services/auth/auth.service';
-import { fromEvent, Subscription, EMPTY } from 'rxjs';
-import { switchMap, catchError, pluck } from 'rxjs/operators';
-import { AuthUser } from '../../shared/models/authUsers';
-import { Router, ActivatedRoute, QueryParamsHandling } from '@angular/router';
-import { NgForm } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { pluck } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';;
 
 @Component({
   selector: 'app-login',

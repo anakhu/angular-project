@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
-import { Course } from 'src/shared/models/course';
-import { User } from 'src/shared/models/user';
+import { Course } from 'src/app/shared/models/course';
+import { User } from 'src/app/shared/models/user';
 import { UsersService } from '../users/users.service';
-import { mergeAll, tap, map, findIndex, exhaustMap, concatMap, mapTo, mergeMap } from 'rxjs/operators';
+import { mergeAll, map, findIndex, concatMap, mapTo } from 'rxjs/operators';
 import { of, Subscription, Observable, from } from 'rxjs';
 import { CoursesService } from '../courses/courses.service';
-import { LoginUser } from 'src/shared/services/auth/login.user';
+import { LoginUser } from '../auth/login.user';
 
 
 @Injectable({

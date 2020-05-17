@@ -1,14 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { CoursesService } from '../shared/services/courses/courses.service';
-import { UsersService } from '../shared/services/users/users.service';
-import { AuthService } from '../shared/services/auth/auth.service';
+import { AuthService } from './shared/services/auth/auth.service';
 import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { LikesService } from 'src/shared/services/likes/likes.service';
-import { FollowersService } from 'src/shared/services/followers/followers.service';
-import { LoginUser } from 'src/shared/services/auth/login.user';
+import { LoginUser } from './shared/services/auth/login.user';
 
 @Component({
   selector: 'app-root',

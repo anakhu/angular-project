@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { LikesService } from 'src/shared/services/likes/likes.service';
-import { AuthService } from 'src/shared/services/auth/auth.service';
+import { LikesService } from '../../../shared/services/likes/likes.service';
+import { AuthService } from '../../../shared/services/auth/auth.service';
 import { Subscription, of } from 'rxjs';
 import { exhaustMap, delay, tap, finalize } from 'rxjs/operators';
 

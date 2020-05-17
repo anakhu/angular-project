@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
-import { AUTH_USERS } from '../mock';
-import { AuthUser } from '../../models/authUsers'; 
-import { from, Observable, of, BehaviorSubject, Subject, combineLatest, forkJoin } from 'rxjs';
-import { find, mergeMap, tap, concatMap, map } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap, concatMap, map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AuthResponse } from './auth.response';
 import { LoginUser } from './login.user';
-import { Route } from '@angular/compiler/src/core';
 import { Router } from '@angular/router';
-import { NewUser } from '../users/user';
 import { UsersService } from '../users/users.service';
-import { User } from 'src/shared/models/user';
+import { User } from '../../models/user';
+import { ErrorService } from '../error/error.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,14 +19,14 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private userService: UsersService
+    private userService: UsersService,
+    private errorService: ErrorService
   ) {}
 
   public signUp(email: string, password: string, payload: any = {}) {
     return this.http.post(`${environment.signUpUrl}${environment.apiKey}`,
       {email, password, returnSecureToken: true})
       .pipe(
-        tap((data: AuthResponse) => console.log(data)),
         concatMap((data: AuthResponse) => {
           const id = data.localId;
           return this.collectUserDataOnSignUp({...payload, id})
@@ -67,7 +64,6 @@ export class AuthService {
 
     this.user.next(user);
     this._saveLoginUserToLocalStorage(user);
-    console.log(data.localId);
 
     this.router.navigate(['/users', data.localId]);
   }
@@ -95,6 +91,22 @@ export class AuthService {
     }
   }
 
+  public deleteUserAccount(): Observable<any> {
+    if (this.user.getValue()?.token) {
+      const idToken = this.user.getValue()?.token;
+      return this.http.post(`${environment.deleteAccountUrl}${environment.apiKey}`, {idToken})
+        .pipe(
+          map((response: any) => {
+            const localId = this.user.getValue().id;
+            return { response, localId };
+          })
+        );
+    } else {
+      this.logout();
+      this.errorService.handleError(new Error('Account wasn\'t deleted. Login in again and retry.'))
+    }
+  }
+
   private _clearLocalStorage(): void {
     window.localStorage.removeItem('user');
   }
@@ -105,6 +117,10 @@ export class AuthService {
 
   public createSubscription(): Observable<LoginUser> {
     return this.user.asObservable();
+  }
+
+  public getAuthUser(): LoginUser {
+    return this.user.getValue();
   }
 
   public logout() {

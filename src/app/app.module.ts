@@ -34,7 +34,7 @@ import {
 
 import { DetailPageComponent } from './detail-page/detail-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
-import { ErrorService } from 'src/shared/services/error/error.service';
+import { ErrorService } from 'src/app/shared/services/error/error.service';
 import {
   FollowBarComponent,
   FollowButtonComponent,
@@ -42,7 +42,10 @@ import {
   FollowersComponent
 } from './followers/index';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { LogInterceptor } from 'src/shared/interceptors/log.interceptor';
+import { LogInterceptor } from './shared/interceptors/log.interceptor';
+import { ToastrModule } from 'ngx-toastr';
+import { NotificationsComponent } from './shared/components/notifications/notifications.component';
+import { ErrorInterceptor } from './shared/interceptors/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -68,12 +71,14 @@ import { LogInterceptor } from 'src/shared/interceptors/log.interceptor';
     CountrySelectComponent,
     CredentialsFormComponent,
     ProfileFormComponent,
-    LikeButtonComponent
+    LikeButtonComponent,
+    NotificationsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
@@ -81,7 +86,8 @@ import { LogInterceptor } from 'src/shared/interceptors/log.interceptor';
   ],
   providers: [
     {provide: ErrorHandler, useClass: ErrorService},
-    {provide: HTTP_INTERCEPTORS, useClass: LogInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: LogInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
   ],
   bootstrap: [AppComponent]
 })

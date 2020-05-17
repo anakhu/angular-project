@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Course } from 'src/shared/models/course';
-import { User } from 'src/shared/models/user';
-import { UsersService } from 'src/shared/services/users/users.service';
+import { Course } from 'src/app/shared/models/course';
+import { User } from 'src/app/shared/models/user';
+import { UsersService } from 'src/app/shared/services/users/users.service';
 import { Subscription } from 'rxjs';
-import { CoursesService } from 'src/shared/services/courses/courses.service';
+import { CoursesService } from '../../shared/services/courses/courses.service';
 
 @Component({
   selector: 'app-course',

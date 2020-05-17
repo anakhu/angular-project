@@ -1,22 +1,17 @@
 import { Injectable } from '@angular/core';
-import { USERS } from '../mock';
 import { User } from '../../models/user';
 import {
   of,
   from,
-  BehaviorSubject,
   Observable,
   Subject,
 } from 'rxjs';
 import {
-  first,
-  mergeAll,
   find,
   switchMap,
   map,
   tap,
 } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../api/api.service';
 import { NewUser } from './user';
 
@@ -25,7 +20,9 @@ import { NewUser } from './user';
 })
 
 export class UsersService {
-  constructor( private api: ApiService) { }
+  constructor(
+    private api: ApiService,
+    ) { }
 
   private users: User[] = [];
   private userSubject = new Subject<User[]>();
@@ -39,7 +36,6 @@ export class UsersService {
   }
 
   private _setUsers(): void {
-    // this.users = users;
     this.userSubject.next(this.users);
   }
 
@@ -84,17 +80,6 @@ export class UsersService {
           }
         }),
       );
-    //   .subscribe((user: User) => {
-    //     const index = this.users
-    //       .findIndex((entry: User) => {
-    //         return entry.id === user.id;
-    //       });
-
-    //     if (index !== -1) {
-    //       this.users.splice(index, 1, user);
-    //       this._setUsers();
-    //     }
-    // });
   }
 
   public addUser(payloadData: Partial<User>): Observable<any> {
@@ -105,6 +90,21 @@ export class UsersService {
         tap((user: User) => {
           this.users.push(user);
           this._setUsers();
+        })
+      );
+  }
+
+  public deleteUser(userId: string): Observable<any> {
+    return this.api.deleteItem('users', userId)
+      .pipe(
+        map((response: any) => {
+          const index = this.users
+            .findIndex((userToDelete: User) => userToDelete.id === userId);
+          if (index !== -1) {
+            this.users.splice(index, 1);
+            this._setUsers();
+            return response;
+          }
         })
       );
   }

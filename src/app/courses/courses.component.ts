@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CoursesService } from '../../shared/services/courses/courses.service';
-import { Course } from '../../shared/models/course';
-import { Subscription, Observable } from 'rxjs';
-import { AuthService } from 'src/shared/services/auth/auth.service';
-import { ActivatedRoute, ResolveData } from '@angular/router';
-import { LoginUser } from 'src/shared/services/auth/login.user';
+import { CoursesService } from '../shared/services/courses/courses.service';
+import { Course } from '../shared/models/course';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../shared/services/auth/auth.service';
+import { ActivatedRoute } from '@angular/router';
+import { LoginUser } from '../shared/services/auth/login.user';
 
 @Component({
   selector: 'app-courses',

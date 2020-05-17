@@ -5,11 +5,12 @@ import { CourseDetailComponent } from './courses/course-detail/course-detail.com
 import { LoginComponent } from './login/login.component';
 import { UsersComponent } from './users/users.component';
 import { UserDetailComponent } from './user-detail/user-detail.component';
-import { AuthGuard } from '../shared/services/auth/auth.guard';
+import { AuthGuard } from './shared/services/auth/auth.guard';
 import { DetailPageComponent } from './detail-page/detail-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
-import { CoursesResolver } from '../shared/services/courses/courses.resolver';
-import { UsersResolver } from '../shared/services/users/users.resolver';
+import { CoursesResolver } from './shared/services/courses/courses.resolver';
+import { UsersResolver } from './shared/services/users/users.resolver';
+import { FollowersResolver } from './shared/services/followers/followers.resolver';
 
 const routes: Routes = [
   {
@@ -25,18 +26,18 @@ const routes: Routes = [
   {
     path: 'users',
     component: UsersComponent,
-    resolve: { UsersResolver }
+    resolve: { UsersResolver, FollowersResolver }
   },
   {
     path: 'users/:id',
     component: UserDetailComponent,
-    resolve: { UsersResolver, CoursesResolver }
+    resolve: { UsersResolver, CoursesResolver, FollowersResolver }
   },
   { path: 'users/:id/:detail', component: DetailPageComponent },
   {
     path: 'login',
     component: LoginComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   { path: '', redirectTo: '/courses', pathMatch: 'full' },
   { path: '404', component: ErrorPageComponent },

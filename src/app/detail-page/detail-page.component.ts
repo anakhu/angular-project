@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { of, Subscription } from 'rxjs';
-import { UsersService } from 'src/shared/services/users/users.service';
-import { User } from 'src/shared/models/user';
+import { UsersService } from 'src/app/shared/services/users/users.service';
+import { User } from 'src/app/shared/models/user';
 import { mergeAll, mergeMap, toArray } from 'rxjs/operators';
-import { CoursesService } from 'src/shared/services/courses/courses.service';
-import { Course } from 'src/shared/models/course';
-import { AuthService } from 'src/shared/services/auth/auth.service';
-import { LoginUser } from 'src/shared/services/auth/login.user';
-import { FollowersService } from 'src/shared/services/followers/followers.service';
+import { CoursesService } from 'src/app/shared/services/courses/courses.service';
+import { Course } from 'src/app/shared/models/course';
+import { AuthService } from 'src/app/shared/services/auth/auth.service';
+import { LoginUser } from '../shared/services/auth/login.user';
+import { FollowersService } from '../shared/services/followers/followers.service';
 
 const ALIAS = {
   'authored-courses': 'authoredCourses',
