@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FollowersService } from './followers.service';
-import { Follower } from '../../models/followers';
+import { Follower } from './follower.interface';
+import { take } from 'rxjs/operators';
 
 
 @Injectable({
@@ -12,6 +13,7 @@ import { Follower } from '../../models/followers';
 export class FollowersResolver implements Resolve<Follower[]> {
   constructor(private coursesService: FollowersService) {}
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Follower[]> {
-    return this.coursesService.loadFollowers();
+    console.log('resolver works')
+    return this.coursesService.loadFollowers().pipe(take(1));
   }
 }

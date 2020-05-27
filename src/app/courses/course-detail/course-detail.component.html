@@ -6,12 +6,6 @@
           class="example-header-image">
         </div>
         <mat-card-title>{{course.name}}</mat-card-title>
-        <mat-card-subtitle>
-          by 
-          <a [routerLink]="['/users', course.authorId]">
-            {{course.author}}
-          </a>
-        </mat-card-subtitle>
       </mat-card-header>
       <img mat-card-image src="{{course.image}}" alt="course banner">
       <mat-card-content>
@@ -31,15 +25,6 @@
           <mat-list-item>
             Price: {{course.price === 0 ? 'free' : course.price}}
           </mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>
-            Lessons: {{course.sessions}}
-          </mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>
-            Students max: {{course.studentsMax}}
-          </mat-list-item>
-          <mat-divider></mat-divider>
           <mat-list-item>
             Certificate: {{course.certificate ? 'Yes': 'No'}}
           </mat-list-item>

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
 import { FollowersService } from 'src/app/shared/services/followers/followers.service';
 import { Subscription } from 'rxjs';
-import { Follower } from '../../shared/models/followers';
+import { Follower } from '../../shared/services/followers/follower.interface';
 
 @Component({
   selector: 'app-follow-bar',

@@ -1,130 +1,93 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap, concatMap, map } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { AuthResponse } from './auth.response';
-import { LoginUser } from './login.user';
+import { Observable, BehaviorSubject, from } from 'rxjs';
+import { tap, concatMap, exhaustMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { UsersService } from '../users/users.service';
 import { User } from '../../models/user';
-import { ErrorService } from '../error/error.service';
+import { UsersService } from '../users/users.service';
+import { ApiService } from '../api/api.service';
+import { AppService } from '../app/app.service';
+
+
+export interface FireBaseUser {
+  uid: string;
+  email: string;
+}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  user = new BehaviorSubject<LoginUser>(null);
+  fireBaseAuth: any;
+  firebaseUser = new BehaviorSubject<FireBaseUser>(null);
 
   constructor(
-    private http: HttpClient,
     private router: Router,
-    private userService: UsersService,
-    private errorService: ErrorService
-  ) {}
+    private users: UsersService,
+    // private api: ApiService,
+    private app: AppService
+  ) {
+    this.setFireAuthRef();
+  }
+
+  private setFireAuthRef() {
+    this.fireBaseAuth = this.app.getFireBaseAuthReference();
+    this.fireBaseAuth.onAuthStateChanged((user: any) => {
+      if (user) {
+        const { uid, email } = user;
+        const loginUser: FireBaseUser = { uid, email };
+        this.firebaseUser.next(loginUser);
+      }
+    });
+  }
 
   public signUp(email: string, password: string, payload: any = {}) {
-    return this.http.post(`${environment.signUpUrl}${environment.apiKey}`,
-      {email, password, returnSecureToken: true})
+    return from(this.fireBaseAuth.createUserWithEmailAndPassword(email, password))
       .pipe(
-        concatMap((data: AuthResponse) => {
-          const id = data.localId;
-          return this.collectUserDataOnSignUp({...payload, id})
-            .pipe(
-              map((user: Partial<User>) => ({data, user}))
-            );
+        exhaustMap((response: any) => {
+          const id = response.user.uid;
+          return this.users.addUser({...payload, id });
         }),
-        map((result: {data: AuthResponse, user: Partial<User>}) => {
-          this._loginHandler(result.data);
-          return result.data;
-        })
+        tap((user: User) => user?.id
+          ? this.router.navigate(['/users', user.id])
+          : console.log('error occured'))
       );
   }
 
   public login(email: string, password: string) {
-    return this.http.post(`${environment.loginUrl}${environment.apiKey}`,
-      {email, password, returnSecureToken: true })
+    return from(this.fireBaseAuth.signInWithEmailAndPassword(email, password))
       .pipe(
-      tap((data: any) => {
-        this._loginHandler(data);
-      })
-    );
-  }
-
-  private _loginHandler(data: AuthResponse) {
-    const expirationDate: number = new Date(new Date().getTime() +
-      Number(data.expiresIn) * 1000).getTime();
-
-    const user: LoginUser = new LoginUser(
-      data.email,
-      data.localId,
-      data.idToken,
-      expirationDate,
-    );
-
-    this.user.next(user);
-    this._saveLoginUserToLocalStorage(user);
-
-    this.router.navigate(['/users', data.localId]);
-  }
-
-  public collectUserDataOnSignUp(userData: Partial<User>): Observable<User> {
-    return this.userService.addUser(userData);
-  }
-
-  public getLoginUserOnAppLoad(): void {
-    const user = JSON.parse(window.localStorage.getItem('user'));
-    if (user) {
-      const { email, id, _token, _expirationDate } = user;
-      const loginUser = new LoginUser(
-        email,
-        id,
-        _token,
-        _expirationDate,
+        tap((response: any) => {
+          if (!(response instanceof Error)) {
+            this.router.navigate(['/users', response.user.uid]);
+          }
+        })
       );
-
-      if (loginUser.token) {
-        this.user.next(loginUser);
-      } else {
-        this._clearLocalStorage();
-      }
-    }
-  }
-
-  public deleteUserAccount(): Observable<any> {
-    if (this.user.getValue()?.token) {
-      const idToken = this.user.getValue()?.token;
-      return this.http.post(`${environment.deleteAccountUrl}${environment.apiKey}`, {idToken})
-        .pipe(
-          map((response: any) => {
-            const localId = this.user.getValue().id;
-            return { response, localId };
-          })
-        );
-    } else {
-      this.logout();
-      this.errorService.handleError(new Error('Account wasn\'t deleted. Login in again and retry.'))
-    }
-  }
-
-  private _clearLocalStorage(): void {
-    window.localStorage.removeItem('user');
-  }
-
-  private _saveLoginUserToLocalStorage(user: LoginUser): void {
-    window.localStorage.setItem('user', JSON.stringify(user));
-  }
-
-  public createSubscription(): Observable<LoginUser> {
-    return this.user.asObservable();
-  }
-
-  public getAuthUser(): LoginUser {
-    return this.user.getValue();
   }
 
   public logout() {
-    this.user.next(null);
-    this._clearLocalStorage();
+    this.fireBaseAuth.signOut();
+    this.firebaseUser.next(null);
+    this.router.navigate(['/login']);
+  }
+
+  public deleteUserAccount(): Observable<any> {
+    if (this.firebaseUser.getValue()) {
+      return this.users.deleteUser(this.firebaseUser.getValue().uid)
+        .pipe(
+          concatMap((response: boolean) => {
+            if (response) {
+              const user = this.fireBaseAuth.currentUser;
+              return from(user.delete());
+            } else {
+              throw Error('Account wasn\'t deleted. Login again and retry.');
+            }
+          })
+        );
+    }
+  }
+
+  public createSubscription(): Observable<FireBaseUser> {
+    return this.firebaseUser.asObservable();
   }
 }

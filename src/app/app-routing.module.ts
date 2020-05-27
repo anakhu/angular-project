@@ -1,16 +1,19 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from './shared/services/auth/auth.guard';
 import { CoursesComponent } from './courses/courses.component';
 import { CourseDetailComponent } from './courses/course-detail/course-detail.component';
 import { LoginComponent } from './login/login.component';
 import { UsersComponent } from './users/users.component';
 import { UserDetailComponent } from './user-detail/user-detail.component';
-import { AuthGuard } from './shared/services/auth/auth.guard';
-import { DetailPageComponent } from './detail-page/detail-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { CoursesResolver } from './shared/services/courses/courses.resolver';
 import { UsersResolver } from './shared/services/users/users.resolver';
 import { FollowersResolver } from './shared/services/followers/followers.resolver';
+import { UserCoursesComponent } from './user-detail';
+import { FollowersComponent } from './followers';
+
+
 
 const routes: Routes = [
   {
@@ -26,14 +29,17 @@ const routes: Routes = [
   {
     path: 'users',
     component: UsersComponent,
-    resolve: { UsersResolver, FollowersResolver }
+    resolve: { UsersResolver, FollowersResolver },
   },
   {
     path: 'users/:id',
     component: UserDetailComponent,
-    resolve: { UsersResolver, CoursesResolver, FollowersResolver }
+    resolve: { UsersResolver, CoursesResolver, FollowersResolver },
+    children: [
+      { path: 'courses', component: UserCoursesComponent },
+      { path: 'followers', component: FollowersComponent }
+    ]
   },
-  { path: 'users/:id/:detail', component: DetailPageComponent },
   {
     path: 'login',
     component: LoginComponent,
@@ -46,6 +52,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule { }

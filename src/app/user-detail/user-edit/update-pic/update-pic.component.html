@@ -1,0 +1,4 @@
+<form [formGroup]="imageForm" (ngSubmit)="submit()">
+  <app-upload [form]="imageForm"></app-upload>
+  <button mat-raised-button color="primary" type="submit" [disabled]="imageForm.invalid">Upload</button>
+</form>

@@ -1,6 +1,6 @@
-import { Follower } from '../../models/followers';
+import { Follower } from './follower.interface';
 
-export class FireBaseFollower implements Follower {
+export class NewFollower implements Follower {
   constructor(
     public userId: string,
     public followerId: string,

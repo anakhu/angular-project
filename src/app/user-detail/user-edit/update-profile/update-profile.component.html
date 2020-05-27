@@ -1,0 +1,5 @@
+<form [formGroup]="editForm" (ngSubmit)="submit()">
+  <app-profile-form formControlName="profile"></app-profile-form>
+  <button mat-raised-button color="primary" [disabled]="editForm.invalid || isBlocked">Update</button>
+</form>
+

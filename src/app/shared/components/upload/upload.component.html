@@ -1,0 +1,15 @@
+<div [formGroup]="form">
+  <mat-form-field appearance="outline" style="display: block;">
+    <mat-label>Photo</mat-label>
+    <ngx-mat-file-input 
+      [formControlName]="'image'"
+      #file
+      accept="image/x-png,image/gif,image/jpeg" 
+      type="file"
+      (change)="handleFileChange($event)"
+    >
+    </ngx-mat-file-input>
+    <mat-icon matSuffix>folder</mat-icon>
+  </mat-form-field>  
+</div>
+  

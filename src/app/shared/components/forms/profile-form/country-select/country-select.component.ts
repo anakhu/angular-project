@@ -14,7 +14,6 @@ export class CountrySelectComponent implements OnInit {
 
   @Input() formGroup: FormGroup;
   @Input() formControlName: FormControlName;
-  control: any;
   countries: any;
   countriesSelect: any;
 

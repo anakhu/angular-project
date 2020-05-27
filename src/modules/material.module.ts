@@ -19,6 +19,9 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MaterialFileInputModule } from 'ngx-material-file-input';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 const MaterialComponents = [
@@ -42,6 +45,9 @@ const MaterialComponents = [
   MatTooltipModule,
   MatBadgeModule,
   MatProgressSpinnerModule,
+  MatDialogModule,
+  MaterialFileInputModule,
+  MatCheckboxModule
 ];
 
 @NgModule({

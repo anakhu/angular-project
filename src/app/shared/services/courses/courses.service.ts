@@ -1,31 +1,48 @@
 import { Injectable } from '@angular/core';
-import { Course, CourseFormData } from '../../models/course';
-import { Observable, of, BehaviorSubject, from, Subject } from 'rxjs';
-import { find, first, mergeAll, switchMap, tap, map } from 'rxjs/operators';
+import { Course } from './course-model';
+import { Observable, of, from, Subject } from 'rxjs';
+import { find, switchMap, map, exhaust, exhaustMap, tap } from 'rxjs/operators';
 import { ApiService } from '../api/api.service';
+import { routes } from '../../../../environments/environment';
+import { AppService } from '../app/app.service';
+import { UploadService, UploadUpdate } from '../upload/upload.service';
+import { NewCourse } from './course';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class CoursesService {
-  constructor( private api: ApiService) {}
+  fireBase: any;
+
+  constructor(
+    private api: ApiService,
+    private app: AppService,
+    private uploads: UploadService
+    ) {
+    this._listenToChanges();
+  }
 
   private courses: Course[] = [];
   private coursesSubject = new Subject<Course[]>();
 
-  public loadCourses(): Observable<Course[]>{
-    return this.api.getAll('courses', true)
+  public loadCourses(): Observable<Course[]> {
+    return this.api.getCollectionEntries(routes.courses)
       .pipe(
-        map((result: Course[]) => {
-          this._setCourses(result);
+        map((courses: Course[]) => {
+          this._setCourses(courses);
           return this.courses;
-        }),
+        })
       );
   }
 
-  public getCourses(): Course[] {
-    return this.courses;
+  private _listenToChanges() {
+    return this.app.getFirebaseReference()
+      .ref(routes.courses)
+      .on('child_changed', (data: any) => {
+        console.log('child changed', data.val());
+        this.updateLocalCourses(data.key, {id: data.key, ...data.val()});
+      });
   }
 
   private _setCourses(coursesArr: Course[]): void {
@@ -35,6 +52,10 @@ export class CoursesService {
 
   public createSubscription(): Observable<any> {
     return this.coursesSubject.asObservable();
+  }
+
+  public getCourses(): Course[] {
+    return this.courses;
   }
 
   public getById(id: string): Observable<Course | Error> {
@@ -50,32 +71,78 @@ export class CoursesService {
       );
   }
 
-  public addCourse(course: CourseFormData): Observable<Course | Error> {
-    const newCourse = course as Course;
-    // newCourse.id = this.coursesSubject.getValue().length + 1;
+  public addCourse(courseData: any, authorId: string): Observable<any> {
+    let file;
+    try {
+      file = courseData.image.files[0];
+    } catch (error) {
+      file = null;
+    }
 
-    // if (!newCourse.image) {
-    //   newCourse.image = './assets/images/default.jpg';
-    // }
-    // this.setCourses([...this.coursesSubject.getValue(), newCourse]);
+    const { name, content, startDate, endDate, price, certificate } = courseData;
 
-    // // temporary localStorage update
-    // this.updateLocalStorage();
-    return of(newCourse);
-  }
-
-
-  public updateCourse(updatedCourse: Course): Observable<Course> {
-    return this.api.updateItem('courses', updatedCourse)
+    return this.uploads.sendFile(file, 'courses', authorId)
       .pipe(
-        map((course: Course) => {
-          const index = this.courses.findIndex((entry: Course) => entry.id === course.id);
-          if (index !== -1) {
-            this.courses.splice(index, 1, course);
-            this.coursesSubject.next(this.courses);
+        map((result: UploadUpdate) => {
+          let image;
+          if (!(result instanceof Error)) {
+            image = result.image;
+          } else {
+            image = null;
           }
-          return course;
-        })
+          const newCourse = new NewCourse(
+            name,
+            content,
+            authorId,
+            startDate.toString(),
+            endDate.toString(),
+            price,
+            certificate,
+            image,
+          );
+          return newCourse;
+        }),
+        exhaustMap((course: Course) => {
+          return from(this.addNewCourse(course, authorId));
+        }),
       );
   }
+
+  private updateLocalCourses(courseId: string, updatedCourse: Course = null): Course {
+    console.log('updating local courses')
+    const index = this.courses.findIndex((entry: Course) => entry.id === courseId);
+    if (index !== -1) {
+      if (updatedCourse) {
+        this.courses.splice(index, 1, updatedCourse);
+      } else {
+        this.courses.splice(index, 1);
+      }
+      this.coursesSubject.next(this.courses);
+    }
+    return updatedCourse;
+  }
+
+  private async addNewCourse(course: Course, userId: string): Promise<any> {
+    const firebase = this.app.getFirebaseReference();
+
+    let authoredCourses;
+
+    const userRef = firebase.ref(`/${routes.users}/${userId}/authoredCourses`);
+    await userRef.once('value').then((response: any) => {
+      authoredCourses = response.val()?.length
+        ? response.val()
+        : [];
+    });
+
+    const newCourseKey = await firebase.ref().child(routes.courses).push().key;
+    authoredCourses.push(newCourseKey);
+
+    const updates = {};
+    updates[`/${routes.courses}/${newCourseKey}`] = course;
+    updates[`/${routes.users}/${userId}/authoredCourses`] = authoredCourses;
+
+
+    return firebase.ref().update(updates);
+  }
 }
+

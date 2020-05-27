@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
-import { Course } from 'src/app/shared/models/course';
+import { AuthService, FireBaseUser } from '../auth/auth.service';
 import { User } from 'src/app/shared/models/user';
 import { UsersService } from '../users/users.service';
-import { mergeAll, map, findIndex, concatMap, mapTo } from 'rxjs/operators';
-import { of, Subscription, Observable, from } from 'rxjs';
-import { CoursesService } from '../courses/courses.service';
+import { Subscription, Observable, from } from 'rxjs';
 import { LoginUser } from '../auth/login.user';
-
+import { ApiService } from '../api/api.service';
+import { routes } from 'src/environments/environment';
+import { AppService } from '../app/app.service';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class LikesService {
   private authUser: User;
   private authUserId: string;
@@ -21,16 +21,17 @@ export class LikesService {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-    private coursesService: CoursesService,
+    private api: ApiService,
+    private app: AppService
   ) {
     this.authSubscribe();
   }
 
   private authSubscribe(): void {
     this.authSubscription = this.authService.createSubscription()
-      .subscribe((loginUser: LoginUser) => {
+      .subscribe((loginUser: FireBaseUser) => {
         if (loginUser) {
-          this.authUserId = loginUser.id;
+          this.authUserId = loginUser.uid;
           this.usersService.getUser(this.authUserId)
             .subscribe((user: User) => this.authUser = user);
           this._userSubscribe();
@@ -63,67 +64,66 @@ export class LikesService {
     return false;
   }
 
-
-  public changeLikeStatus(courseId: string): Observable<number> {
-    return of(this.authUser)
-      .pipe(
-        map((user: User) => {
-          if (user.likedCourses?.length) {
-            return from(user.likedCourses);
-          } else {
-            return from([]);
-          }
-        }),
-        mergeAll(),
-        findIndex((id: string) => id === courseId),
-        concatMap((index: number) => {
-          if (index === -1) {
-            return this._like(this.authUser, courseId).pipe(mapTo(1));
-          } else {
-            return this._unlike(this.authUser, courseId).pipe(mapTo(-1));
-          }
-        }),
-        concatMap((point: number) => {
-          return this.updateCourse(courseId, point)
-            .pipe(
-              map((course: Course) => {
-                if (course) {
-                  return point;
-                }
-              })
-            );
-        }),
-      );
+  public changeLikeStatus(courseId: string): Promise<any> {
+    return this.updateLikes(courseId, this.authUserId);
   }
 
-  private _like(user: User, courseId: string): Observable<User> {
-    const updatedUser = {...user};
-    if (!updatedUser.likedCourses) {
-      updatedUser.likedCourses = [];
+  public async updateLikes(courseId: string, userId: string ) {
+    let result;
+    const firebase = this.app.getFirebaseReference();
+    const courseRef = firebase.ref(`${routes.users}/${userId}/likedCourses`);
+    try {
+      await courseRef.transaction((likedCourses: string[]) => {
+        const { coursesIds, likesCount } = this.processUserLikes(likedCourses, courseId);
+        result = likesCount;
+        return coursesIds;
+      }, (error, committed, snapshot) => {
+
+        if (!committed) {
+          throw Error('Failed to update');
+        }
+
+        if (committed) {
+          const ref = firebase.ref(`${routes.courses}/${courseId}/likes/`);
+          return ref.transaction((likes: number) => {
+            const likesNumber = this.processCourseLikes(likes, result);
+            return likesNumber;
+            });
+          }
+      });
+    } catch (error) {
+      console.log(error);
     }
-    updatedUser.likedCourses.push(courseId);
-    return this.usersService.updateUserDetail({...updatedUser});
   }
 
-  private _unlike(user: User, courseId: string): Observable<User> {
-    const updatedCourses = this.authUser.likedCourses
-      .filter((id: string) => id !== courseId);
-    return this.usersService.updateUserDetail({...this.authUser, likedCourses: updatedCourses});
+  private processUserLikes(coursesIds: string[], courseId): any {
+    if (coursesIds?.length && coursesIds.includes(courseId)) {
+      const index = coursesIds.indexOf(courseId);
+      coursesIds.splice(index, 1);
+      return { coursesIds, likesCount: -1 };
+    }
+
+    if (coursesIds?.length && !(coursesIds.includes(courseId))){
+      coursesIds.push(courseId);
+      return { coursesIds, likesCount: 1};
+    }
+
+    if (!coursesIds) {
+      coursesIds = [];
+      coursesIds.push(courseId);
+      return { coursesIds, likesCount: 1};
+    }
   }
 
+  private processCourseLikes(likesNumber: number, point: number) {
+    if (likesNumber < 1) {
+      likesNumber = 1;
+      return likesNumber;
+    }
 
-  private updateCourse(courseId: string, point: number): Observable<Course> {
-    return this.coursesService.getById(courseId)
-      .pipe(
-        concatMap((course: Course) => {
-          if (course) {
-            const updatedCourse = course;
-            updatedCourse.likes += point;
-
-            return this.coursesService.updateCourse(updatedCourse);
-          }
-        })
-      );
+    if (likesNumber && (typeof likesNumber === 'number')) {
+      likesNumber += point;
+      return likesNumber;
+    }
   }
 }
-

@@ -13,8 +13,14 @@ export const environment = {
   refreshTokenUrl: 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=',
   projectId: 'online-academy-afe54',
   appId: '1:1036149137733:web:a696ce537954296145de2c',
+  storageBucket: 'online-academy-afe54.appspot.com',
 };
 
+export const routes = {
+  users: 'userTest',
+  courses: 'courses',
+  followers: 'followers',
+};
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

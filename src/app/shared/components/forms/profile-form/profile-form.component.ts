@@ -2,11 +2,11 @@ import { Component, OnInit, forwardRef, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, FormGroup, FormBuilder, ControlValueAccessor, FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
+
 export interface ProfileFormValues {
   name: string;
   country: string;
   occupation: string;
-  image?: string;
 }
 
 @Component({
@@ -94,7 +94,6 @@ export class ProfileFormComponent implements ControlValueAccessor, OnInit, OnDes
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       country: ['', [Validators.required, Validators.maxLength(50)]],
       occupation: ['', Validators.required],
-      image: [],
     });
   }
 

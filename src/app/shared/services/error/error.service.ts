@@ -15,6 +15,7 @@ export class ErrorService implements ErrorHandler{
 
   public handleError(error: Error): Error {
     this.errorSubject.next(error);
+    console.log(error.stack)
     return error;
   }
 }

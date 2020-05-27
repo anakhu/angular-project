@@ -1,0 +1,23 @@
+<ng-container>
+  <p>Are you sure you want to delete this acccount?
+    All associated data will be deleted as well.
+    To confirm this action type your email down below and click
+    "Confirm"</p>
+  <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+    <mat-form-field appearance="fill" style="display: block;">
+      <input matInput name="email" type="email"
+        #email="ngModel" ngModel required
+        appUserEmail="{{authUser.email}}"
+        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+      >
+    </mat-form-field>
+    <div *ngIf="form.invalid && form.touched && form.value"  class="text-danger">
+      <p *ngIf="email.errors?.required">Email is required</p>
+      <p *ngIf="email.errors?.pattern">Email is not valid</p>
+      <p *ngIf="email.errors?.emailMatch">Emails don't match</p>
+    </div>
+    <button mat-raised-button color="warn" type="submit" [disabled]="form.invalid || isDisabled">
+    Confirm
+  </button>
+  </form>
+</ng-container>

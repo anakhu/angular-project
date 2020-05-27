@@ -1,24 +1,80 @@
+@import '../styles/mixins.scss';
+@import '../styles/variables.scss';
+
 .main {
-  padding: 10px;
-  max-width: 1600px;
-  margin: 20px auto;
-}
-
-.card-footer {
-  text-align: center;
-}
-
-.example-spacer {
-  flex: 1 1 auto;
-}
-
-app-user-pic {
-  width: 100%;
-}
-
-section {
-  min-width: 100%;
   align-items: center;
-  margin: 20px auto;
-  box-shadow: 0 0 10px gray;
+  margin: 70px auto;
+}
+
+.user-card {
+  align-self: center;
+  position: relative;
+
+  .button-abs {
+    position: absolute;
+    top: -10%;
+    left: 0;
+    z-index: 100;
+  }
+}
+
+.icon-bar {
+  justify-content: space-evenly;
+}
+
+.icon {
+  cursor: pointer;
+  margin: 10px;
+  max-width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    transform: scale(1.2);
+    z-index: 100;
+  }
+
+  mat-icon {
+    display: inline-block;
+    color: white;
+    font-size: 30px;
+    height: auto;
+  }
+}
+
+
+.detail-container {
+  box-sizing: border-box;
+  min-height: 300px;
+  position: relative;
+  max-width: 1300px;
+  max-height: 900px;
+  overflow-y: auto;
+  padding: 40px;
+  background-color: $ofgrey;
+  margin: auto;
+
+  @include mQ(700px) {
+    max-height: none;
+    padding: 0px;
+  }
+
+}
+
+.no-content {
+  color: $accent-color;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 40px;
+  margin: 0 auto;
+}
+
+
+.user-bg {
+  background-image: url('../../assets/user/detail-bg.png');
+  background-repeat: no-repeat;
+  background-size: contain;
 }

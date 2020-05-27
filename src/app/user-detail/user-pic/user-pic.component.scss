@@ -1,3 +1,5 @@
+@import '../../styles/variables.scss';
+
 mat-card {
   position: relative;
   z-index: 1;
@@ -16,11 +18,11 @@ mat-card {
 
   .user-pic-occupation {
     display: inline-block;
-    padding: 2px 6px;
-    background: cadetblue;
+    padding: 10px 16px;
+    background: $suppl;
+    font-weight: bold;
     color: white;
-    opacity: 0.8;
-    font-weight: 400;
+    opacity: 0.7;
   }
 
   mat-card-content {

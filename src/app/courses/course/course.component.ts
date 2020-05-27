@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Course } from 'src/app/shared/models/course';
+import { Course } from 'src/app/shared/services/courses/course-model';
 import { User } from 'src/app/shared/models/user';
 import { UsersService } from 'src/app/shared/services/users/users.service';
 import { Subscription } from 'rxjs';
@@ -14,8 +14,8 @@ export class CourseComponent implements OnInit, OnDestroy {
 
   @Input() course: Course;
   author: User;
-
   coursesSubscription: Subscription;
+  @Input() isStandAloneComponent = false;
 
   constructor(
     private usersService: UsersService,
@@ -23,6 +23,9 @@ export class CourseComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    if (this.isStandAloneComponent) {
+      this._createCoursesSubscribtion();
+    }
     this._getUser(this.course.authorId);
     // this._createCoursesSubscribtion();
   }
@@ -31,9 +34,9 @@ export class CourseComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // if (this.coursesSubscription) {
-    //   this.coursesSubscription.unsubscribe();
-    // }
+    if (this.coursesSubscription) {
+      this.coursesSubscription.unsubscribe();
+    }
   }
 
   private _createCoursesSubscribtion(): void {
@@ -41,6 +44,7 @@ export class CourseComponent implements OnInit, OnDestroy {
       .subscribe((courses: Course[]) => {
         const currentCourse = courses
           .find((course: Course) => course.id === this.course.id );
+          console.log(currentCourse);
 
         if (currentCourse) {
           this.course = currentCourse;

@@ -1,18 +1,26 @@
-.user-course-thumb {
-  text-align: center;
-}
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
 
-.user-course-img-container {
-  max-width: 100%;
-  min-height: 100px;
 
-  img {
-    max-width: 100%;
-    max-height: 100%;
+.card-columns {
+
+  @include mQ(1200px) {
+    column-count: 3;
+  }
+  
+  @include mQ(1000px) {
+    column-count: 2;
+  }
+
+  @include mQ(600px) {
+    column-count: 1;
   }
 }
 
-.example-spacer {
-  flex: 1 1 auto;
+@include title();
+
+
+.course {
+  margin-bottom: 10px;
 }
 

@@ -11,40 +11,65 @@ import {
   switchMap,
   map,
   tap,
+  concatMap,
+  mergeAll,
+  pluck,
+  toArray,
+  exhaust,
+  exhaustMap,
 } from 'rxjs/operators';
-import { ApiService } from '../api/api.service';
+import { ApiService, Collection } from '../api/api.service';
+import { routes } from '../../../../environments/environment';
+import { ErrorService } from '../error/error.service';
+import { AppService } from '../app/app.service';
+import { Follower } from '../followers/follower.interface';
 import { NewUser } from './user';
+import { UploadService, UploadUpdate } from '../upload/upload.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class UsersService {
-  constructor(
-    private api: ApiService,
-    ) { }
-
   private users: User[] = [];
   private userSubject = new Subject<User[]>();
 
+  constructor(
+    private api: ApiService,
+    private errors: ErrorService,
+    private app: AppService,
+    private uploads: UploadService
+    ) {
+      this._listenToChanges();
+    }
+  
   public createSubscription(): Observable<User[]>{
     return this.userSubject.asObservable();
+  }
+
+  private _setUsers(users: User[]): void {
+    this.users = users;
+    this.userSubject.next(this.users);
   }
 
   public getUsers(): User[] {
     return this.users;
   }
 
-  private _setUsers(): void {
-    this.userSubject.next(this.users);
+  private _listenToChanges() {
+    return this.app.getFirebaseReference()
+      .ref(routes.users)
+      .on('child_changed', (data: any) => {
+        console.log('changes happened');
+        this.updateLocalUsers(data.key, data.val());
+      });
   }
 
-  public loadUsers(): Observable<User []> {
-    return this.api.getAll('users')
+  public loadUsers(): Observable<User[]> {
+    return this.api.getCollectionEntries(routes.users)
       .pipe(
         map((users: User[]) => {
-          this.users = users;
-          this._setUsers();
+          this._setUsers(users);
           return this.users;
         })
       );
@@ -54,9 +79,11 @@ export class UsersService {
     return from(this.users)
       .pipe(
         find(({id: userId}: User) => userId === id),
-        switchMap((result: User | undefined) => {
+        concatMap((result: User | undefined) => {
           if (!result) {
-            throw Error('User not found');
+            // const error = new Error('User not found');
+            // this.errors.handleError(error);
+            return of(null);
           } else {
             return of(result);
           }
@@ -64,48 +91,130 @@ export class UsersService {
       );
   }
 
-  public getUserById(id: string): Observable<User> {
-    return this.api.getItem('users', id);
-  }
-
   public updateUserDetail(updatedUser: User): Observable<User> {
-    return this.api.updateItem('users', updatedUser)
+    const { id } = updatedUser;
+    return this.api.updateEntry(`${routes.users}/${id}/`, updatedUser)
       .pipe(
-        map((user: User) => {
-          const index = this.users.findIndex((entry: User) => entry.id === user.id);
-          if (index !== -1) {
-            this.users.splice(index, 1, user);
-            this._setUsers();
-            return user;
-          }
-        }),
+        // map((response: any) => {
+        //   if (!(response instanceof Error)) {
+        //     this.updateLocalUsers(updatedUser.id, updatedUser);
+        //     return updatedUser;
+        //   }
+        // })
       );
   }
 
   public addUser(payloadData: Partial<User>): Observable<any> {
-    const {id, name, country, occupation, image } = payloadData;
-    const newUser = new NewUser(id, name, country, occupation, image);
-    return this.api.updateItem('users', newUser)
+    return from(this.createAccount(payloadData))
       .pipe(
         tap((user: User) => {
+          console.log(user);
           this.users.push(user);
-          this._setUsers();
+          this._setUsers(this.users);
         })
       );
   }
 
-  public deleteUser(userId: string): Observable<any> {
-    return this.api.deleteItem('users', userId)
+  public deleteUser(userId: string): Observable<boolean> {
+    return this.deleteAccount(userId)
       .pipe(
-        map((response: any) => {
-          const index = this.users
-            .findIndex((userToDelete: User) => userToDelete.id === userId);
-          if (index !== -1) {
-            this.users.splice(index, 1);
-            this._setUsers();
-            return response;
+        map((response: boolean) => {
+          if (response) {
+            this.updateLocalUsers(userId);
+          }
+          return response;
+        })
+      );
+  }
+
+  private updateLocalUsers(userId: string, updatedUser: User = null) {
+    console.log(updatedUser);
+    const index = this.users.findIndex((entry: User) => entry.id === userId);
+    if (index !== -1) {
+      if (updatedUser) {
+        this.users.splice(index, 1, updatedUser);
+      } else {
+        this.users.splice(index, 1);
+        console.log(this.users);
+      }
+      this._setUsers(this.users);
+    }
+  }
+
+  public getFollowersOnDelete(userId: string): Observable<Collection[]> {
+    return from(this.api.getByChildValue(routes.followers, 'followerId', userId))
+      .pipe(
+        concatMap((followers: Follower[]) => {
+          return this.api.getByChildValue(routes.followers, 'userId', userId)
+            .pipe(
+              map((followings: Follower[]) => {
+                console.log(followings);
+                return [...followers, ...followings];
+              })
+            );
+        }),
+        mergeAll(),
+        pluck('id'),
+        map((id: string) => {
+          const updateRef: Collection = {
+            collection: routes.followers,
+            docs: id,
+          };
+          return updateRef;
+        }),
+        toArray()
+      );
+  }
+
+  public blockAccount(userId: string): Observable<any> {
+    return this.api.updateEntry(`${routes.users}/${userId}/`, { isActive: false});
+  }
+
+
+  public deleteAccount(userId: string): Observable<any> {
+    return this.blockAccount(userId)
+      .pipe(
+        concatMap((result) => {
+          if (!(result instanceof Error)) {
+            return this.getFollowersOnDelete(userId);
+          }
+        }),
+        map((data: Collection[]) => {
+          const userRef: Collection = {
+            collection: routes.users,
+            docs: userId,
+          };
+          return [...data, userRef];
+        }),
+        concatMap((updates: Collection[]) => {
+          return this.api.deleteSimultaneously(updates);
+        })
+      );
+  }
+
+  public createAccount(payloadData: Partial<User>): Observable<User> {
+    const {id, name, country, occupation } = payloadData;
+    const newUser = new NewUser(id, name, country, occupation, true, null);
+    return this.api.addEntry(`${routes.users}/${id}/`, newUser)
+      .pipe(
+        map((response: User) => {
+          if (!(response instanceof Error)) {
+            return newUser;
           }
         })
       );
   }
+
+  public changeProfilePicture(userId: string, image: File ) {
+    return this.uploads.sendFile(image, routes.users, userId)
+      .pipe(
+        exhaustMap((data: UploadUpdate) => {
+          if (!(data instanceof Error)) {
+            return this.api.updateEntry(`${routes.users}/${userId}/`, {image: data.image});
+          }
+        })
+      );
+  }
+
+
 }

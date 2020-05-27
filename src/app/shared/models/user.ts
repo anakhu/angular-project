@@ -3,8 +3,8 @@ export interface User {
   name: string;
   country: { name: string, code: string};
   occupation: string;
-  image?: string;
   isActive?: boolean;
+  image?: string;
   authoredCourses?: string[];
   enrolledCourses?: string[];
   likedCourses?: string[];

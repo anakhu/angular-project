@@ -4,6 +4,7 @@ import { AuthService } from '../../shared/services/auth/auth.service';
 import { AuthResponse } from 'src/app/shared/services/auth/auth.response';
 import { Router } from '@angular/router';
 import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
+import { User } from 'src/app/shared/models/user';
 
 @Component({
   selector: 'app-auth-form',
@@ -35,7 +36,7 @@ export class AuthFormComponent implements OnInit {
     const { email, password } = this.authForm.controls.credentials.value;
     const payload = this.authForm.controls.profile.value;
     this.authService.signUp(email, password, payload)
-      .subscribe((data: AuthResponse)  => {
+      .subscribe((data: User)  => {
         return data ? this.notificationService.createNotification('Sign up success') : null;
       });
     }

@@ -1,0 +1,22 @@
+<div class="modal fade center" [ngClass]="{show: isShown}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="close" (click)="onClick()">
+          <span>&times;</span>
+        </button>
+
+      </div>
+      <div class="modal-body">
+        <ng-template app-anchor></ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+<button
+  mat-raised-button color="primary"
+  (click)="isShown = !isShown">{{name}}
+  <ng-content></ng-content>
+</button>
+<div *ngIf="isShown" class="modal-backdrop"></div>

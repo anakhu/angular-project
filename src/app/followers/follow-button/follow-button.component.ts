@@ -8,7 +8,7 @@ import {
 import { Subscription, of, Observable } from 'rxjs';
 import { FollowersService } from '../../shared/services/followers/followers.service';
 import { tap, exhaustMap, delay, map, finalize } from 'rxjs/operators';
-import { FireBaseFollower } from 'src/app/shared/services/followers/follower';
+import { Follower } from '../../shared/services/followers/follower.interface';
 
 @Component({
   selector: 'app-follow-button',
@@ -44,7 +44,7 @@ export class FollowButtonComponent implements OnInit, OnDestroy, OnChanges {
       .subscribe((followersStatus: boolean) => this.isFollowedByAuthUser = followersStatus);
   }
 
-  private changeFollowersStatus(): Observable<FireBaseFollower | null> {
+  private changeFollowersStatus(): Observable<Follower | null> {
     return this.followersService.changeUserFollowingStatus(this.userId);
   }
 
@@ -53,8 +53,12 @@ export class FollowButtonComponent implements OnInit, OnDestroy, OnChanges {
     of(event).pipe(
       exhaustMap((e: Event) => this.changeFollowersStatus()),
       delay(1000),
-      map((result: FireBaseFollower | null) => this.getFollowersStatus()),
+      map((result: Follower | null) => this.getFollowersStatus()),
       finalize(() => this.isLoading = false)
-    ).subscribe(res => console.log(res));
+    )
+    .subscribe(
+      (response: any) => console.log(response),
+      (error: Error) => console.log(error.message)
+    );
   }
 }

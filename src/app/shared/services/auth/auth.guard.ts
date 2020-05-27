@@ -1,10 +1,11 @@
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { AuthService } from './auth.service';
+import { AuthService, FireBaseUser } from './auth.service';
 import { Observable } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
   constructor(
@@ -14,12 +15,20 @@ export class AuthGuard implements CanActivate {
 
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot):
-    Observable<boolean> | Promise<boolean> | boolean {
-      if (this.authService.getAuthUser()) {
-        this.router.navigate(['/courses']);
-        return false;
-      }
-      return true;
+    state: RouterStateSnapshot): Observable<boolean> | boolean {
+      return this.authService.createSubscription()
+        .pipe(
+          take(1),
+          map((user: FireBaseUser | null) => {
+            if (user) {
+              console.log('false');
+              this.router.navigate(['/courses']);
+              return false;
+            } else {
+              return true;
+            }
+          }),
+        );
   }
 }
+

@@ -1,5 +1,20 @@
+@import '../../styles/mixins.scss';
+
+// @mixin mQ($arg) {
+//   @media screen and (max-width: $arg){
+//     @content;
+//   }
+// }
+
 .example-card {
-  flex: 0 0 30%;
+  // @include mQ(600px) {
+  //   font-size: 12px;
+  //   max-width: 200px;
+
+  //   mat-card-title {
+  //     font-size: 12px;
+  //   }
+  // }
 }
 
 .example-card img {
@@ -7,8 +22,7 @@
 }
 
 mat-card {
-  display: inline-block;
-  // margin: 10px;
+  // display: inline-block;
   position: relative;
 }
 

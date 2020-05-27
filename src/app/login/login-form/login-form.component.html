@@ -1,4 +1,4 @@
-<div class="login-form">
+<div class="form-container">
     <div class="icon-container">
         <span class="material-icons">school</span>
 
@@ -12,14 +12,14 @@
         <mat-form-field appearance="outline">
             <mat-label>Email</mat-label>
 
-            <input
+            <input 
                 matInput
                 type="email"
                 name="email"
                 ngModel
                 #email="ngModel"
                 pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                required="required"
+                required
             >
         </mat-form-field>
 
@@ -44,7 +44,7 @@
                 name="password"
                 ngModel
                 #password="ngModel"
-                required="required"
+                required
             >
         </mat-form-field>
 

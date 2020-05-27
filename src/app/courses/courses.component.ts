@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CoursesService } from '../shared/services/courses/courses.service';
-import { Course } from '../shared/models/course';
+import { Course } from '../shared/services/courses/course-model';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../shared/services/auth/auth.service';
+import { AuthService, FireBaseUser } from '../shared/services/auth/auth.service';
 import { ActivatedRoute } from '@angular/router';
-import { LoginUser } from '../shared/services/auth/login.user';
 
 @Component({
   selector: 'app-courses',
@@ -17,6 +16,7 @@ export class CoursesComponent implements OnInit, OnDestroy {
   coursesSubscription: Subscription;
   authSubscription: Subscription;
   authUserId: string;
+  @Input() filterValue: {key: string, value: any};
 
   constructor(
     private coursesService: CoursesService,
@@ -43,6 +43,6 @@ export class CoursesComponent implements OnInit, OnDestroy {
 
   private createAuthSubscription(): void {
     this.authSubscription = this.authService.createSubscription()
-      .subscribe((user: LoginUser) => this.authUserId = user ? user.id : null);
+      .subscribe((user: FireBaseUser) => this.authUserId = user ? user.uid : null);
   }
 }

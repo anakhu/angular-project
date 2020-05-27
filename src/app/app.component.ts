@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AuthService } from './shared/services/auth/auth.service';
+import { AuthService, FireBaseUser } from './shared/services/auth/auth.service';
 import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoginUser } from './shared/services/auth/login.user';
+import { ApiService } from './shared/services/api/api.service';
 
 @Component({
   selector: 'app-root',
@@ -28,15 +29,16 @@ export class AppComponent implements OnInit, OnDestroy{
     private breakpointObserver: BreakpointObserver,
     private authService: AuthService,
     private router: Router,
+    private api: ApiService,
   ) {
-    this.authService.getLoginUserOnAppLoad();
   }
 
   ngOnInit(): void {
-   this.authSubscription = this.authService.createSubscription()
-    .subscribe((user: LoginUser) => {
-     this.authUserId = user ? user.id : null;
-    });
+    this.authSubscription = this.authService.createSubscription()
+      .subscribe((user: FireBaseUser) => {
+      this.authUserId = user ? user.uid : null;
+      console.log(this.authUserId)
+      });
   }
 
   ngOnDestroy(): void {

@@ -46,14 +46,5 @@
         <mat-hint *ngIf="occupation.errors?.maxlength">Name is too long!</mat-hint>
     </div>
 
-    <mat-form-field appearance="outline">
-        <mat-label>Photo</mat-label>
-
-        <input
-            matInput
-            formControlName="image"
-            type="text"
-            id="image"
-        >
-    </mat-form-field>
+    <!-- <app-upload [formGroup]="form"></app-upload> -->
 </div>

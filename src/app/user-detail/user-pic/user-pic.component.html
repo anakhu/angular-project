@@ -12,7 +12,7 @@
       alt="user image">
     </mat-card-content>
     <mat-card-content>
-      <p class="user-pic-occupation">Occupation</p>
+      <p class="user-pic-occupation">{{user.occupation}}</p>
       <p class="text-muted">{{ user.country?.name }}</p>
     </mat-card-content>
     <app-follow-bar [userId]="user.id"></app-follow-bar>

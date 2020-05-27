@@ -1,0 +1,59 @@
+@import './variables.scss';
+
+@mixin mQ($arg) {
+  @media screen and (max-width: $arg){
+    @content;
+  }
+}
+
+@mixin img-card {
+  img {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    
+    @include mQ(600px) {
+      max-height: 200px;
+    }
+  }
+}
+
+
+@mixin link {
+  span {
+    color: $link;
+    cursor: pointer;
+  }
+}
+
+
+@mixin form {
+  background-color: $ofgrey;
+  max-width: 600px;
+  padding: 50px 30px;
+  margin: 50px auto;
+  text-align: center;
+
+  .material-icons {
+    font-size: 100px;
+  }
+}
+
+@mixin input {
+  mat-form-field {
+    display: block;
+    margin: 5px 30px;
+  }
+}
+
+
+@mixin title {
+  .title {
+    font-weight: bold;
+    color: $main-color;
+    text-align: right;
+    border-bottom: 2px solid $main-color;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+}

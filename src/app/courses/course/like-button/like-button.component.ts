@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { LikesService } from '../../../shared/services/likes/likes.service';
-import { AuthService } from '../../../shared/services/auth/auth.service';
+import { AuthService, FireBaseUser } from '../../../shared/services/auth/auth.service';
 import { Subscription, of } from 'rxjs';
 import { exhaustMap, delay, tap, finalize } from 'rxjs/operators';
 
@@ -32,8 +32,8 @@ export class LikeButtonComponent implements OnInit, OnDestroy {
 
   private _createAuthSubscription(): void {
     this.authSubscription = this.authService.createSubscription()
-      .subscribe((user: any) => {
-       this.authUserId = user ? user.id : null;
+      .subscribe((user: FireBaseUser) => {
+       this.authUserId = user ? user.uid : null;
        if (this.authUserId) {
          this._setUserLikeStatus();
        }
@@ -51,10 +51,10 @@ export class LikeButtonComponent implements OnInit, OnDestroy {
         delay(1000),
         exhaustMap((e: Event) => this.likesService.changeLikeStatus(this.courseId)),
         delay(300),
-        tap((point: number) => this._setUserLikeStatus()),
+        tap(() => this._setUserLikeStatus()),
         finalize(() => this.isLoading = false)
       )
-      .subscribe((result: number) => console.log('success'),
+      .subscribe(() => {},
       (error: Error) => console.log(error));
   }
 
