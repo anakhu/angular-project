@@ -8,14 +8,12 @@ import {
 } from 'rxjs';
 import {
   find,
-  switchMap,
   map,
   tap,
   concatMap,
   mergeAll,
   pluck,
   toArray,
-  exhaust,
   exhaustMap,
 } from 'rxjs/operators';
 import { ApiService, Update } from '../api/api.service';
@@ -57,7 +55,6 @@ export class UsersService {
     return this.app.getFirebaseReference()
       .ref(routes.users)
       .on('child_changed', (data: any) => {
-        console.log('changes happened');
         this.updateLocalUsers(data.key, data.val());
       });
   }
@@ -97,7 +94,6 @@ export class UsersService {
     return from(this.createAccount(payloadData))
       .pipe(
         tap((user: User) => {
-          console.log(user);
           this.users.push(user);
           this._setUsers(this.users);
         })
@@ -117,14 +113,12 @@ export class UsersService {
   }
 
   private updateLocalUsers(userId: string, updatedUser: User = null) {
-    console.log(updatedUser);
     const index = this.users.findIndex((entry: User) => entry.id === userId);
     if (index !== -1) {
       if (updatedUser) {
         this.users.splice(index, 1, updatedUser);
       } else {
         this.users.splice(index, 1);
-        console.log(this.users);
       }
       this._setUsers(this.users);
     }
@@ -137,7 +131,7 @@ export class UsersService {
           return this.api.getByChildValue(routes.followers, 'userId', userId)
             .pipe(
               map((followings: Follower[]) => {
-                console.log(followings);
+
                 return [...followers, ...followings];
               })
             );

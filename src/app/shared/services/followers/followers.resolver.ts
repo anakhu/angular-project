@@ -13,7 +13,6 @@ import { take } from 'rxjs/operators';
 export class FollowersResolver implements Resolve<Follower[]> {
   constructor(private coursesService: FollowersService) {}
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Follower[]> {
-    console.log('resolver works')
     return this.coursesService.loadFollowers().pipe(take(1));
   }
 }

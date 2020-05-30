@@ -42,7 +42,6 @@ export class CoursesService {
     return this.app.getFirebaseReference()
       .ref(routes.courses)
       .on('child_changed', (data: any) => {
-        console.log('child changed', data.val());
         this.updateLocalCourses(data.key, {id: data.key, ...data.val()});
       });
   }
@@ -111,7 +110,7 @@ export class CoursesService {
   }
 
   private updateLocalCourses(courseId: string, updatedCourse: Course = null): Course {
-    console.log('updating local courses')
+
     const index = this.courses.findIndex((entry: Course) => entry.id === courseId);
     if (index !== -1) {
       if (updatedCourse) {

@@ -33,7 +33,6 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('user detail works')
     this._authSubscribe();
     this._subscribeOnParamsChange();
   }
@@ -41,6 +40,10 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.routerSubscription.unsubscribe();
     this.authSubscription.unsubscribe();
+  }
+
+  public processClick(path: string, content: string) {
+    this.router.navigate(['/users', this.userId, path], { queryParams: { base: content}});
   }
 
   private _authSubscribe(): void {
@@ -71,13 +74,5 @@ export class UserDetailComponent implements OnInit, OnDestroy {
           },
           (error: Error) => this.router.navigate(['/404']),
       );
-  }
-
-  onNextClick(event) {
-    console.log(event);
-  }
-
-  processClick(path: string, content: string) {
-    this.router.navigate(['/users', this.userId, path], { queryParams: { base: content}});
   }
 }

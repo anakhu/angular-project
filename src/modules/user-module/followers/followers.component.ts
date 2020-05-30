@@ -31,7 +31,6 @@ export class FollowersComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    console.log('followers work');
     this.userId = this.route.parent.snapshot.params.id;
     this.routeParamsSubscription = this.route.queryParamMap
       .subscribe(params => {

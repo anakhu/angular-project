@@ -36,7 +36,6 @@ export class AppComponent implements OnInit, OnDestroy{
     this.authSubscription = this.authService.createSubscription()
       .subscribe((user: FireBaseUser) => {
       this.authUserId = user ? user.uid : null;
-      console.log(this.authUserId);
       });
   }
 

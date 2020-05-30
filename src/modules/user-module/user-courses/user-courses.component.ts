@@ -31,7 +31,6 @@ export class UserCoursesComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    console.log('user courses works');
     this.userId = this.route.parent.snapshot.params.id;
     this.route.queryParamMap
       .subscribe(params => {
