@@ -4,6 +4,7 @@ import 'firebase/database';
 import 'firebase/storage';
 import 'firebase/auth';
 import { environment } from 'src/environments/environment';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 
 @Injectable({

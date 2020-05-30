@@ -1,0 +1,44 @@
+@import '../../../app/styles/variables.scss';
+
+mat-card {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 auto;
+
+  .user-pic-header {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: 10px;
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+  }
+
+  .user-pic-occupation {
+    display: inline-block;
+    padding: 10px 16px;
+    font-weight: bold;
+    opacity: 0.7;
+  }
+
+  mat-card-content {
+    text-align: center;
+  }
+
+  .img-thumbnail {
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .mat-card-actions {
+    padding: 8px 0;
+    text-align: center;
+    border: 1px solid cadetblue;
+    opacity: 0.8;
+    vertical-align: middle;
+  }
+}
+

@@ -1,0 +1,16 @@
+<ng-container *ngIf="user">
+  <div class="col-12">
+    <div class="card">
+      <app-user-pic [user]="user"></app-user-pic>
+      <div class="card-footer">
+        <button
+          mat-raised-button color="accent"
+          [routerLink]="['/users', user.id]"
+          >
+          View Profile
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>
+

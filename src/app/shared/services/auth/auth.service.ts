@@ -4,15 +4,12 @@ import { tap, concatMap, exhaustMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../../models/user';
 import { UsersService } from '../users/users.service';
-import { ApiService } from '../api/api.service';
 import { AppService } from '../app/app.service';
-
 
 export interface FireBaseUser {
   uid: string;
   email: string;
 }
-
 
 @Injectable({
   providedIn: 'root'
@@ -24,24 +21,12 @@ export class AuthService {
   constructor(
     private router: Router,
     private users: UsersService,
-    // private api: ApiService,
     private app: AppService
   ) {
     this.setFireAuthRef();
   }
 
-  private setFireAuthRef() {
-    this.fireBaseAuth = this.app.getFireBaseAuthReference();
-    this.fireBaseAuth.onAuthStateChanged((user: any) => {
-      if (user) {
-        const { uid, email } = user;
-        const loginUser: FireBaseUser = { uid, email };
-        this.firebaseUser.next(loginUser);
-      }
-    });
-  }
-
-  public signUp(email: string, password: string, payload: any = {}) {
+  public signUp(email: string, password: string, payload: any = {}): Observable<User> {
     return from(this.fireBaseAuth.createUserWithEmailAndPassword(email, password))
       .pipe(
         exhaustMap((response: any) => {
@@ -90,4 +75,16 @@ export class AuthService {
   public createSubscription(): Observable<FireBaseUser> {
     return this.firebaseUser.asObservable();
   }
+
+  private setFireAuthRef(): void {
+    this.fireBaseAuth = this.app.getFireBaseAuthReference();
+    this.fireBaseAuth.onAuthStateChanged((user: any) => {
+      if (user) {
+        const { uid, email } = user;
+        const loginUser: FireBaseUser = { uid, email };
+        this.firebaseUser.next(loginUser);
+      }
+    });
+  }
+
 }

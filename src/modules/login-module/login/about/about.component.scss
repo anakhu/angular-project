@@ -1,0 +1,28 @@
+.about-main-banner {
+  background-image: url('../../../../assets/images/about/about.png');
+  filter: saturate(45%);
+  width: 100%;
+}
+
+section img {
+  width: 100%;
+}
+
+section {
+  div {
+    padding: 10px;
+  }
+}
+
+blockquote {
+  padding: 100px 20px;
+  color: white;
+  text-align: left;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 30px;
+
+  footer {
+    color: white;
+  }
+}

@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Course } from './course-model';
 import { Observable, of, from, Subject } from 'rxjs';
-import { find, switchMap, map, exhaust, exhaustMap, tap } from 'rxjs/operators';
+import { find, switchMap, map, exhaustMap, catchError } from 'rxjs/operators';
 import { ApiService } from '../api/api.service';
 import { routes } from '../../../../environments/environment';
 import { AppService } from '../app/app.service';
 import { UploadService, UploadUpdate } from '../upload/upload.service';
 import { NewCourse } from './course';
+import { API_ERRORS } from '../api/api-errors';
+import { CustomError } from '../api/api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -103,7 +105,7 @@ export class CoursesService {
           return newCourse;
         }),
         exhaustMap((course: Course) => {
-          return from(this.addNewCourse(course, authorId));
+          return this.addNewCourse(course, authorId);
         }),
       );
   }
@@ -142,7 +144,14 @@ export class CoursesService {
     updates[`/${routes.users}/${userId}/authoredCourses`] = authoredCourses;
 
 
-    return firebase.ref().update(updates);
+    return from(firebase.ref().update(updates))
+      .pipe(
+        catchError((error: Error) => {
+          const err: CustomError = {...API_ERRORS.add};
+          throw err;
+        }),
+       map((response: any) => newCourseKey)
+      );
   }
 }
 

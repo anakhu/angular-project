@@ -1,0 +1,9 @@
+<ng-container *ngIf="users">
+  <div class="card-group">
+    <div class="row justify-content-center">
+      <ng-container *ngFor="let user of users">
+          <app-user [user]="user"></app-user>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>

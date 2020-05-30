@@ -1,0 +1,16 @@
+@import '../../../app/styles/variables.scss';
+@import '../../../app//styles/mixins.scss';
+
+app-follower {
+  margin: 5px;
+}
+
+.card-deck {
+  max-width: 100%;
+  margin: 10px auto;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
+}
+
+@include title();

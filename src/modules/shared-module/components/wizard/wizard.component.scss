@@ -1,0 +1,23 @@
+@import '../../../../app/styles/mixins.scss';
+
+.show {
+  display: block;
+}
+
+.modal-backdrop {
+  opacity: .7;
+}
+
+.modal-body {
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+}
+
+.modal-dialog {
+  margin: auto;
+  max-width: 700px;
+
+  @include mQ(600px) {
+    width: 100%;
+  }
+}

@@ -1,0 +1,43 @@
+@import '../../../../app/styles/variables.scss';
+
+.example-card img {
+  height: auto;
+}
+
+mat-card {
+  position: relative;
+}
+
+.example-header-image {
+  img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    position: absolute;
+    top: 3%;
+    left: 3%;
+  }
+}
+
+.mat-card-content {
+  p {
+    text-align: center;
+    
+    span {
+      vertical-align: middle;
+    }
+  }
+}
+
+.mat-card-actions {
+  text-align: center;
+}
+
+.mat-button {
+  span {
+    font-size: 16px;
+    vertical-align: middle;
+  }
+} 

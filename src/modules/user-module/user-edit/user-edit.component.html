@@ -1,0 +1,67 @@
+
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+       Update Profile Picture
+      </mat-panel-title>
+      <mat-panel-description>
+        <span class="spacer"></span>
+        <mat-icon>camera_enhance</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <app-update-pic></app-update-pic>
+  </mat-expansion-panel>
+
+  
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+       Update Proifle Info
+      </mat-panel-title>
+      <mat-panel-description>
+        <span class="spacer"></span>
+        <mat-icon>account_circle</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <app-update-profile [userId]="authUser.uid"></app-update-profile>
+  </mat-expansion-panel>
+
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+       Add a Course
+      </mat-panel-title>
+      <mat-panel-description>
+        <span class="spacer"></span>
+        <mat-icon>school</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+     <app-add-course></app-add-course>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+       Delete Account
+      </mat-panel-title>
+      <mat-panel-description>
+        <span class="spacer"></span>
+        <mat-icon>delete_sweep</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <app-delete-user></app-delete-user>
+  </mat-expansion-panel>
+
+</mat-accordion>
+
+<button
+  style="margin-top: 30px;"
+  mat-raised-button
+  color="accent"
+  class="btn btn-success" 
+  (click)="onNext()"
+  >
+  Cancel
+</button>

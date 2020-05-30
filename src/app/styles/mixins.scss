@@ -49,9 +49,11 @@
 
 @mixin title {
   .title {
+    max-width: 400px;
+    margin: auto;
     font-weight: bold;
-    color: $main-color;
-    text-align: right;
+    color: $accent-color;
+    text-align: center;
     border-bottom: 2px solid $main-color;
     margin-bottom: 20px;
     text-transform: uppercase;

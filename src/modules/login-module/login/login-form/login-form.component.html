@@ -1,0 +1,78 @@
+<div class="form-container">
+    <div class="icon-container">
+        <span class="material-icons">school</span>
+        <h1 class="title">Sign in to Online Academy</h1>
+    </div>
+    <form
+        #form="ngForm"
+        (ngSubmit)="onSubmit(form)"
+    >
+        <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+
+            <input 
+                matInput
+                type="email"
+                name="email"
+                ngModel
+                #email="ngModel"
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                required
+            >
+        </mat-form-field>
+
+        <div *ngIf="email.touched">
+            <p
+                *ngIf="email.errors?.required"
+                class="text-danger"
+            >Email is a required field!</p>
+
+            <p
+                *ngIf="email.errors?.pattern"
+                class="text-danger"
+            >This is not a valid Email!!!</p>
+        </div>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+
+            <input
+                matInput
+                type="password"
+                name="password"
+                ngModel
+                #password="ngModel"
+                required
+            >
+        </mat-form-field>
+
+        <div *ngIf="password.touched">
+            <p
+                *ngIf="password.errors?.required"
+                class="text-danger"
+            >
+                Please, type your password here!
+            </p>
+        </div>
+
+        <button
+            #login
+            mat-flat-button="mat-flat-button"
+            color="accent"
+            class="button-login"
+            type="submit"
+            [disabled]="form.invalid"
+        >Login</button>
+    </form>
+
+    <div class="login-form-footer">
+        <h4 class="subheading-1">Not a user?</h4>
+
+        <button
+            mat-raised-button="mat-raised-button"
+            color="primary"
+            [routerLink]="['/login']"
+            [queryParams]="{ action: 'sign-up'}"
+        >Create free account</button>
+    </div>
+</div>

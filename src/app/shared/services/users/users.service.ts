@@ -18,9 +18,8 @@ import {
   exhaust,
   exhaustMap,
 } from 'rxjs/operators';
-import { ApiService, Collection } from '../api/api.service';
+import { ApiService, Update } from '../api/api.service';
 import { routes } from '../../../../environments/environment';
-import { ErrorService } from '../error/error.service';
 import { AppService } from '../app/app.service';
 import { Follower } from '../followers/follower.interface';
 import { NewUser } from './user';
@@ -36,13 +35,11 @@ export class UsersService {
 
   constructor(
     private api: ApiService,
-    private errors: ErrorService,
     private app: AppService,
     private uploads: UploadService
     ) {
       this._listenToChanges();
     }
-  
   public createSubscription(): Observable<User[]>{
     return this.userSubject.asObservable();
   }
@@ -93,15 +90,7 @@ export class UsersService {
 
   public updateUserDetail(updatedUser: User): Observable<User> {
     const { id } = updatedUser;
-    return this.api.updateEntry(`${routes.users}/${id}/`, updatedUser)
-      .pipe(
-        // map((response: any) => {
-        //   if (!(response instanceof Error)) {
-        //     this.updateLocalUsers(updatedUser.id, updatedUser);
-        //     return updatedUser;
-        //   }
-        // })
-      );
+    return this.api.updateEntry(`${routes.users}/${id}/`, updatedUser);
   }
 
   public addUser(payloadData: Partial<User>): Observable<any> {
@@ -141,7 +130,7 @@ export class UsersService {
     }
   }
 
-  public getFollowersOnDelete(userId: string): Observable<Collection[]> {
+  public getFollowersOnDelete(userId: string): Observable<Update[]> {
     return from(this.api.getByChildValue(routes.followers, 'followerId', userId))
       .pipe(
         concatMap((followers: Follower[]) => {
@@ -156,7 +145,7 @@ export class UsersService {
         mergeAll(),
         pluck('id'),
         map((id: string) => {
-          const updateRef: Collection = {
+          const updateRef: Update = {
             collection: routes.followers,
             docs: id,
           };
@@ -179,14 +168,14 @@ export class UsersService {
             return this.getFollowersOnDelete(userId);
           }
         }),
-        map((data: Collection[]) => {
-          const userRef: Collection = {
+        map((data: Update[]) => {
+          const userRef: Update = {
             collection: routes.users,
             docs: userId,
           };
           return [...data, userRef];
         }),
-        concatMap((updates: Collection[]) => {
+        concatMap((updates: Update[]) => {
           return this.api.deleteSimultaneously(updates);
         })
       );

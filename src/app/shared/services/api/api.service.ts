@@ -1,29 +1,19 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { Observable, from, of, pipe } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
-import 'firebase/database';
-import 'firebase/storage';
-import 'firebase/auth';
-import { ErrorService } from '../error/error.service';
+import { Observable, from } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { FirebaseError } from 'firebase/app';
 import { AppService } from '../app/app.service';
+import { API_ERRORS } from './api-errors';
 
-
-export interface Collection {
+export interface Update {
   collection: string;
   docs: string;
   data?: any;
 }
 
-export interface Update {
-  collection: string;
-  update: {
-    doc: string,
-    data: any
-  };
+export interface CustomError {
+  code: string;
+  message: string;
 }
 
 @Injectable({
@@ -31,46 +21,14 @@ export interface Update {
 })
 export class ApiService {
   fireBase: any;
-
   constructor(
-    private http: HttpClient,
-    private errorService: ErrorService,
-    private app: AppService
+    private app: AppService,
     ) {
-      this.fireBase = this.app.getFirebaseReference();
-    // this._initFireBaseServices();
-  }
-
-  // private _initFireBaseServices(): void {
-  //   firebase.initializeApp({
-  //     ...environment
-  //   });
-  //   this.fireBase = firebase.database();
-  // }
-
-  // public getFireStorageRef(): any {
-  //   return firebase.storage();
-  // }
-
-  // public getFireAuthRef(): any {
-  //   return firebase.auth();
-  // }
-
-  // public getFireBaseReference(): any {
-  //   return this.fireBase;
-  // }
-
-  private _processDataOnLoad<T>(response: any): T[] {
-    const data: T[] = [];
-    response.forEach((child: any) => {
-      const id = child.key;
-      const value = child.val();
-      data.push({id, ...value});
-    });
-    return data;
+    this.fireBase = this.app.getFirebaseReference();
   }
 
   public getCollectionEntries<T>(reference: string): Observable<T[]> {
+
     return from(this.fireBase.ref(reference).once('value'))
       .pipe(
         map((data: firebase.database.DataSnapshot) => {
@@ -83,8 +41,8 @@ export class ApiService {
     return from(this.fireBase.ref(reference).update(updates))
       .pipe(
         catchError((error: FirebaseError) => {
-          this.errorService.handleError(error);
-          return Error;
+          const err: CustomError = {...API_ERRORS.update};
+          throw err;
         })
       );
   }
@@ -93,8 +51,8 @@ export class ApiService {
     return from(this.fireBase.ref(reference).set(entry))
       .pipe(
         catchError((error: FirebaseError) => {
-          this.errorService.handleError(error);
-          return Error;
+          const err: CustomError = {...API_ERRORS.add};
+          throw err;
         })
       );
   }
@@ -103,8 +61,8 @@ export class ApiService {
     return from(this.fireBase.ref(reference).push(entry))
       .pipe(
         catchError((error: FirebaseError) => {
-          this.errorService.handleError(error);
-          return Error;
+          const err: CustomError = {...API_ERRORS.push};
+          throw err;
         }),
         map((payload: firebase.database.Reference) => payload.key)
       );
@@ -114,8 +72,8 @@ export class ApiService {
     return from(this.fireBase.ref(reference).remove())
       .pipe(
         catchError((error: FirebaseError) => {
-          this.errorService.handleError(error);
-          return Error;
+          const err: CustomError = {...API_ERRORS.delete};
+          throw err;
         }),
       );
   }
@@ -132,24 +90,33 @@ export class ApiService {
       );
   }
 
-  public deleteSimultaneously(data: Collection[]): Observable<boolean> {
+  public deleteSimultaneously(data: Update[]): Observable<boolean> {
     const updates = {};
 
     for (const entry of data) {
       updates[`/${entry.collection}/` + entry.docs] = entry.data ? entry.data : null;
     }
-    console.log(updates);
 
     return from(this.fireBase.ref().update(updates))
       .pipe(
         map((response: any) => {
           console.log(response);
           if (response instanceof Error) {
-            this.errorService.handleError(response);
+            const err: CustomError = {...API_ERRORS.delete};
             return false;
           }
           return true;
         })
       );
+  }
+
+  private _processDataOnLoad<T>(response: any): T[] {
+    const data: T[] = [];
+    response.forEach((child: any) => {
+      const id = child.key;
+      const value = child.val();
+      data.push({id, ...value});
+    });
+    return data;
   }
 }

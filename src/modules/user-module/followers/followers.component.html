@@ -1,0 +1,30 @@
+<h1 class="title" *ngIf="header">{{header}}</h1>
+<div class="followers">
+      <ng-container *ngIf="users?.length">
+        <div class="card-group justify-content-center">
+          <ng-container *ngFor="let user of users">
+            <app-user [user]="user"></app-user>
+          </ng-container> 
+        </div>
+      </ng-container>
+</div>
+
+<ng-container *ngIf="!(users?.length)">
+  <ng-container
+    *ngTemplateOutlet="noFollowersTemplate; context: {header: header}">
+  </ng-container>
+
+
+<ng-template #noFollowersTemplate let-header="header">
+  <ng-container [ngSwitch]="header">
+    <h3 class="text-muted" *ngSwitchCase="'Followers'">
+      This user hasn't got any followers
+    </h3>
+    <h3 class="text-muted" *ngSwitchCase="'Followings'">
+      This user hasn't hasn't followed anyone yet
+    </h3>
+    <h3 class="text-muted" *ngSwitchDefault>
+      No users yet
+    </h3>
+  </ng-container>
+</ng-template>

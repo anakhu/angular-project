@@ -29,7 +29,6 @@ export class AppComponent implements OnInit, OnDestroy{
     private breakpointObserver: BreakpointObserver,
     private authService: AuthService,
     private router: Router,
-    private api: ApiService,
   ) {
   }
 
@@ -37,7 +36,7 @@ export class AppComponent implements OnInit, OnDestroy{
     this.authSubscription = this.authService.createSubscription()
       .subscribe((user: FireBaseUser) => {
       this.authUserId = user ? user.uid : null;
-      console.log(this.authUserId)
+      console.log(this.authUserId);
       });
   }
 
