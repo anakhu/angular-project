@@ -1,4 +1,11 @@
 <form [formGroup]="imageForm" (ngSubmit)="submit()">
+  <p>Max picture size is {{ maxSize / 1000}} Kylobyte</p>
   <app-upload [form]="imageForm"></app-upload>
+  <div *ngIf="image.touched && image?.errors">
+   <mat-hint 
+    *ngIf="image.errors.maxContentSize"
+    style="color: #dd2c00"
+    >Picture size is bigger than {{ maxSize / 1000}}</mat-hint>
+  </div>
   <button mat-raised-button color="primary" type="submit" [disabled]="imageForm.invalid">Upload</button>
 </form>

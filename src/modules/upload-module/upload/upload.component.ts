@@ -16,5 +16,6 @@ export class UploadComponent implements OnInit {
 
   handleFileChange(event: any) {
     this.file = event.target.files[0];
+    console.log(this.file);
   }
 }

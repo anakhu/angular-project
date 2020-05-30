@@ -17,7 +17,7 @@ export const environment = {
 };
 
 export const routes = {
-  users: 'userTest',
+  users: 'users',
   courses: 'courses',
   followers: 'followers',
 };

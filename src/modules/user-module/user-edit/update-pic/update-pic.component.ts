@@ -6,6 +6,7 @@ import { UsersService } from 'src/app/shared/services/users/users.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { finalize } from 'rxjs/operators';
 import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
+import { FileValidator } from 'ngx-material-file-input';
 
 @Component({
   selector: 'app-update-pic',
@@ -17,12 +18,14 @@ export class UpdatePicComponent implements OnInit, OnDestroy{
   authSubscription: Subscription;
   authUserId: string;
 
+  readonly maxSize = 400000;
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private users: UsersService,
     private ngxService: NgxUiLoaderService,
-    private notifications: NotificationsService
+    private notifications: NotificationsService,
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +57,7 @@ export class UpdatePicComponent implements OnInit, OnDestroy{
 
   private _initForm() {
     this.imageForm = this.fb.group({
-      image: ['', Validators.required]
+      image: [undefined, [Validators.required, FileValidator.maxContentSize(this.maxSize)]]
     });
   }
 
