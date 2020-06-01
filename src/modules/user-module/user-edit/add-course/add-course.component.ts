@@ -5,10 +5,12 @@ import { take, finalize, switchMap } from 'rxjs/operators';
 import { CoursesService } from 'src/app/shared/services/courses/courses.service';
 import { AuthService, FireBaseUser } from 'src/app/shared/services/auth/auth.service';
 import { dateValidator } from './date.validator';
+import { dateConflictValidator } from './date-conflict.validator';
 import { Subscription } from 'rxjs';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
 import { Router } from '@angular/router';
+import { FileValidator } from 'ngx-material-file-input';
 
 
 @Component({
@@ -21,6 +23,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   courseForm: FormGroup;
   authorId: string;
   authSubscription: Subscription;
+  readonly maxSize = 400000;
 
   constructor(
     private fb: FormBuilder,
@@ -95,8 +98,8 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       endDate: ['', { validators: [Validators.required, dateValidator()], updateOn: 'blur'}],
       price: ['', [Validators.required, Validators.min(0)]],
       certificate: [''],
-      image: ['', [Validators.required]]
-    });
+      image: ['', [Validators.required, FileValidator.maxContentSize(this.maxSize)]],
+    }, { validator: dateConflictValidator() });
   }
 
   private _subscribe() {

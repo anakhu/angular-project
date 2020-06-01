@@ -1,0 +1,26 @@
+.btn-up{
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  opacity: 0.9;
+  z-index: 1000;
+  animation: show 0.5s ease-in;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
+}
+
+@keyframes show {
+  from {
+    opacity: .1;
+  }
+
+  to {
+    opacity: .9;
+  }
+}

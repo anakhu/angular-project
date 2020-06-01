@@ -1,13 +1,50 @@
-mat-list-item {
-  font-weight: bold;
-}
+@import 'mixins';
+@import 'variables';
+
+@include title();
 
 .single-course-wrapper {
-  box-shadow: -6px 10px 38px 0px #3f51b5;
+  max-width: 1200px;
   margin: 5%;
   padding: 5%;
 }
 
 mat-card-actions {
   text-align: center;
+}
+
+mat-card-header {
+  height: fit-content;
+  margin-bottom: auto;
+  padding-bottom: 30px;
+}
+
+.example-header-image {
+  img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+}
+
+.header-text {
+  margin-left: 40px;
+  vertical-align: middle;;
+}
+
+.content {
+  padding: 10px 0px;
+}
+
+.date {
+  color: $main-color;
+  font-weight: bold;
+}
+
+.price {
+  color: $accent-color;
+  font-weight: bold;
 }

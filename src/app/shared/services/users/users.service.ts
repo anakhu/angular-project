@@ -22,6 +22,7 @@ import { AppService } from '../app/app.service';
 import { Follower } from '../followers/follower.interface';
 import { NewUser } from './user';
 import { UploadService, UploadUpdate } from '../upload/upload.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Injectable({
   providedIn: 'root'
@@ -34,29 +35,14 @@ export class UsersService {
   constructor(
     private api: ApiService,
     private app: AppService,
-    private uploads: UploadService
+    private uploads: UploadService,
+    private loader: NgxUiLoaderService
     ) {
       this._listenToChanges();
     }
+
   public createSubscription(): Observable<User[]>{
     return this.userSubject.asObservable();
-  }
-
-  private _setUsers(users: User[]): void {
-    this.users = users;
-    this.userSubject.next(this.users);
-  }
-
-  public getUsers(): User[] {
-    return this.users;
-  }
-
-  private _listenToChanges() {
-    return this.app.getFirebaseReference()
-      .ref(routes.users)
-      .on('child_changed', (data: any) => {
-        this.updateLocalUsers(data.key, data.val());
-      });
   }
 
   public loadUsers(): Observable<User[]> {
@@ -69,20 +55,22 @@ export class UsersService {
       );
   }
 
-  public getUser(id: string): Observable<User | Error> {
-    return from(this.users)
-      .pipe(
-        find(({id: userId}: User) => userId === id),
-        concatMap((result: User | undefined) => {
-          if (!result) {
-            // const error = new Error('User not found');
-            // this.errors.handleError(error);
-            return of(null);
-          } else {
-            return of(result);
-          }
-        })
-      );
+  public getUsers(): User[] {
+    return this.users;
+  }
+
+
+  private _setUsers(users: User[]): void {
+    this.users = users;
+    this.userSubject.next(this.users);
+  }
+
+  private _listenToChanges() {
+    return this.app.getFirebaseReference()
+      .ref(routes.users)
+      .on('child_changed', (data: any) => {
+        this.updateLocalUsers(data.key, data.val());
+      });
   }
 
   public updateUserDetail(updatedUser: User): Observable<User> {
@@ -112,16 +100,20 @@ export class UsersService {
       );
   }
 
-  private updateLocalUsers(userId: string, updatedUser: User = null) {
-    const index = this.users.findIndex((entry: User) => entry.id === userId);
-    if (index !== -1) {
-      if (updatedUser) {
-        this.users.splice(index, 1, updatedUser);
-      } else {
-        this.users.splice(index, 1);
-      }
-      this._setUsers(this.users);
-    }
+  public getUser(id: string): Observable<User | Error> {
+    return from(this.users)
+      .pipe(
+        find(({id: userId}: User) => userId === id),
+        concatMap((result: User | undefined) => {
+          if (!result) {
+            // const error = new Error('User not found');
+            // this.errors.handleError(error);
+            return of(null);
+          } else {
+            return of(result);
+          }
+        })
+      );
   }
 
   public getFollowersOnDelete(userId: string): Observable<Update[]> {
@@ -197,6 +189,18 @@ export class UsersService {
           }
         })
       );
+  }
+
+  private updateLocalUsers(userId: string, updatedUser: User = null) {
+    const index = this.users.findIndex((entry: User) => entry.id === userId);
+    if (index !== -1) {
+      if (updatedUser) {
+        this.users.splice(index, 1, updatedUser);
+      } else {
+        this.users.splice(index, 1);
+      }
+      this._setUsers(this.users);
+    }
   }
 
 

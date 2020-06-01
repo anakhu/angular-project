@@ -6,6 +6,12 @@
   }
 }
 
+@mixin breakPoint($width, $orientation) {
+  @media screen  and (max-width: $width) and (orientation: $orientation){
+    @content;
+  }
+}
+
 @mixin img-card {
   img {
     max-width: 100%;
@@ -52,10 +58,9 @@
     max-width: 400px;
     margin: auto;
     font-weight: bold;
-    color: $accent-color;
-    text-align: center;
-    border-bottom: 2px solid $main-color;
+    color: $text;
     margin-bottom: 20px;
     text-transform: uppercase;
   }
 }
+

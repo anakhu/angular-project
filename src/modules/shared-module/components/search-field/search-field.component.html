@@ -1,0 +1,10 @@
+<mat-form-field class="search-field" appearance="outline">
+  <input 
+    [(ngModel)]="filterStr"
+    name="filter"
+    matInput 
+    placeholder="Filter by {{name}}"
+    (keyup)="onChange($event)"
+    >
+    <mat-icon matSuffix>search</mat-icon>
+</mat-form-field>

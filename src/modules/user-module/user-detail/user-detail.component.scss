@@ -1,5 +1,5 @@
-@import '../../../app//styles/mixins.scss';
-@import '../../../app//styles/variables.scss';
+@import 'mixins.scss';
+@import 'variables.scss';
 
 .main {
   align-items: center;
@@ -25,33 +25,12 @@
 
     mat-icon {
       height: 100%;
-      font-size: 30px;
     }
 }
 
-.icon {
-  position: relative;
-  cursor: pointer;
-  margin: 10px;
-  max-width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-
+.btn-icon {
   &:hover {
     transform: scale(1.2);
-    z-index: 100;
-  }
-
-  mat-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 30px;
-    height: auto;
   }
 }
 

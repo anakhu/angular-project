@@ -10,6 +10,7 @@ import { MaterialModule } from '../material-module/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CoursesRoutingModule } from './courses-routing';
+import { SharedModule } from '../shared-module/shared.module';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { CoursesRoutingModule } from './courses-routing';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    CoursesRoutingModule
+    CoursesRoutingModule,
+    SharedModule
   ],
   exports: [
     CourseComponent

@@ -1,4 +1,4 @@
-<mat-sidenav-container class="sidenav-container">
+<mat-sidenav-container class="sidenav-container" #main>
   <mat-sidenav #drawer class="sidenav" fixedInViewport
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
@@ -56,6 +56,7 @@
         </a>
       </ng-container>
     </mat-toolbar>
+    <app-scroller></app-scroller>
     <ngx-ui-loader></ngx-ui-loader>
     <app-notifications></app-notifications>
     <app-error-handler></app-error-handler>

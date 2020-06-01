@@ -1,17 +1,21 @@
 <div *ngIf="courses?.length; else noCourses">
   <mat-tab-group>
     <mat-tab label="All courses">
+      <app-search-field [filterStr]="filterStr" [name]="filterField" (newKeyEvent)="onFilterValChange($event)"
+      ></app-search-field>
       <div class="card-columns">
-          <ng-container *ngFor="let course of courses">
-            <app-course 
-            class="col-xs-12 col-sm-12 col-md-6 col-lg-4"
-            [course]="course"></app-course>
-          </ng-container>
+        <ng-container *ngFor="let course of courses | filter:filterStr:filterField; let i = index">
+          <app-course 
+          class="col-xs-12 col-sm-12 col-md-6 col-lg-4"
+          [course]="course"></app-course>
+        </ng-container>
         </div>
       </mat-tab>
     <mat-tab label="Free courses">
+      <app-search-field [filterStr]="filterStr" [name]="filterField" (newKeyEvent)="onFilterValChange($event)"
+      ></app-search-field>
       <div class="card-columns">
-        <ng-container *ngFor="let course of courses">
+        <ng-container *ngFor="let course of courses | filter:filterStr:filterField; let i = index">
           <ng-container *ngIf="course.price == 0">
             <app-course
               class="col-xs-12 col-sm-12 col-md-6 col-lg-4"
@@ -21,8 +25,10 @@
       </div>
       </mat-tab>
       <mat-tab label="Paid courses">
+        <app-search-field [filterStr]="filterStr" [name]="filterField" (newKeyEvent)="onFilterValChange($event)"
+        ></app-search-field>
         <div class="card-columns">
-          <ng-container *ngFor="let course of courses">
+          <ng-container *ngFor="let course of courses | filter:filterStr:filterField; let i = index">
             <ng-container *ngIf="course.price != 0">
               <app-course
                 class="col-xs-12 col-sm-12 col-md-6 col-lg-4"

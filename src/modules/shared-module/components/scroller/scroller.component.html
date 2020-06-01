@@ -1,0 +1,5 @@
+<div #upBtn [ngClass]="{'show': isShown, 'hide': !isShown}">
+  <button class="btn-up" mat-fab (click)="handleClick($event)">
+    <mat-icon>expand_less</mat-icon>
+  </button>
+</div>

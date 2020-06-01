@@ -42,6 +42,7 @@
     <mat-datepicker #dp1 disabled="false"></mat-datepicker>
   </mat-form-field>
 
+  <p class='text-muted'>You can choose any date starting from tomorrow</p>
   <div *ngIf="startDate.touched && startDate.invalid">
     <mat-hint *ngIf="startDate.errors?.required">Please, provide the date when you course starts</mat-hint>
     <mat-hint *ngIf="startDate.errors?.invalidDate">You can't use expired dates</mat-hint>
@@ -63,6 +64,10 @@
     <mat-hint *ngIf="endDate.errors?.invalidDate">You can't use expired dates</mat-hint>
   </div>
 
+  <div *ngIf="courseForm.invalid && endDate.touched">
+    <mat-hint *ngIf="courseForm.errors?.dateConflict">The difference between dates should be at least 24h</mat-hint>
+  </div>
+
   <mat-form-field appearance="outline">
     <mat-label>Price</mat-label>
     <input 
@@ -75,7 +80,11 @@
 
   <mat-checkbox #certificate formControlName="certificate">Certificate</mat-checkbox>
  
+  <p class='text-muted'>The picture max size mustn't exceed {{ maxSize / 1000}} kilobytes</p>
   <app-upload [form]="courseForm"></app-upload>
+  <div *ngIf="image.invalid && image.errors.maxContentSize">
+    <mat-hint>Maximum image size exceeded</mat-hint>
+  </div>
 
   <button 
     [disabled]="courseForm.invalid"

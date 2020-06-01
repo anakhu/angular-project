@@ -7,6 +7,7 @@ import { MaterialModule } from '../material-module/material.module';
 import { FollowButtonComponent } from '../users-module/follow-button/follow-button.component';
 import { FollowBarComponent } from '../users-module/follow-bar/follow-bar.component';
 import { UserPicComponent } from '../users-module/user-pic/user-pic.component';
+import { SharedModule } from '../shared-module/shared.module';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { UserPicComponent } from '../users-module/user-pic/user-pic.component';
     RouterModule,
     MaterialModule,
     UsersRoutingModule,
+    SharedModule,
   ],
   exports: [
     FollowButtonComponent,

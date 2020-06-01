@@ -18,46 +18,51 @@
       </div>
 
       <div class="row col-12 icon-bar" style="margin-top: 40px;">
-        <div
+        <button
+          mat-fab
+          class="btn-icon"
           (click)="processClick('followers','followers')"
-          class="icon col-lg-2 col-md-2 col-sm-3 col-xs-4" 
           matTooltip="followers"
           matTooltipPosition="below" 
           style="background-color: #1a237e;">
           <mat-icon>people_alt</mat-icon>
-        </div>
-        <div
+        </button>
+        <button
+          mat-fab
+          class="btn-icon"
           (click)="processClick('followers','followings')"
           matTooltip="followings"
           matTooltipPosition="below" 
-          class="icon col-lg-2 col-md-2 col-sm-3 col-xs-4" 
           style="background-color: #c51162;">
           <mat-icon>visibility</mat-icon>
-        </div>
-        <div
+        </button>
+        <button
+          mat-fab
+          class="btn-icon"
           (click)="processClick('courses','authoredCourses')"
           matTooltip="authored courses"
           matTooltipPosition="below" 
-          class="icon col-lg-2 col-md-2 col-sm-3 col-xs-4" 
           style="background-color: #f9a825;">
           <mat-icon>create</mat-icon>
-        </div>
-        <div
+        </button>
+        <button
+          mat-fab
+          class="btn-icon"
           (click)="processClick('courses','likedCourses')"
           matTooltip="liked courses"
           matTooltipPosition="below" 
-          class="icon col-lg-2 col-md-2 col-sm-3 col-xs-4" 
           style="background-color: #dd2c00;">
           <mat-icon>favorite</mat-icon>
-        </div>
-        <div
+      </button>
+        <button
+          mat-fab
+          class="btn-icon"
           (click)="processClick('courses','enrolledCourses')"
           matTooltip="enrolled courses"
           matTooltipPosition="below"
-          class="icon col-lg-2 col-md-2 col-sm-3 col-xs-4" 
           style="background-color: #004d40;">
           <mat-icon>school</mat-icon>
-        </div>
+      </button>
       </div>
     </div>
 
@@ -70,3 +75,4 @@
 </div>
 
 <ng-template #noUser>User not found</ng-template>
+ 

@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoursesService } from '../../../app/shared/services/courses/courses.service';
 import { Course } from '../../../app/shared/services/courses/course-model';
 import { Subscription } from 'rxjs';
 import { AuthService, FireBaseUser } from '../../../app/shared/services/auth/auth.service';
 import { ActivatedRoute } from '@angular/router';
+
 
 @Component({
   selector: 'app-courses',
@@ -11,21 +12,20 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./courses.component.scss']
 })
 export class CoursesComponent implements OnInit, OnDestroy {
-
   courses: Course[] = [];
   coursesSubscription: Subscription;
   authSubscription: Subscription;
   authUserId: string;
-  @Input() filterValue: {key: string, value: any};
+  filterStr = '';
+  filterField = 'name';
 
   constructor(
-    private coursesService: CoursesService,
     private authService: AuthService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
-    this.createAuthSubscription();
+    this._createAuthSubscription();
     this.activatedRoute.data
       .subscribe((data: {CoursesResolver: Course[]}) => {
         this.courses = data.CoursesResolver;
@@ -36,12 +36,11 @@ export class CoursesComponent implements OnInit, OnDestroy {
     this.authSubscription.unsubscribe();
   }
 
-  private createCourseSyubscription(): void {
-    this.coursesSubscription = this.coursesService.createSubscription()
-      .subscribe((courses: Course []) => this.courses = courses);
+  public onFilterValChange(value: string) {
+    this.filterStr = value;
   }
 
-  private createAuthSubscription(): void {
+  private _createAuthSubscription(): void {
     this.authSubscription = this.authService.createSubscription()
       .subscribe((user: FireBaseUser) => this.authUserId = user ? user.uid : null);
   }

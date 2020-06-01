@@ -12,7 +12,6 @@ import { CoursesService } from '../../../../app/shared/services/courses/courses.
 })
 export class CourseComponent implements OnInit, OnDestroy {
   @Input() course: Course;
-  @Input() isStandAloneComponent = false;
   author: User;
   coursesSubscription: Subscription;
 
@@ -22,16 +21,12 @@ export class CourseComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    if (this.isStandAloneComponent) {
-      this._createCoursesSubscribtion();
-    }
+    this._createCoursesSubscribtion();
     this._getUser(this.course.authorId);
   }
 
   ngOnDestroy(): void {
-    if (this.coursesSubscription) {
-      this.coursesSubscription.unsubscribe();
-    }
+    this.coursesSubscription.unsubscribe();
   }
 
   private _createCoursesSubscribtion(): void {

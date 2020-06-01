@@ -1,39 +1,48 @@
 <ng-container *ngIf="course; else notFound">
-  <div class="single-course-wrapper">
-    <mat-card>
-      <mat-card-header>
-        <div mat-card-avatar 
-          class="example-header-image">
+  <div class="container">
+    <div class="row justify-content-center">
+      <mat-card class="col-xs-12 col-sm-11 col-md-8 col-lg-8">
+        <mat-card-header>
+          <ng-container *ngIf="author">
+            <div *ngIf="author?.image" mat-card-avatar class="example-header-image">
+              <img src="{{author?.image}}" alt="author's thumbnail" [routerLink]="['/users', author.id]">
+            </div>
+          </ng-container>
+          <ng-container *ngIf="!author">
+            <img src="assets/user/userpic.png" mat-card-avatar alt="author's thumbnail">
+          </ng-container>
+        <div class="header-text">
+          <mat-card-title class="title">{{course.name}}</mat-card-title>
+          <mat-card-subtitle>by {{author?.name ? author.name : 'Deleted User'}}</mat-card-subtitle>
         </div>
-        <mat-card-title>{{course.name}}</mat-card-title>
-      </mat-card-header>
-      <img mat-card-image src="{{course.image}}" alt="course banner">
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item>
-            {{course.content}}
-          </mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>
-            Start: {{course.startDate}}
-          </mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>
-            End: {{course.endDate}}
-          </mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>
-            Price: {{course.price === 0 ? 'free' : course.price}}
-          </mat-list-item>
-          <mat-list-item>
-            Certificate: {{course.certificate ? 'Yes': 'No'}}
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-stroked-button color="primary">ENROLL</button>
-      </mat-card-actions>
-    </mat-card>
+        </mat-card-header>
+        <img  mat-card-image src="{{course.image}}" alt="course banner">
+        <mat-card-content>
+          <div class="content">{{course.content}}</div>
+          <p class="date">
+            {{course.startDate | date}} - {{course.endDate | date}}
+          </p>
+          <p class="price" *ngIf="course.price">
+            {{course.price | currency: 'USD'}}
+          </p>
+          <p class="price" *ngIf="!course.price">Free course</p>
+          <p>Certificate: {{course.certificate ? 'Yes': 'No'}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button 
+            mat-button 
+            color="primary"
+            [disabled]="!isCourseActive"
+          >
+            <mat-icon>person_add</mat-icon>
+            Enroll
+          </button>
+          <ng-container *ngIf="course">
+            <app-like-button [courseId]="course.id"></app-like-button>
+          </ng-container>
+        </mat-card-actions>
+      </mat-card>
+    </div> 
   </div>
 </ng-container>
 

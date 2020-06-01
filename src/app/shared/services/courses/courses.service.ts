@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Course } from './course-model';
-import { Observable, of, from, Subject } from 'rxjs';
-import { find, switchMap, map, exhaustMap, catchError } from 'rxjs/operators';
+import { Observable, of, from, Subject, EMPTY } from 'rxjs';
+import { find, switchMap, map, exhaustMap, catchError, finalize, tap, delay } from 'rxjs/operators';
 import { ApiService } from '../api/api.service';
 import { routes } from '../../../../environments/environment';
 import { AppService } from '../app/app.service';
@@ -9,6 +9,7 @@ import { UploadService, UploadUpdate } from '../upload/upload.service';
 import { NewCourse } from './course';
 import { API_ERRORS } from '../api/api-errors';
 import { CustomError } from '../api/api.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,8 @@ export class CoursesService {
   constructor(
     private api: ApiService,
     private app: AppService,
-    private uploads: UploadService
+    private uploads: UploadService,
+    private loader: NgxUiLoaderService
     ) {
     this._listenToChanges();
   }
@@ -59,13 +61,13 @@ export class CoursesService {
     return this.courses;
   }
 
-  public getById(id: string): Observable<Course | Error> {
+  public getById(id: string): Observable<Course | null> {
     return from(this.courses)
       .pipe(
         find(({id: courseId}: Course) => courseId === id),
         switchMap((found: Course | undefined) => {
           if (!found) {
-            throw Error('Course not found');
+            return null;
           }
           return of(found);
         })
