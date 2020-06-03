@@ -34,7 +34,6 @@
   }
 }
 
-
 .detail-container {
   box-sizing: border-box;
   min-height: 300px;
@@ -46,7 +45,6 @@
   border-top: 3px solid $main-color;
   border-bottom: 3px solid $main-color;
   margin: auto;
-  // background-color: $ofgrey;
 
   @include mQ(700px) {
     max-height: none;
@@ -56,18 +54,17 @@
 }
 
 .no-content {
-  color: $accent-color;
-  text-align: center;
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 60px;
-  margin: 0 auto;
-  opacity: 0.7;
+  h2 {
+    color: $accent-color;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 25px;
+    margin: 10px auto;
+    opacity: 0.3;
+  }
 }
 
-
 .user-bg {
-  // background-image: url('../../../assets/user/detail-bg.png');
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-image: url('../../../assets/user/detail-bg.png');
 }

@@ -22,6 +22,8 @@ export class FollowersComponent implements OnInit, OnDestroy {
   header: string;
   private userId: string;
   private routeParamsSubscription: Subscription;
+  filterStr = '';
+  filterField = 'name';
 
   constructor(
     private followers: FollowersService,
@@ -41,6 +43,10 @@ export class FollowersComponent implements OnInit, OnDestroy {
           this._getFilteredUsers();
         }
       });
+  }
+
+  public onFilterValChange(data: string) {
+    this.filterStr = data;
   }
 
   private _getFilteredUsers() {

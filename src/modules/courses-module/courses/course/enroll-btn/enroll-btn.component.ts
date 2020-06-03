@@ -4,6 +4,7 @@ import { LikesService } from 'src/app/shared/services/likes/likes.service';
 import { of } from 'rxjs';
 import { delay, exhaustMap, tap, finalize } from 'rxjs/operators';
 import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-enroll-btn',
@@ -21,7 +22,8 @@ export class EnrollBtnComponent implements OnInit {
   constructor(
     private auth: AuthService,
     private likesService: LikesService,
-    private notifications: NotificationsService
+    private notifications: NotificationsService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -29,6 +31,11 @@ export class EnrollBtnComponent implements OnInit {
   }
 
   public enroll(event: Event) {
+    if (!this.authUserId) {
+      this.router.navigate(['/login'], { queryParams: { action: 'sign-in' } });
+      return;
+    }
+
     this.isLoading = true;
     of(event)
       .pipe(

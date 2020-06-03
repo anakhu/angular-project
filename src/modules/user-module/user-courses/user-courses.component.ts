@@ -23,6 +23,8 @@ export class UserCoursesComponent implements OnInit, OnChanges {
   header: string;
   userId: string;
   filterValue: string;
+  filterStr = '';
+  filterField = 'name';
 
   constructor(
     private coursesService: CoursesService,
@@ -44,6 +46,10 @@ export class UserCoursesComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {}
+
+  onFilterValChange(data: string) {
+    this.filterStr = data;
+  }
 
   private _getfilteredCourses(){
     return from(this.users.getUser(this.userId))

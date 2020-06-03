@@ -1,8 +1,15 @@
-<h1 class="title" *ngIf="header">{{header}}</h1>
+<h1 class="header-title" *ngIf="header">{{header}}</h1>
 <div class="followers">
       <ng-container *ngIf="users?.length">
+
+        <app-search-field 
+          [filterStr]="filterStr"
+          [name]="filterField"
+          (newKeyEvent)="onFilterValChange($event)">
+        </app-search-field>
+
         <div class="card-group justify-content-center">
-          <ng-container *ngFor="let user of users">
+          <ng-container *ngFor="let user of users | filter:filterStr:filterField; let i = index">
             <app-user [user]="user"></app-user>
           </ng-container> 
         </div>
@@ -17,13 +24,13 @@
 
 <ng-template #noFollowersTemplate let-header="header">
   <ng-container [ngSwitch]="header">
-    <h3 class="text-muted" *ngSwitchCase="'Followers'">
+    <h3 class="text-muted text-center" *ngSwitchCase="'Followers'">
       This user hasn't got any followers
     </h3>
-    <h3 class="text-muted" *ngSwitchCase="'Followings'">
+    <h3 class="text-muted text-center" *ngSwitchCase="'Followings'">
       This user hasn't hasn't followed anyone yet
     </h3>
-    <h3 class="text-muted" *ngSwitchDefault>
+    <h3 class="text-muted text-center" *ngSwitchDefault>
       No users yet
     </h3>
   </ng-container>

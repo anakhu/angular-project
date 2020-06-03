@@ -1,7 +1,14 @@
-<h1 class="title" *ngIf="header">{{ header }}</h1>
+<h1 class="header-title" *ngIf="header">{{ header }}</h1>
 <ng-container *ngIf="courses?.length">
+
+  <app-search-field 
+    [filterStr]="filterStr"
+    [name]="filterField"
+    (newKeyEvent)="onFilterValChange($event)">
+  </app-search-field>
+
     <div class="card-columns">
-     <ng-container *ngFor="let course of courses">
+     <ng-container *ngFor="let course of courses | filter:filterStr:filterField; let i = index">
         <div class="course">
           <app-course [course]="course"></app-course>
         </div>
@@ -17,16 +24,16 @@
 
 <ng-template #noCoursesTemplate let-header="header">
   <ng-container [ngSwitch]="header">
-    <h3 class="text-muted" *ngSwitchCase="'Authored Courses'">
+    <h3 class="text-muted text-center" *ngSwitchCase="'Authored Courses'">
       This user hasn't authored any courses yet
     </h3>
-    <h3 class="text-muted" *ngSwitchCase="'Enrolled Courses'">
+    <h3 class="text-muted text-center" *ngSwitchCase="'Enrolled Courses'">
       This user hasn't enrolled in any courses yet
     </h3>
-    <h3 class="text-muted" *ngSwitchCase="'Liked Courses'">
+    <h3 class="text-muted text-center" *ngSwitchCase="'Liked Courses'">
       This user hasn't liked any courses yet
     </h3>
-    <h3 class="text-muted" *ngSwitchDefault>
+    <h3 class="text-muted tert-center" *ngSwitchDefault>
       No courses yet
     </h3>
   </ng-container>

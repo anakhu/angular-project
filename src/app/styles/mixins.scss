@@ -54,13 +54,13 @@
 
 
 @mixin title {
-  .title {
-    max-width: 400px;
-    margin: auto;
+  .header-title {
+    font-size: 18px;
     font-weight: bold;
-    color: $text;
-    margin-bottom: 20px;
+    text-align: center;
     text-transform: uppercase;
+    color: $ofgrey;
+    margin: 0;
   }
 }
 
