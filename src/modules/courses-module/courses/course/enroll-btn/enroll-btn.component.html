@@ -1,0 +1,19 @@
+<ng-container *ngIf="courseId">
+  <ng-container *ngIf="authUserId !== courseAuthorId">
+    <button
+      [disabled]="isLoading"
+      mat-button color="primary" 
+      (click)="enroll($event)"
+      >
+      <span *ngIf="isLoading" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+      <ng-container *ngIf="!isLoading">
+        <span class="material-icons appear">
+          {{isEnrolled === true ? 'cancel' : 'person_add' }}
+        </span >
+        <span class="appear">
+          {{isEnrolled === true ? 'Qiut' : 'Enroll'}}
+        </span>
+      </ng-container>
+    </button> 
+  </ng-container>  
+</ng-container>

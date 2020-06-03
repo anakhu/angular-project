@@ -8,6 +8,7 @@ export interface Course {
   certificate: boolean;
   image?: string;
   isActive?: boolean;
+  students?: string[];
   id?: string;
   likes?: number;
 }

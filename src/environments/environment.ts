@@ -20,6 +20,7 @@ export const routes = {
   users: 'users',
   courses: 'courses',
   followers: 'followers',
+  comments: 'comments',
 };
 /*
  * For easier debugging in development mode, you can import the following file

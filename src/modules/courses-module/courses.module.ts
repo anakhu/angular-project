@@ -11,6 +11,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CoursesRoutingModule } from './courses-routing';
 import { SharedModule } from '../shared-module/shared.module';
+import { EnrollBtnComponent } from './courses/course/enroll-btn/enroll-btn.component';
+import { CommentComponent } from './courses/course-detail/comment/comment.component';
 
 
 @NgModule({
@@ -19,6 +21,8 @@ import { SharedModule } from '../shared-module/shared.module';
     CourseDetailComponent,
     CoursesComponent,
     LikeButtonComponent,
+    EnrollBtnComponent,
+    CommentComponent,
   ],
   imports: [
     CommonModule,

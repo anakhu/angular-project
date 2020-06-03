@@ -1,11 +1,13 @@
 <ng-container *ngIf="course">
   <mat-card class="example-card card">
     <mat-card-header>
-      <div *ngIf="author?.image" mat-card-avatar class="example-header-image">
-        <img src="{{author?.image}}" alt="author's thumbnail" [routerLink]="['/users', author.id]">
+      <div mat-card-avatar class="example-header-image">
+        <img *ngIf="author?.image" src="{{author?.image}}" alt="author's thumbnail" [routerLink]="['/users', author.id]">
+        <img *ngIf="!author" src="assets/user/userpic.png" mat-card-avatar alt="author's thumbnail">
       </div>
       <mat-card-title >{{course.name}}</mat-card-title>
-      <mat-card-subtitle>{{author?.name}}</mat-card-subtitle>
+      <mat-card-subtitle *ngIf="author">{{author?.name}}</mat-card-subtitle>
+      <mat-card-subtitle class="text-danger" *ngIf="!author">Deleted User</mat-card-subtitle>
     </mat-card-header>
     <img mat-card-image 
       src="{{course.image}}" 

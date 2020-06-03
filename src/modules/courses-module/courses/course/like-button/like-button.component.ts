@@ -41,7 +41,7 @@ export class LikeButtonComponent implements OnInit, OnDestroy {
   }
 
   private _setUserLikeStatus(): void {
-    this.isLiked = this.likesService.getLikeStatus(this.courseId);
+    this.isLiked = this.likesService.getUserStatus(this.courseId, 'likedCourses');
   }
 
   public likeCourse(event: Event): void {

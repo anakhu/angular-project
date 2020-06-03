@@ -3,17 +3,14 @@
     <div class="row justify-content-center">
       <mat-card class="col-xs-12 col-sm-11 col-md-8 col-lg-8">
         <mat-card-header>
-          <ng-container *ngIf="author">
-            <div *ngIf="author?.image" mat-card-avatar class="example-header-image">
-              <img src="{{author?.image}}" alt="author's thumbnail" [routerLink]="['/users', author.id]">
-            </div>
-          </ng-container>
-          <ng-container *ngIf="!author">
-            <img src="assets/user/userpic.png" mat-card-avatar alt="author's thumbnail">
-          </ng-container>
+          <div mat-card-avatar class="example-header-image">
+            <img *ngIf="author?.image" src="{{author?.image}}" alt="author's thumbnail" [routerLink]="['/users', author.id]">
+            <img *ngIf="!author" src="assets/user/userpic.png" mat-card-avatar alt="author's thumbnail">
+          </div>
         <div class="header-text">
           <mat-card-title class="title">{{course.name}}</mat-card-title>
-          <mat-card-subtitle>by {{author?.name ? author.name : 'Deleted User'}}</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="author?.name">by {{author?.name}}</mat-card-subtitle>
+          <mat-card-subtitle class="text-danger" *ngIf="!author">Deleted User</mat-card-subtitle>
         </div>
         </mat-card-header>
         <img  mat-card-image src="{{course.image}}" alt="course banner">
@@ -29,21 +26,17 @@
           <p>Certificate: {{course.certificate ? 'Yes': 'No'}}</p>
         </mat-card-content>
         <mat-card-actions>
-          <button 
-            mat-button 
-            color="primary"
-            [disabled]="!isCourseActive"
-          >
-            <mat-icon>person_add</mat-icon>
-            Enroll
-          </button>
           <ng-container *ngIf="course">
             <app-like-button [courseId]="course.id"></app-like-button>
+            <ng-container *ngIf="isCourseActive">
+              <app-enroll-btn [courseId]="course.id" [courseAuthorId]="course.authorId"></app-enroll-btn>
+            </ng-container>
           </ng-container>
         </mat-card-actions>
       </mat-card>
     </div> 
   </div>
+  <app-comment [entryId]="courseId"></app-comment>
 </ng-container>
 
 <ng-template #notFound>Course doesn't exist</ng-template>

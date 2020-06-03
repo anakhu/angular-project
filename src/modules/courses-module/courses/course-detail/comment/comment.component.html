@@ -1,0 +1,86 @@
+<div class="comments-container container">
+  <div class="row justify-content-center">
+    <div class="col-xs-12 col-sm-11 col-md-8 col-lg-8">
+      <ng-container *ngIf="comments$ | async">
+        <ng-container *ngFor="let comment of (comments$ | async | slice:0:showVal)">
+          <div class="container comment">
+            <div class="row">
+              <div class="col-2 comment-thumb">
+                <div class="example-header-image">
+                  <img *ngIf="comment?.image" src="{{comment.image}}" alt="author's thumbnail" [routerLink]="['/users', comment.userId]">
+                  <img *ngIf="!comment.image" src="assets/user/userpic.png" mat-card-avatar alt="author's thumbnail">
+                </div>
+                <div>
+                  <span *ngIf="comment.name" style="color: #1a237e">{{comment.name}}</span>
+                  <span *ngIf="!comment.name" style="color: #dd2c00">Deleted User</span>
+                </div>      
+              </div>
+              <div class="col-9 comment-content">
+                <p>{{comment.comment}}</p>
+                <span class="text-muted date">{{comment.date | date:'short'}}</span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container>
+          <div class="show-more-pan row col-12" [ngClass]="{'show': isBtnShown, 'hide': !isBtnShown}" (click)=onClick()>
+            Show more
+          </div>
+        </ng-container>
+      </ng-container>  
+    </div>
+  </div>
+  
+</div>
+
+<div class="comment-form-wrapper">
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Add a comment
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="container comment-container">
+        <div class="row justify-content-center">
+          <form class="col-xs-12 col-sm-11 col-md-8 col-lg-8 comment-form" #form="ngForm" (ngSubmit)="onPost(form)">
+            <mat-form-field appearance="outline">
+              <mat-label>Comment</mat-label>
+              <textarea 
+                matInput
+                name="comment"
+                ngModel
+                #comment="ngModel"
+                cdkTextareaAutosize
+                #textArea="cdkTextareaAutosize"
+                cdkAutosizeMinRows="5"
+                cdkAutosizeMaxRows="10"
+                required
+                minlength="1"
+                maxlength="800"
+                >
+              </textarea>
+            </mat-form-field>
+            <div *ngIf="comment.touched && comment.invalid">
+              <mat-hint *ngIf="comment.errors?.required">Type your comment here</mat-hint>
+              <mat-hint *ngIf="comment.errors?.maxlength">300 characters is max comment length</mat-hint>
+            </div>
+            <button
+              [disabled]="form.invalid"
+              type="submit"
+              mat-stroked-button
+              color="primary"
+            >
+             Add comment 
+            </button>
+          </form>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+
+
+
+
+

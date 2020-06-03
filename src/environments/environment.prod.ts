@@ -16,4 +16,5 @@ export const routes = {
   users: 'users',
   courses: 'courses',
   followers: 'followers',
+  comments: 'comments',
 };

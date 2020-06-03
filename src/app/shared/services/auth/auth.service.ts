@@ -23,7 +23,7 @@ export class AuthService {
     private users: UsersService,
     private app: AppService
   ) {
-    this.setFireAuthRef();
+    this._setFireAuthRef();
   }
 
   public signUp(email: string, password: string, payload: any = {}): Observable<User> {
@@ -76,7 +76,7 @@ export class AuthService {
     return this.firebaseUser.asObservable();
   }
 
-  private setFireAuthRef(): void {
+  private _setFireAuthRef(): void {
     this.fireBaseAuth = this.app.getFireBaseAuthReference();
     this.fireBaseAuth.onAuthStateChanged((user: any) => {
       if (user) {

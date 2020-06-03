@@ -100,14 +100,12 @@ export class UsersService {
       );
   }
 
-  public getUser(id: string): Observable<User | Error> {
+  public getUser(id: string): Observable<User | null> {
     return from(this.users)
       .pipe(
         find(({id: userId}: User) => userId === id),
         concatMap((result: User | undefined) => {
           if (!result) {
-            // const error = new Error('User not found');
-            // this.errors.handleError(error);
             return of(null);
           } else {
             return of(result);

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CoursesService } from '../../../app/shared/services/courses/courses.service';
 import { Course } from '../../../app/shared/services/courses/course-model';
 import { Subscription } from 'rxjs';
 import { AuthService, FireBaseUser } from '../../../app/shared/services/auth/auth.service';

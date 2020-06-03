@@ -40,6 +40,10 @@ form {
   button {
       display: block;
   }
+
+  mat-hint {
+    color: $warn;
+  }
 }
 
 .mat-form-field {
