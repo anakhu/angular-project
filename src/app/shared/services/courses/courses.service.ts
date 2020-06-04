@@ -15,8 +15,6 @@ import { CustomError } from '../api/api.service';
 })
 
 export class CoursesService {
-  fireBase: any;
-
   constructor(
     private api: ApiService,
     private app: AppService,
@@ -32,23 +30,11 @@ export class CoursesService {
     return this.api.getCollectionEntries(routes.courses)
       .pipe(
         map((courses: Course[]) => {
+          courses.reverse();
           this._setCourses(courses);
           return this.courses;
         })
       );
-  }
-
-  private _listenToChanges() {
-    return this.app.getFirebaseReference()
-      .ref(routes.courses)
-      .on('child_changed', (data: any) => {
-        this.updateLocalCourses(data.key, {id: data.key, ...data.val()});
-      });
-  }
-
-  private _setCourses(coursesArr: Course[]): void {
-    this.courses = coursesArr;
-    this.coursesSubject.next(this.courses);
   }
 
   public createSubscription(): Observable<any> {
@@ -104,12 +90,25 @@ export class CoursesService {
           return newCourse;
         }),
         exhaustMap((course: Course) => {
-          return this.addNewCourse(course, authorId);
+          return this._addNewCourse(course, authorId);
         }),
       );
   }
 
-  private updateLocalCourses(courseId: string, updatedCourse: Course = null): Course {
+  private _listenToChanges() {
+    return this.app.getFirebaseReference()
+      .ref(routes.courses)
+      .on('child_changed', (data: any) => {
+        this._updateLocalCourses(data.key, {id: data.key, ...data.val()});
+      });
+  }
+
+  private _setCourses(coursesArr: Course[]): void {
+    this.courses = coursesArr;
+    this.coursesSubject.next(this.courses);
+  }
+
+  private _updateLocalCourses(courseId: string, updatedCourse: Course = null): Course {
 
     const index = this.courses.findIndex((entry: Course) => entry.id === courseId);
     if (index !== -1) {
@@ -123,7 +122,7 @@ export class CoursesService {
     return updatedCourse;
   }
 
-  private async addNewCourse(course: Course, userId: string): Promise<any> {
+  private async _addNewCourse(course: Course, userId: string): Promise<any> {
     const firebase = this.app.getFirebaseReference();
 
     let authoredCourses;

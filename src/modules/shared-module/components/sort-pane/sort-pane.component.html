@@ -1,0 +1,19 @@
+<ng-container *ngIf="options">
+  <div #pane class="sort-pane">
+    <ng-container *ngFor="let option of options; let i = index">
+        <button mat-button [ngClass]="{active: option.isActive}" mat-button (click)="handleClick(i)">
+          <mat-icon>{{option.order !== 'ASC' ? 'arrow_downward' : 'arrow_upward'}}</mat-icon>
+          {{option.alias}}
+        </button>
+    </ng-container>
+    <ng-container>
+      <button
+        [disabled]="!isSorted"
+        mat-mini-fab color="accent"
+        (click)="reset($event)"
+        >
+        <mat-icon>clear</mat-icon>
+      </button>
+    </ng-container>
+  </div>
+</ng-container>

@@ -18,6 +18,7 @@ import { CoursesModule } from 'src/modules/courses-module/courses.module';
 import { UserModule } from 'src/modules/user-module/user.module';
 import { SharedModule } from 'src/modules/shared-module/shared.module';
 
+
 export function get_auth_status(appService: AppService) {
   return () => appService.getAuthUser();
 }
@@ -43,7 +44,7 @@ export function get_auth_status(appService: AppService) {
     UploadModule,
     CoursesModule,
     UserModule,
-    SharedModule
+    SharedModule,
   ],
   providers: [
     {provide: APP_INITIALIZER, useFactory: get_auth_status, deps: [AppService], multi: true},

@@ -31,7 +31,7 @@ import { CommentComponent } from './courses/course-detail/comment/comment.compon
     ReactiveFormsModule,
     RouterModule,
     CoursesRoutingModule,
-    SharedModule
+    SharedModule,
   ],
   exports: [
     CourseComponent

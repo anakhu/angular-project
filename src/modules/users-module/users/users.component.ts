@@ -1,8 +1,24 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, OnChanges, AfterContentChecked, AfterViewInit } from '@angular/core';
 import { User } from '../../../app/shared/models/user';
 import { UsersService } from '../../../app/shared/services/users/users.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { SortOptions } from 'src/app/shared/models/sortOptions';
+import { StorageService } from 'src/app/shared/services/storage.service';
+import { tap, delay, takeUntil } from 'rxjs/operators';
+
+const SORT_OPTIONS: SortOptions[] = [
+  {
+    field: 'name',
+    alias: 'name',
+    order: 'ASC'
+  },
+  {
+    field: 'authoredCourses',
+    alias: 'courses authored',
+    order: 'ASC'
+  },
+];
 
 @Component({
   selector: 'app-users',
@@ -11,15 +27,22 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class UsersComponent implements OnInit, OnDestroy {
   users: User[] = [];
-  filterStr = '';
-  filterField = 'name';
+  isLoaded: boolean;
   usersSubscription: Subscription;
   routeSubscription: Subscription;
+
+  filterStr = '';
+  filterField = 'name';
+
+  sortOptions: SortOptions[];
+  field = '';
+  order = 'ASC';
+  sortRef = 'users-sort';
 
   constructor(
     private usersService: UsersService,
     private activatedRoute: ActivatedRoute,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this._createRouteSubscription();
@@ -31,19 +54,24 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.routeSubscription.unsubscribe();
   }
 
+  public onFilterValChange(value: string) {
+    this.filterStr = value;
+  }
+
+  public onSortValChange(data: SortOptions) {
+    this.field = data.field;
+    this.order = data.order;
+  }
+
   private _createRouteSubscription(): void {
     this.routeSubscription = this.activatedRoute.data
-      .subscribe((data: {UsersResolver: User[]}) => {
-        this.users = data.UsersResolver;
-      });
+      .subscribe((data: {UsersResolver: User[]}) => this.users = data.UsersResolver);
   }
 
   private _createUserSubscription(): void {
     this.usersSubscription = this.usersService.createSubscription()
-      .subscribe((users: User[]) => this.users = users);
-  }
-
-  public onFilterValChange(value: string) {
-    this.filterStr = value;
+      .subscribe((users: User[]) => {
+        this.users = users;
+      });
   }
 }

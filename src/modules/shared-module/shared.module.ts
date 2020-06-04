@@ -9,7 +9,9 @@ import { AnchorDirective } from './components/wizard/anchor.directive';
 import { WizardComponent} from './components/wizard/wizard.component';
 import { ScrollerComponent } from './components/scroller/scroller.component';
 import { FilterPipe } from './pipes/filter.pipe';
+import { SortPipe } from './pipes/sort.pipe';
 import { SearchFieldComponent } from './components/search-field/search-field.component';
+import { SortPaneComponent } from './components/sort-pane/sort-pane.component';
 
 const sharedComponents = [
   CountrySelectComponent,
@@ -20,10 +22,12 @@ const sharedComponents = [
   ScrollerComponent,
   FilterPipe,
   SearchFieldComponent,
+  SortPipe,
+  SortPaneComponent
 ];
 
 @NgModule({
-  declarations: [sharedComponents, SearchFieldComponent],
+  declarations: [sharedComponents, SearchFieldComponent, SortPaneComponent],
   imports: [
     CommonModule,
     MaterialModule,

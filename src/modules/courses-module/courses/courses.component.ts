@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 import { AuthService, FireBaseUser } from '../../../app/shared/services/auth/auth.service';
 import { ActivatedRoute } from '@angular/router';
 
-
 @Component({
   selector: 'app-courses',
   templateUrl: './courses.component.html',
@@ -12,11 +11,17 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class CoursesComponent implements OnInit, OnDestroy {
   courses: Course[] = [];
-  coursesSubscription: Subscription;
-  authSubscription: Subscription;
   authUserId: string;
+
+  routeSubscription: Subscription;
+  authSubscription: Subscription;
+
   filterStr = '';
   filterField = 'name';
+
+  sortRef = 'courses-sort';
+  field = '';
+  order = '';
 
   constructor(
     private authService: AuthService,
@@ -25,18 +30,28 @@ export class CoursesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._createAuthSubscription();
-    this.activatedRoute.data
-      .subscribe((data: {CoursesResolver: Course[]}) => {
-        this.courses = data.CoursesResolver;
-      });
+    this._createRouteSubscription();
   }
 
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
+    this.routeSubscription.unsubscribe();
   }
 
   public onFilterValChange(value: string) {
     this.filterStr = value;
+  }
+
+  public onSortValChange(data: any) {
+    this.field = data.field;
+    this.order = data.order;
+  }
+
+  private _createRouteSubscription(): void {
+    this.routeSubscription = this.activatedRoute.data
+      .subscribe((data: {CoursesResolver: Course[]}) => {
+        this.courses = data.CoursesResolver;
+    });
   }
 
   private _createAuthSubscription(): void {

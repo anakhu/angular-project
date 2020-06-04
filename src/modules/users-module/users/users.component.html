@@ -1,12 +1,21 @@
-<ng-container *ngIf="users">
-  <app-search-field 
+<ng-container *ngIf="users?.length">
+  <ng-container *ngIf="users.length >= 8">
+    <app-search-field 
     [filterStr]="filterStr"
     [name]="filterField"
     (newKeyEvent)="onFilterValChange($event)"
-  ></app-search-field>
+    ></app-search-field>
+  </ng-container>
+  <ng-container *ngIf="users.length >= 8">
+    <app-sort-pane
+    [sortRef]="sortRef"
+    (sortValChange)="onSortValChange($event)"
+  >
+  </app-sort-pane>
+  </ng-container>
   <div class="card-group">
     <div class="row justify-content-center">
-      <ng-container *ngFor="let user of users | filter:filterStr:filterField; let i = index">
+      <ng-container *ngFor="let user of users | sort:field:order:users |filter:filterStr:filterField; let i = index">
           <app-user [user]="user"></app-user>
       </ng-container>
     </div>
