@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { User } from '../../models/user';
 import { UsersService } from '../users/users.service';
 import { AppService } from '../app/app.service';
+import { API_ERRORS } from 'src/app/shared/services/api/api-errors';
+import { CustomError } from 'src/app/shared/models/custom-error';
 
 export interface FireBaseUser {
   uid: string;
@@ -26,6 +28,10 @@ export class AuthService {
     this._setFireAuthRef();
   }
 
+  public createSubscription(): Observable<FireBaseUser> {
+    return this.firebaseUser.asObservable();
+  }
+
   public signUp(email: string, password: string, payload: any = {}): Observable<User> {
     return from(this.fireBaseAuth.createUserWithEmailAndPassword(email, password))
       .pipe(
@@ -35,7 +41,7 @@ export class AuthService {
         }),
         tap((user: User) => user?.id
           ? this.router.navigate(['/users', user.id])
-          : console.log('error occured'))
+          : null)
       );
   }
 
@@ -65,15 +71,12 @@ export class AuthService {
               const user = this.fireBaseAuth.currentUser;
               return from(user.delete());
             } else {
-              throw Error('Account wasn\'t deleted. Login again and retry.');
+              const err: CustomError = {...API_ERRORS.delete};
+              throw err;
             }
           })
         );
     }
-  }
-
-  public createSubscription(): Observable<FireBaseUser> {
-    return this.firebaseUser.asObservable();
   }
 
   private _setFireAuthRef(): void {
@@ -83,6 +86,8 @@ export class AuthService {
         const { uid, email } = user;
         const loginUser: FireBaseUser = { uid, email };
         this.firebaseUser.next(loginUser);
+      } else {
+        this.firebaseUser.next(null)
       }
     });
   }

@@ -26,6 +26,7 @@
     "flag-icon-css": "^3.4.6",
     "jquery": "^3.5.1",
     "ngx-material-file-input": "^2.1.1",
+    "ngx-pagination": "^5.0.0",
     "ngx-toastr": "^12.0.1",
     "ngx-ui-loader": "^9.1.1",
     "popper.js": "^1.16.1",

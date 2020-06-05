@@ -16,13 +16,14 @@ import {
   toArray,
   exhaustMap,
 } from 'rxjs/operators';
-import { ApiService, Update } from '../api/api.service';
+import { ApiService } from '../api/api.service';
 import { routes } from '../../../../environments/environment';
 import { AppService } from '../app/app.service';
 import { Follower } from '../followers/follower.interface';
 import { NewUser } from './user';
 import { UploadService, UploadUpdate } from '../upload/upload.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { Update } from '../../models/update';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,6 @@ export class UsersService {
     private api: ApiService,
     private app: AppService,
     private uploads: UploadService,
-    private loader: NgxUiLoaderService
     ) {
       this._listenToChanges();
     }

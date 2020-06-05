@@ -13,8 +13,8 @@ button.active {
   button {
     margin: 5px 15px;
     @include mQ(600px) {
-      margin: 2px 7px;
-      font-size: 12px;
+      margin: 2px 5px;
+      font-size: 10px;
     }
   }
 }

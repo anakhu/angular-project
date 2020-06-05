@@ -23,6 +23,8 @@ export class CoursesComponent implements OnInit, OnDestroy {
   field = '';
   order = '';
 
+  p = 1;
+
   constructor(
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,

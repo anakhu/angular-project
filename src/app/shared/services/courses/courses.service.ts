@@ -8,7 +8,7 @@ import { AppService } from '../app/app.service';
 import { UploadService, UploadUpdate } from '../upload/upload.service';
 import { NewCourse } from './course';
 import { API_ERRORS } from '../api/api-errors';
-import { CustomError } from '../api/api.service';
+import { CustomError } from '../../models/custom-error';
 
 @Injectable({
   providedIn: 'root'

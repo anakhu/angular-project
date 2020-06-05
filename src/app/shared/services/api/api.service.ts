@@ -4,17 +4,9 @@ import { map, catchError } from 'rxjs/operators';
 import { FirebaseError } from 'firebase/app';
 import { AppService } from '../app/app.service';
 import { API_ERRORS } from './api-errors';
+import { CustomError } from '../../models/custom-error';
+import { Update } from '../../models/update';
 
-export interface Update {
-  collection: string;
-  docs: string;
-  data?: any;
-}
-
-export interface CustomError {
-  code: string;
-  message: string;
-}
 
 @Injectable({
   providedIn: 'root'

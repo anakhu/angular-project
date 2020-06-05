@@ -23,11 +23,11 @@ const sharedComponents = [
   FilterPipe,
   SearchFieldComponent,
   SortPipe,
-  SortPaneComponent
+  SortPaneComponent,
 ];
 
 @NgModule({
-  declarations: [sharedComponents, SearchFieldComponent, SortPaneComponent],
+  declarations: [sharedComponents],
   imports: [
     CommonModule,
     MaterialModule,

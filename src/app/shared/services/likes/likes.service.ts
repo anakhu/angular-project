@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { routes } from 'src/environments/environment';
 import { AppService } from '../app/app.service';
 import { API_ERRORS } from '../api/api-errors';
-import { CustomError } from '../api/api.service';
+import { CustomError } from '../../models/custom-error';
 
 @Injectable({
   providedIn: 'root'

@@ -13,6 +13,8 @@ import { CoursesRoutingModule } from './courses-routing';
 import { SharedModule } from '../shared-module/shared.module';
 import { EnrollBtnComponent } from './courses/course/enroll-btn/enroll-btn.component';
 import { CommentComponent } from './courses/course-detail/comment/comment.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+
 
 
 @NgModule({
@@ -32,6 +34,7 @@ import { CommentComponent } from './courses/course-detail/comment/comment.compon
     RouterModule,
     CoursesRoutingModule,
     SharedModule,
+    NgxPaginationModule,
   ],
   exports: [
     CourseComponent

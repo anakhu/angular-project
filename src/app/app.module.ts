@@ -17,6 +17,7 @@ import { UploadModule } from 'src/modules/upload-module/upload.module';
 import { CoursesModule } from 'src/modules/courses-module/courses.module';
 import { UserModule } from 'src/modules/user-module/user.module';
 import { SharedModule } from 'src/modules/shared-module/shared.module';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 
 export function get_auth_status(appService: AppService) {
