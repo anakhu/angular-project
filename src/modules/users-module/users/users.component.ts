@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { User } from '../../../app/shared/models/user';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -12,6 +12,7 @@ import { PaginationService } from 'src/app/shared/services/pagination/pagination
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit, OnDestroy {
+  @ViewChild('container', {static: false}) container: ElementRef;
   users: User[] = [];
   routeSubscription: Subscription;
 
@@ -21,7 +22,6 @@ export class UsersComponent implements OnInit, OnDestroy {
   field = '';
   order = 'ASC';
   sortRef = 'users-sort';
-  sortLoaded = false;
 
   page = 1;
   maxItemsPerPage = 8;
@@ -46,14 +46,12 @@ export class UsersComponent implements OnInit, OnDestroy {
   public onSortValChange(data: SortOptions) {
     this.field = data.field;
     this.order = data.order;
-    if (this.sortLoaded) {
-      this.page = 1;
-      this.pageChanged(1);
-    }
-    this.sortLoaded = true;
   }
 
   public pageChanged(data: number) {
+    if (this.container) {
+      this.container.nativeElement.offsetParent.scrollTop = 0;
+    }
     this.pagination.saveCurrentPage('users-page', data);
   }
 

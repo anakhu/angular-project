@@ -1,37 +1,40 @@
-<div *ngIf="courses?.length; else noCourses">
-      <app-search-field 
-        [filterStr]="filterStr"
-        [name]="filterField"
-        (newKeyEvent)="onFilterValChange($event)"
-        >
-      </app-search-field>
-      <app-sort-pane
-        [sortRef]="sortRef"
-        (sortValChange)="onSortValChange($event)"
-        >
-      </app-sort-pane>
-      <div class="card-group">
-        <ng-container *ngFor="let course of courses
-          | sort:field:order:courses 
-          | paginate: { itemsPerPage: maxItemsPerPage, currentPage: page }
-          | filter:filterStr:filterField
-          ; 
-          let i = index">
-          <app-course
-          class="col-xs-12 col-sm-12 col-md-6 col-lg-4"
-          [course]="course"></app-course>
-        </ng-container>
-      </div>
-      <div class="pagination">
-        <pagination-controls 
-          autoHide="true"
-          (pageChange)="pageChanged($event)"
-          (pageBoundsCorrection)="pageChanged($event)"
-          maxSize="8"
-          (pageChange)="page = $event">
-        </pagination-controls>
-      </div>
+<div #container>
+  <div *ngIf="courses?.length; else noCourses">
+    <app-search-field 
+      [filterStr]="filterStr"
+      [name]="filterField"
+      (newKeyEvent)="onFilterValChange($event)"
+      >
+    </app-search-field>
+    <app-sort-pane
+      [sortRef]="sortRef"
+      (sortValChange)="onSortValChange($event)"
+      >
+    </app-sort-pane>
+    <div class="card-group">
+      <ng-container *ngFor="let course of courses
+        | sort:field:order:courses 
+        | paginate: { itemsPerPage: maxItemsPerPage, currentPage: page }
+        | filter:filterStr:filterField
+        ; 
+        let i = index">
+        <app-course
+        class="col-xs-12 col-sm-12 col-md-6 col-lg-4"
+        [course]="course"></app-course>
+      </ng-container>
+    </div>
+    <div class="pagination">
+      <pagination-controls
+        autoHide="true"
+        (pageChange)="pageChanged($event)"
+        (pageBoundsCorrection)="pageChanged($event)"
+        maxSize="8"
+        (pageChange)="page = $event">
+      </pagination-controls>
+    </div>
 </div>
+</div>
+
 
 <ng-template #noCourses>
   <p>No courses yet</p>

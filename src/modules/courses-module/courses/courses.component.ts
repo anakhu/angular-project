@@ -1,8 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Course } from '../../../app/shared/services/courses/course-model';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { StorageService } from 'src/app/shared/services/storage/storage.service';
 import { PaginationService } from 'src/app/shared/services/pagination/pagination.service';
 
 @Component({
@@ -11,6 +10,7 @@ import { PaginationService } from 'src/app/shared/services/pagination/pagination
   styleUrls: ['./courses.component.scss'],
 })
 export class CoursesComponent implements OnInit, OnDestroy {
+  @ViewChild('container', {static: false}) container: ElementRef;
   courses: Course[] = [];
   routeSubscription: Subscription;
 
@@ -20,7 +20,6 @@ export class CoursesComponent implements OnInit, OnDestroy {
   sortRef = 'courses-sort';
   field = '';
   order = '';
-  sortLoaded = false;
 
   page = 1;
   maxItemsPerPage = 6;
@@ -45,15 +44,12 @@ export class CoursesComponent implements OnInit, OnDestroy {
   public onSortValChange(data: any) {
     this.field = data.field;
     this.order = data.order;
-
-    if (this.sortLoaded) {
-      this.page = 1;
-      this.pageChanged(1);
-    }
-    this.sortLoaded = true;
   }
 
   public pageChanged(data: number) {
+    if (this.container) {
+      this.container.nativeElement.offsetParent.scrollTop = 0;
+    }
     this.pagination.saveCurrentPage('courses-page', data);
   }
 

@@ -11,17 +11,16 @@ export class PaginationService {
   ) { }
 
   public getPage(reference: string, itemsTotal: number, itemsPerPage: number ) {
-    try {
-      const page = this.storage.getItem(reference);
+    const page = this.storage.getItem(reference);
+    if (page) {
       const pageMax = Math.ceil(itemsTotal / itemsPerPage);
       if (page && page <= pageMax) {
         return page;
       } else {
         return pageMax;
       }
-    } catch (error) {
-      return 1;
     }
+    return 1;
   }
 
   public saveCurrentPage(reference: string, page: number) {
