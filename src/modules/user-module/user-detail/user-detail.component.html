@@ -67,12 +67,17 @@
     </div>
 
 </ng-container>
-<div class="detail-container">
-  <router-outlet></router-outlet>
-  <div class="no-content">
-    <h2>Click one of the icons above to see more content</h2>
+<ng-container *ngIf="user">
+  <div class="detail-container">
+    <router-outlet></router-outlet>
+    <div class="no-content">
+      <h2>Click one of the icons above to see more content</h2>
+    </div>
   </div>
-</div>
+</ng-container>
 
-<ng-template #noUser>User not found</ng-template>
+
+<ng-template #noUser>
+  <app-error-page></app-error-page>
+</ng-template>
  

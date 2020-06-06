@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { LikesService } from '../../../../../app/shared/services/likes/likes.service';
-import { AuthService, FireBaseUser } from '../../../../../app/shared/services/auth/auth.service';
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { LikesService } from 'src/app/shared/services/likes/likes.service';
+import { AuthService, FireBaseUser } from 'src/app/shared/services/auth/auth.service';
 import { Subscription, of } from 'rxjs';
 import { exhaustMap, delay, tap, finalize } from 'rxjs/operators';
 
@@ -12,6 +12,7 @@ import { exhaustMap, delay, tap, finalize } from 'rxjs/operators';
 export class LikeButtonComponent implements OnInit, OnDestroy {
 
   @Input() courseId: string;
+  @Output() statusChanged = new EventEmitter();
   authUserId: string;
   isLiked: boolean;
   authSubscription: Subscription;
@@ -19,7 +20,8 @@ export class LikeButtonComponent implements OnInit, OnDestroy {
 
   constructor(
     private likesService: LikesService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -52,10 +54,12 @@ export class LikeButtonComponent implements OnInit, OnDestroy {
         exhaustMap((e: Event) => this.likesService.changeLikeStatus(this.courseId)),
         delay(300),
         tap(() => this._setUserLikeStatus()),
-        finalize(() => this.isLoading = false)
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
       )
-      .subscribe(() => {},
-      (error: Error) => console.log(error));
+      .subscribe(() => this.statusChanged.emit(this.authUserId));
   }
 
 }

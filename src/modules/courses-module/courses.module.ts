@@ -15,8 +15,6 @@ import { EnrollBtnComponent } from './courses/course/enroll-btn/enroll-btn.compo
 import { CommentComponent } from './courses/course-detail/comment/comment.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 
-
-
 @NgModule({
   declarations: [
     CourseComponent,

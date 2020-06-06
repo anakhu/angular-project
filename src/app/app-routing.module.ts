@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CoursesComponent } from '../modules/courses-module/courses/courses.component';
 import { CourseDetailComponent } from '../modules/courses-module/courses/course-detail/course-detail.component';
-import { ErrorPageComponent } from './error-page/error-page.component';
+import { ErrorPageComponent } from '../modules/shared-module/components/error-page/error-page.component';
 import { CoursesResolver } from './shared/services/courses/courses.resolver';
 import { UsersResolver } from './shared/services/users/users.resolver';
 import { UserDetailComponent } from 'src/modules/user-module/user-detail/user-detail.component';

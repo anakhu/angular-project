@@ -8,6 +8,7 @@ import { FollowButtonComponent } from '../users-module/follow-button/follow-butt
 import { FollowBarComponent } from '../users-module/follow-bar/follow-bar.component';
 import { UserPicComponent } from '../users-module/user-pic/user-pic.component';
 import { SharedModule } from '../shared-module/shared.module';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { SharedModule } from '../shared-module/shared.module';
     MaterialModule,
     UsersRoutingModule,
     SharedModule,
+    NgxPaginationModule
   ],
   exports: [
     FollowButtonComponent,

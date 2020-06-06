@@ -12,6 +12,9 @@ import { FilterPipe } from './pipes/filter.pipe';
 import { SortPipe } from './pipes/sort.pipe';
 import { SearchFieldComponent } from './components/search-field/search-field.component';
 import { SortPaneComponent } from './components/sort-pane/sort-pane.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ErrorPageComponent } from './components/error-page/error-page.component';
+import { RouterModule } from '@angular/router';
 
 const sharedComponents = [
   CountrySelectComponent,
@@ -24,6 +27,7 @@ const sharedComponents = [
   SearchFieldComponent,
   SortPipe,
   SortPaneComponent,
+  ErrorPageComponent,
 ];
 
 @NgModule({
@@ -33,6 +37,8 @@ const sharedComponents = [
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxPaginationModule,
+    RouterModule
   ],
   exports: [sharedComponents],
 })

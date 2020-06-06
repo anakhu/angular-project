@@ -1,20 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Course } from '../../../app/shared/services/courses/course-model';
 import { Subscription } from 'rxjs';
-import { AuthService, FireBaseUser } from '../../../app/shared/services/auth/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { StorageService } from 'src/app/shared/services/storage/storage.service';
+import { PaginationService } from 'src/app/shared/services/pagination/pagination.service';
 
 @Component({
   selector: 'app-courses',
   templateUrl: './courses.component.html',
-  styleUrls: ['./courses.component.scss']
+  styleUrls: ['./courses.component.scss'],
 })
 export class CoursesComponent implements OnInit, OnDestroy {
   courses: Course[] = [];
-  authUserId: string;
-
   routeSubscription: Subscription;
-  authSubscription: Subscription;
 
   filterStr = '';
   filterField = 'name';
@@ -22,21 +20,21 @@ export class CoursesComponent implements OnInit, OnDestroy {
   sortRef = 'courses-sort';
   field = '';
   order = '';
+  sortLoaded = false;
 
-  p = 1;
+  page = 1;
+  maxItemsPerPage = 6;
 
   constructor(
-    private authService: AuthService,
     private activatedRoute: ActivatedRoute,
+    private pagination: PaginationService
   ) { }
 
   ngOnInit(): void {
-    this._createAuthSubscription();
     this._createRouteSubscription();
   }
 
   ngOnDestroy(): void {
-    this.authSubscription.unsubscribe();
     this.routeSubscription.unsubscribe();
   }
 
@@ -47,17 +45,28 @@ export class CoursesComponent implements OnInit, OnDestroy {
   public onSortValChange(data: any) {
     this.field = data.field;
     this.order = data.order;
+
+    if (this.sortLoaded) {
+      this.page = 1;
+      this.pageChanged(1);
+    }
+    this.sortLoaded = true;
+  }
+
+  public pageChanged(data: number) {
+    this.pagination.saveCurrentPage('courses-page', data);
   }
 
   private _createRouteSubscription(): void {
     this.routeSubscription = this.activatedRoute.data
       .subscribe((data: {CoursesResolver: Course[]}) => {
         this.courses = data.CoursesResolver;
+        this._getActivePage();
     });
   }
 
-  private _createAuthSubscription(): void {
-    this.authSubscription = this.authService.createSubscription()
-      .subscribe((user: FireBaseUser) => this.authUserId = user ? user.uid : null);
+  private _getActivePage() {
+    this.page = this.pagination.getPage('courses-page', this.courses.length, this.maxItemsPerPage);
   }
+
 }

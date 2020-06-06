@@ -8,10 +8,15 @@ button.active {
 
 .sort-pane {
   text-align: center;
-  margin: 10px 0px;
+  margin: 5px 0px;
+
+  @include mQ(600px) {
+   display: flex;
+  }
 
   button {
     margin: 5px 15px;
+    font-size: 10px;
     @include mQ(600px) {
       margin: 2px 5px;
       font-size: 10px;

@@ -1,6 +1,6 @@
 import { SortOptions } from 'src/app/shared/models/sortOptions';
 
-const USER_SORT_OPTIONS: SortOptions[] = [
+export const USER_SORT_OPTIONS: SortOptions[] = [
   {
     field: 'name',
     alias: 'name',
@@ -14,7 +14,7 @@ const USER_SORT_OPTIONS: SortOptions[] = [
 ];
 
 
-const COURSE_SORT_OPTIONS: SortOptions[] = [
+export const COURSE_SORT_OPTIONS: SortOptions[] = [
   {
     field: 'likes',
     alias: 'likes',

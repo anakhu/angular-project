@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { SortOptions } from 'src/app/shared/models/sortOptions';
-import { StorageService } from 'src/app/shared/services/storage.service';
+import { StorageService } from 'src/app/shared/services/storage/storage.service';
 import { sortOptMap } from './sort-options';
 
 @Component({
