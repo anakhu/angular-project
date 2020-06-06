@@ -1,6 +1,9 @@
 @import 'mixins';
 
 @include paginator();
+.courses-component {
+  max-width: 1600px;
+}
 
 .example-card {
   max-width: 400px;

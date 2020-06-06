@@ -1,3 +1,7 @@
 @import 'mixins';
 
 @include paginator();
+
+.users-component {
+  max-width: 1600px;
+}

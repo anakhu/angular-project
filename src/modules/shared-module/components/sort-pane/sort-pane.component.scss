@@ -1,14 +1,13 @@
 @import 'variables';
 @import 'mixins';
 
-button.active {
-  background-color: $main-color;
-  color: white;
-}
-
 .sort-pane {
   text-align: center;
   margin: 5px 0px;
+
+  .radio {
+    padding-right: 10px;
+  }
 
   @include mQ(600px) {
    display: flex;

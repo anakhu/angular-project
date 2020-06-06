@@ -1,19 +1,24 @@
-<ng-container *ngIf="options">
-  <div #pane class="sort-pane">
-    <ng-container *ngFor="let option of options; let i = index">
-        <button mat-button [ngClass]="{active: option.isActive}" mat-button (click)="handleClick(i)">
-          <mat-icon>{{option.order !== 'ASC' ? 'arrow_downward' : 'arrow_upward'}}</mat-icon>
-          {{option.alias}}
-        </button>
-    </ng-container>
-    <ng-container>
-      <button
-        [disabled]="!isSorted"
-        mat-mini-fab color="accent"
-        (click)="reset($event)"
-        >
-        <mat-icon>clear</mat-icon>
-      </button>
-    </ng-container>
+<ng-container *ngIf="options?.length">
+  <div class="sort-pane">
+    <mat-radio-group aria-label="Select an option" [value]="sortValue" (change)="onSortFieldChange($event)">
+      <ng-container *ngFor="let option of options; let i = index">
+        <mat-radio-button class="radio" [value]="option.field">{{option.alias}}</mat-radio-button>
+      </ng-container>
+    </mat-radio-group>
+    <button mat-mini-fab [disabled]="!sortValue" color="primary" (click)="onSortOrderChange()">
+      <mat-icon>
+        {{sortOrder ? 'arrow_downward' : 'arrow_upward'}}
+      </mat-icon>
+    </button>
+    <button
+      [disabled]="!sortValue"
+      mat-mini-fab
+      color="warn"
+      (click)="reset()"
+      >
+      <mat-icon>clear</mat-icon>
+    </button>
   </div>
 </ng-container>
+
+

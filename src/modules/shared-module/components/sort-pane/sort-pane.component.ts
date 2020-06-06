@@ -1,69 +1,74 @@
-import { Component, OnInit, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
 import { SortOptions } from 'src/app/shared/models/sortOptions';
 import { StorageService } from 'src/app/shared/services/storage/storage.service';
 import { sortOptMap } from './sort-options';
+
 
 @Component({
   selector: 'app-sort-pane',
   templateUrl: './sort-pane.component.html',
   styleUrls: ['./sort-pane.component.scss']
 })
-export class SortPaneComponent implements OnInit, AfterViewInit {
+export class SortPaneComponent implements OnInit, OnDestroy, AfterViewInit {
   options: SortOptions[] = [];
   @Input() sortRef: string;
   @Output() sortValChange = new EventEmitter();
-  isSorted = false;
+  sortOrder = false;
+  sortValue = '';
 
   constructor(
     private storage: StorageService
   ) { }
 
-  ngOnInit(): void {}
-
-  ngAfterViewInit() {
-    Promise.resolve(null).then(() => this._getActiveFilter());
+  ngOnInit() {
+    this.options = [...sortOptMap[this.sortRef]];
   }
 
-  public handleClick(index: number) {
-    this.options[index].order = this.options[index].order === 'ASC' ? 'DESC' : 'ASC';
-    this.options[index].isActive = true;
-    this.sortValChange.emit(this.options[index]);
-    this._resetBtnsStatus(index);
-    this.storage.addItem(this.sortRef, this.options);
-    this.isSorted = true;
-  }
-
-  public reset(event: Event) {
-    this._resetBtnsStatus(-1);
-    this.isSorted = false;
-    this.sortValChange.emit({field: '', order: 'ASC'});
-    this.storage.clearStorage(this.sortRef);
-  }
-
-  private _getActiveFilter(): void{
-    const sortVals = this.storage.getItem(this.sortRef);
-    this.options = sortVals ? sortVals : sortOptMap[this.sortRef];
-    this._checkActiveFilter(this.options);
-  }
-
-  private _checkActiveFilter(options: SortOptions[]) {
-    for (const option of options) {
-      if (option.isActive) {
-        this.isSorted = true;
-        const index = options.indexOf(option);
-        this.sortValChange.emit(option);
-        this._resetBtnsStatus(index);
-        break;
-      }
+  ngOnDestroy() {
+    if (this.sortValue) {
+      console.log('storing options');
+      this._storeSortOptins();
     }
   }
 
-  private _resetBtnsStatus(index: number) {
-    this.options.forEach((option: SortOptions) => {
-      if (this.options.indexOf(option) !== index) {
-        option.order = 'ASC';
-        option.isActive = false;
-      }
-    });
+  ngAfterViewInit() {
+    Promise.resolve(null).then(() => this._getSortOptions());
+  }
+
+  public onSortOrderChange() {
+    this.sortOrder = !this.sortOrder;
+    this.emitSortVal();
+  }
+
+  public onSortFieldChange(event) {
+    this.sortValue = event.value;
+    this.emitSortVal();
+  }
+
+  public reset() {
+    this.sortValue = '';
+    this.sortOrder = false;
+    this.emitSortVal();
+    this.storage.clearStorage(this.sortRef);
+  }
+
+  private _getSortOptions() {
+    const savedOptions = this.storage.getItem(this.sortRef);
+    if (savedOptions) {
+      this.sortValue = savedOptions.field;
+      this.sortOrder = savedOptions.order;
+      this.emitSortVal();
+    }
+  }
+
+  private emitSortVal() {
+    const order = this.sortOrder ? 'ASC' : 'DESC';
+    this.sortValChange.emit({ field: this.sortValue, order });
+  }
+
+  private _storeSortOptins() {
+    const order = this.sortOrder ? 'ASC' : 'DESC';
+    const activeSortVal = { field: this.sortValue, order };
+    this.storage.addItem(this.sortRef, activeSortVal);
   }
 }

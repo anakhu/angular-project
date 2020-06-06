@@ -22,7 +22,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import {MatRadioModule} from '@angular/material/radio';
 
 const MaterialComponents = [
   FormsModule,
@@ -48,6 +48,7 @@ const MaterialComponents = [
   MatDialogModule,
   MaterialFileInputModule,
   MatCheckboxModule,
+  MatRadioModule,
 ];
 
 @NgModule({

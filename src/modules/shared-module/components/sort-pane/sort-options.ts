@@ -36,4 +36,3 @@ export const sortOptMap = {
   'users-sort': USER_SORT_OPTIONS,
   'courses-sort': COURSE_SORT_OPTIONS,
 };
-
