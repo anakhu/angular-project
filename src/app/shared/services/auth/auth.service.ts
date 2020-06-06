@@ -87,7 +87,7 @@ export class AuthService {
         const loginUser: FireBaseUser = { uid, email };
         this.firebaseUser.next(loginUser);
       } else {
-        this.firebaseUser.next(null)
+        this.firebaseUser.next(null);
       }
     });
   }
