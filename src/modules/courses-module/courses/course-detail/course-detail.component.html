@@ -36,7 +36,11 @@
       </mat-card>
     </div> 
   </div>
-  <app-comment [entryId]="courseId"></app-comment>
+  <ng-container *ngIf="course">
+    <app-comment [entryId]="course.id"></app-comment>
+  </ng-container>
 </ng-container>
 
-<ng-template #notFound>Course doesn't exist</ng-template>
+<ng-template #notFound>
+  <app-error-page></app-error-page>
+</ng-template>

@@ -1,10 +1,10 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AuthService, FireBaseUser } from './shared/services/auth/auth.service';
 import { Observable, Subscription } from 'rxjs';
-import { map, shareReplay, tap, filter } from 'rxjs/operators';
-import { Router, RouterEvent, NavigationEnd } from '@angular/router';
-import { ViewportScroller } from '@angular/common';
+import { map, shareReplay, tap  } from 'rxjs/operators';
+import { Router } from '@angular/router';
+
 
 
 @Component({

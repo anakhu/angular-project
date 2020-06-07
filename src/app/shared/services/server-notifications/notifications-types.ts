@@ -1,0 +1,5 @@
+export enum NOTIFICATION_TYPES {
+  'USER_ENROLLED' = 1,
+  'COURSE_ADDED',
+  'FOLLOWER_ADDED'
+}

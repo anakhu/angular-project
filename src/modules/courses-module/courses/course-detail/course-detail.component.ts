@@ -4,7 +4,7 @@ import { Course } from '../../../../app/shared/services/courses/course-model';
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users/users.service';
 import { User } from 'src/app/shared/models/user';
-import { map, concatMap, tap } from 'rxjs/operators';
+import { map, concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-course-detail',

@@ -17,6 +17,7 @@ import { CoursesModule } from '../courses-module/courses.module';
 import { UploadModule } from '../upload-module/upload.module';
 import { UserRoutingModule } from './user-routing.module';
 import { SharedModule } from './../shared-module/shared.module';
+import { UserNotificationsComponent } from './notifications/user-notifications.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { SharedModule } from './../shared-module/shared.module';
     EmailMatchValidator,
     UpdatePicComponent,
     UpdateProfileComponent,
-    UserCoursesComponent
+    UserCoursesComponent,
+    UserNotificationsComponent,
   ],
   imports: [
     CommonModule,

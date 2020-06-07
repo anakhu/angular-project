@@ -20,7 +20,6 @@ export class UserEditComponent extends StepBase implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
-    private users: UsersService
     ) {
     super();
   }

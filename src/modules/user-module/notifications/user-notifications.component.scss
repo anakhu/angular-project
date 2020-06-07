@@ -1,0 +1,32 @@
+@import 'variables';
+
+.notification {
+  margin: 5px;
+  display: inline-block;
+  padding: 25px 10px 10px 10px;
+  position: relative;
+  border-radius: 8%;
+  background-color: $main-color;
+  opacity: .9;
+
+  p {
+    color: white;
+    font-weight: bold;
+  }
+
+  a {
+    color: $light;
+  }
+  .close {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+  }
+
+}
+
+.notification-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}

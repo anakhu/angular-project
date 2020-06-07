@@ -5,9 +5,11 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AuthService, FireBaseUser } from '../../../app/shared/services/auth/auth.service';
 import { UserEditComponent } from '../user-edit/user-edit.component';
+import { UserNotificationsComponent } from '../notifications/user-notifications.component';
 
 const COMPONENT_MAP = {
   1: UserEditComponent,
+  2: UserNotificationsComponent,
 };
 
 @Component({

@@ -51,7 +51,7 @@ export class CoursesService {
         find(({id: courseId}: Course) => courseId === id),
         switchMap((found: Course | undefined) => {
           if (!found) {
-            return null;
+            return [];
           }
           return of(found);
         })
