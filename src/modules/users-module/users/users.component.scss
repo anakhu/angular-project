@@ -3,6 +3,10 @@
 @include paginator();
 
 .users-component {
-  max-width: 1800px;
+  max-width: 2000px;
   margin: 0 auto;
+}
+
+app-user {
+  margin-bottom: 20px;
 }

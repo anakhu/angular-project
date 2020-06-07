@@ -8,10 +8,12 @@
           (newKeyEvent)="onFilterValChange($event)">
         </app-search-field>
 
-        <div class="card-group justify-content-center">
-          <ng-container *ngFor="let user of users | filter:filterStr:filterField; let i = index">
-            <app-user [user]="user"></app-user>
-          </ng-container> 
+        <div class="container justify-content-start">
+          <div class="row">
+            <ng-container *ngFor="let user of users | filter:filterStr:filterField; let i = index">
+              <app-user class="col-xs-12 col-sm-12 col-md-6 col-lg-4" [user]="user"></app-user>
+            </ng-container>
+          </div> 
         </div>
       </ng-container>
 </div>

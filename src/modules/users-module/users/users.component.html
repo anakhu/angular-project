@@ -14,13 +14,13 @@
     >
     </app-sort-pane>
     </ng-container>
-    <div class="card-deck">
-      <div class="row justify-content-center">
+    <div class="container">
+      <div class="row justify-content-start">
         <ng-container *ngFor="let user of users 
           | sort:field:order:users 
           | paginate: { itemsPerPage: maxItemsPerPage, currentPage: page }
           | filter:filterStr:filterField; let i = index">
-          <app-user [user]="user"></app-user>
+          <app-user class="col-xs-12 col-sm-6 col-md-4 col-lg-4" [user]="user"></app-user>
         </ng-container>
       </div>
     </div>

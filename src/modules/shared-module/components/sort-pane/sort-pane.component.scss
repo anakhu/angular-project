@@ -4,11 +4,14 @@
 .sort-pane {
   text-align: center;
   margin: 5px 0px;
-  vertical-align: middle;
 
   .radio {
-    margin-top: auto;
+    vertical-align: middle;
     padding-right: 10px;
+    @include mQ(600px) {
+      margin-top: 10px;
+    }
+
   }
 
   @include mQ(600px) {
