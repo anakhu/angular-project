@@ -20,6 +20,7 @@ export class CoursesComponent implements OnInit, OnDestroy {
   sortRef = 'courses-sort';
   field = '';
   order = '';
+  sortLoaded = false;
 
   page = 1;
   maxItemsPerPage = 9;

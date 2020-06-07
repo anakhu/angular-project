@@ -2,17 +2,23 @@
   <div class="sort-pane">
     <mat-radio-group aria-label="Select an option" [value]="sortValue" (change)="onSortFieldChange($event)">
       <ng-container *ngFor="let option of options; let i = index">
-        <mat-radio-button class="radio" [value]="option.field">{{option.alias}}</mat-radio-button>
+        <mat-radio-button 
+          matTooltip="{{sortOrder ? option.tooltip.DESC : option.tooltip.ASC}}"
+          class="radio" 
+          [value]="option.field"
+        >{{option.alias}}</mat-radio-button>
       </ng-container>
     </mat-radio-group>
-    <button mat-mini-fab [disabled]="!sortValue" color="primary" (click)="onSortOrderChange()">
+    <button
+      mat-icon-button [disabled]="!sortValue" 
+      color="primary" 
+      (click)="onSortOrderChange()">
       <mat-icon>
-        {{sortOrder ? 'arrow_downward' : 'arrow_upward'}}
+        {{sortOrder ? 'arrow_upward' : 'arrow_downward'}}
       </mat-icon>
     </button>
-    <button
+    <button mat-icon-button
       [disabled]="!sortValue"
-      mat-mini-fab
       color="warn"
       (click)="reset()"
       >

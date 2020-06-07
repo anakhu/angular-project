@@ -26,7 +26,6 @@ export class SortPaneComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     if (this.sortValue) {
-      console.log('storing options');
       this._storeSortOptins();
     }
   }
@@ -56,18 +55,18 @@ export class SortPaneComponent implements OnInit, OnDestroy, AfterViewInit {
     const savedOptions = this.storage.getItem(this.sortRef);
     if (savedOptions) {
       this.sortValue = savedOptions.field;
-      this.sortOrder = savedOptions.order;
+      this.sortOrder = savedOptions.order === 'ASC' ;
       this.emitSortVal();
     }
   }
 
   private emitSortVal() {
-    const order = this.sortOrder ? 'ASC' : 'DESC';
+    const order = this.sortOrder ? 'DESC' : 'ASC';
     this.sortValChange.emit({ field: this.sortValue, order });
   }
 
   private _storeSortOptins() {
-    const order = this.sortOrder ? 'ASC' : 'DESC';
+    const order = this.sortOrder ? 'DESC' : 'ASC';
     const activeSortVal = { field: this.sortValue, order };
     this.storage.addItem(this.sortRef, activeSortVal);
   }
