@@ -16,9 +16,9 @@ export class DeleteUserComponent implements OnInit, OnDestroy {
   @ViewChild('form', {static: true}) form: NgForm;
   public authUser: FireBaseUser;
   private authSubscription: Subscription;
-
   @Input() data: any;
   @Output() next: EventEmitter<any> = new EventEmitter<any>();
+  warnMessage = false;
 
   constructor(
     private auth: AuthService,
@@ -50,9 +50,11 @@ export class DeleteUserComponent implements OnInit, OnDestroy {
         finalize(() => this.ngxService.stop())
       )
       .subscribe((result: boolean | any) => {
-        if (!(result instanceof Error)) {
+        if (!!result) {
           this.auth.logout();
           this.notifications.createNotification('Account was successfully deleted');
+        } else {
+          this.warnMessage = true;
         }
     });
   }

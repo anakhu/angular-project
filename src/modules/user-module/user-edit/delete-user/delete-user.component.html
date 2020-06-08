@@ -3,6 +3,13 @@
     All associated data will be deleted as well.
     To confirm this action type your email down below and click
     "Confirm"</p>
+  <h3 class="text-danger">A word of Caution</h3>
+  <p>
+    If you have been logged in for a long time,
+    you may need to log out and log in again to proceed.
+    We care about your data safety!
+  </p>
+  <p class="text-danger" *ngIf="warnMessage">Please, log in again and retry!</p>
   <form #form="ngForm" (ngSubmit)="onSubmit(form)">
     <mat-form-field appearance="outline" style="display: block;">
       <input matInput name="email" type="email"

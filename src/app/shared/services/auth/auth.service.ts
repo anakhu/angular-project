@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, from } from 'rxjs';
-import { tap, concatMap, exhaustMap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, from, of } from 'rxjs';
+import { tap, concatMap, exhaustMap, catchError, mapTo } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../../models/user';
 import { UsersService } from '../users/users.service';
 import { AppService } from '../app/app.service';
-import { API_ERRORS } from 'src/app/shared/services/api/api-errors';
-import { CustomError } from 'src/app/shared/models/custom-error';
+import { ErrorService } from 'src/modules/error-handler/error.service/error.service';
+
 
 export interface FireBaseUser {
   uid: string;
@@ -18,12 +18,14 @@ export interface FireBaseUser {
 })
 export class AuthService {
   fireBaseAuth: any;
+  fireBaseRef: any;
   firebaseUser = new BehaviorSubject<FireBaseUser>(null);
 
   constructor(
     private router: Router,
     private users: UsersService,
-    private app: AppService
+    private app: AppService,
+    private errors: ErrorService
   ) {
     this._setFireAuthRef();
   }
@@ -63,20 +65,23 @@ export class AuthService {
   }
 
   public deleteUserAccount(): Observable<any> {
-    if (this.firebaseUser.getValue()) {
-      return this.users.deleteUser(this.firebaseUser.getValue().uid)
-        .pipe(
-          concatMap((response: boolean) => {
-            if (response) {
-              const user = this.fireBaseAuth.currentUser;
-              return from(user.delete());
-            } else {
-              const err: CustomError = {...API_ERRORS.delete};
-              throw err;
-            }
-          })
-        );
-    }
+    const user = this.fireBaseAuth.currentUser;
+    return of(user)
+      .pipe(
+        concatMap((loginUser: any) => {
+          if (loginUser) {
+            return from(user.delete())
+              .pipe(
+                tap(x => console.log(x)),
+                mapTo(true),
+            );
+          }
+        }),
+        catchError((error: Error) => {
+          this.errors.handleError(error);
+          return of(false);
+        })
+      );
   }
 
   private _setFireAuthRef(): void {

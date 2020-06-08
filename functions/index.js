@@ -17,8 +17,16 @@ admin.initializeApp({
 
 exports.onCourseEnroll = functions.database.ref('/courses/{id}/students/')
   .onWrite((change, context) => {
-    const previous = change.before.val();
-    const current = change.after.val();
+    let previous = change.before.val();
+    let current = change.after.val();
+
+    if (!previous) {
+      previous = [];
+    }
+
+    if (!current) {
+      current = [];
+    }
 
     const courseId = context.params.id;
     const filtered = current.filter((val) => !previous.includes(val));
@@ -97,4 +105,46 @@ exports.onFollow = functions.database.ref(`/followers/{id}`)
       .push(notification)
       .then(res => res)
       .catch(err => console.log(err));
-  });
+});
+
+
+exports.onUserDeleted = functions.auth.user().onDelete((user) => {
+  const id = user.uid;
+  const updates = {};
+
+  admin.database().ref('log/').push({id: user.uid});
+
+  async function deleteRelatedData(id) {
+
+    const ref1 = admin.database().ref(`/followers/`)
+      .orderByChild('userId')
+      .equalTo(id)
+      .once('value', data => {
+        if (data) {
+          data.forEach(entry => {
+            updates[`/followers/${entry.key}/`] = null;
+          });
+        }
+    })
+
+    const ref2 = await admin.database().ref(`/followers/`)
+      .orderByChild('followerId')
+      .equalTo(id)
+      .once('value', data => {
+        if (data) {
+          data.forEach(entry => {
+            updates[`/followers/${entry.key}/`] = null;
+        });
+      }
+   })
+
+    await ref1;
+    await ref2;
+
+    updates[`/users/${id}/`] = null;
+  }
+
+  return deleteRelatedData(id)
+    .then(() => admin.database().ref().update(updates))
+    .catch((err) => console.log(err));
+});

@@ -23,7 +23,7 @@ export class CoursesComponent implements OnInit, OnDestroy {
   sortLoaded = false;
 
   page = 1;
-  maxItemsPerPage = 9;
+  maxItemsPerPage = 12;
 
   constructor(
     private activatedRoute: ActivatedRoute,

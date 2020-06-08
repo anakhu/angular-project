@@ -1,15 +1,7 @@
 <ng-container *ngIf="user">
-  <div class="col-12">
-    <div class="card">
-      <app-user-pic [user]="user"></app-user-pic>
-      <div class="card-footer">
-        <button
-          mat-stroked-button color="accent"
-          [routerLink]="['/users', user.id]"
-          >
-          View Profile
-        </button>
-      </div>
+  <div class="card-wrapper" class="col-12">
+    <div class="card" >
+      <app-user-pic [user]="user" [routerLink]="['/users', user.id]"></app-user-pic>
     </div>
   </div>
 </ng-container>

@@ -4,7 +4,6 @@ import 'firebase/database';
 import 'firebase/storage';
 import 'firebase/auth';
 import { environment } from 'src/environments/environment';
-import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 
 @Injectable({
@@ -14,6 +13,7 @@ export class AppService {
   fireBase: any;
   fireStorage: any;
   fireBaseAuth: any;
+  fb: any;
 
   constructor() {
     this.initApp();
@@ -23,6 +23,7 @@ export class AppService {
     firebase.initializeApp({
       ...environment
     });
+    this.fb = firebase;
     this.fireBase = firebase.database();
     this.fireStorage = firebase.storage();
     this.fireBaseAuth = firebase.auth();
@@ -38,6 +39,10 @@ export class AppService {
 
   public getFireBaseAuthReference() {
     return this.fireBaseAuth;
+  }
+
+  public getFirebase() {
+    return this.fb;
   }
 
   public getAuthUser(): Promise<any>{

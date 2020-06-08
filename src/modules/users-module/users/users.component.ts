@@ -24,7 +24,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   sortRef = 'users-sort';
 
   page = 1;
-  maxItemsPerPage = 9;
+  maxItemsPerPage = 12;
 
   constructor(
     private activatedRoute: ActivatedRoute,

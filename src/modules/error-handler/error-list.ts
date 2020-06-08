@@ -7,6 +7,7 @@ export enum UserErrors {
   'auth/user-token-expired',
   'auth/app-not-authorized',
   'auth/network-request-failed',
+  'auth/requires-recent-login',
   'auth/too-many-requests',
   'storage/unauthorized',
   'storage/unauthenticated',

@@ -88,17 +88,17 @@ export class UsersService {
       );
   }
 
-  public deleteUser(userId: string): Observable<boolean> {
-    return this.deleteAccount(userId)
-      .pipe(
-        map((response: boolean) => {
-          if (response) {
-            this.updateLocalUsers(userId);
-          }
-          return response;
-        })
-      );
-  }
+  // public deleteUser(userId: string): Observable<boolean> {
+  //   return this.deleteAccount(userId)
+  //     .pipe(
+  //       map((response: boolean) => {
+  //         if (response) {
+  //           this.updateLocalUsers(userId);
+  //         }
+  //         return response;
+  //       })
+  //     );
+  // }
 
   public getUser(id: string): Observable<User | null> {
     return from(this.users)
@@ -144,26 +144,26 @@ export class UsersService {
   }
 
 
-  public deleteAccount(userId: string): Observable<any> {
-    return this.blockAccount(userId)
-      .pipe(
-        concatMap((result) => {
-          if (!(result instanceof Error)) {
-            return this.getFollowersOnDelete(userId);
-          }
-        }),
-        map((data: Update[]) => {
-          const userRef: Update = {
-            collection: routes.users,
-            docs: userId,
-          };
-          return [...data, userRef];
-        }),
-        concatMap((updates: Update[]) => {
-          return this.api.deleteSimultaneously(updates);
-        })
-      );
-  }
+  // public deleteAccount(userId: string): Observable<any> {
+  //   return this.blockAccount(userId)
+  //     .pipe(
+  //       concatMap((result) => {
+  //         if (!(result instanceof Error)) {
+  //           return this.getFollowersOnDelete(userId);
+  //         }
+  //       }),
+  //       map((data: Update[]) => {
+  //         const userRef: Update = {
+  //           collection: routes.users,
+  //           docs: userId,
+  //         };
+  //         return [...data, userRef];
+  //       }),
+  //       concatMap((updates: Update[]) => {
+  //         return this.api.deleteSimultaneously(updates);
+  //       })
+  //     );
+  // }
 
   public createAccount(payloadData: Partial<User>): Observable<User> {
     const {id, name, country, occupation } = payloadData;

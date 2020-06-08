@@ -5,8 +5,6 @@ import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay, tap  } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
-
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -24,6 +22,7 @@ export class AppComponent implements OnInit {
   mediaSub: Subscription;
   authSubscription: Subscription;
   authUserId: string;
+  firebase: any;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
