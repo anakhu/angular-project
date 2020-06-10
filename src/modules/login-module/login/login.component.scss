@@ -1,4 +1,8 @@
 @import 'variables.scss';
+@import 'mixins';
+
+@include title();
+
 
 .login-banner {
     position: relative;
@@ -55,4 +59,11 @@ li {
 
 h1.title {
     font-weight: bold;
+}
+
+.wrapper {
+    display: block;
+    height: 500px;
+    width: 500px;
+    padding: 2em;
 }

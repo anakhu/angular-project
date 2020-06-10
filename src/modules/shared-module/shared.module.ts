@@ -44,7 +44,7 @@ const sharedComponents = [
     FormsModule,
     ReactiveFormsModule,
     NgxPaginationModule,
-    RouterModule
+    RouterModule,
   ],
   exports: [sharedComponents],
 })

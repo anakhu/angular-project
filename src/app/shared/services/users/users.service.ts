@@ -80,9 +80,7 @@ export class UsersService {
     return from(this.createAccount(payloadData))
       .pipe(
         tap((user: User) => {
-          console.log(user);
           this.users.push(user);
-          console.log(this.users);
           this._setUsers(this.users);
         })
       );

@@ -136,9 +136,9 @@ exports.onUserDeleted = functions.auth.user().onDelete((user) => {
             updates[`/followers/${entry.key}/`] = null;
         });
       }
-   })
+    })
 
-   const ref3 = await admin.database().ref('/courses/')
+    const ref3 = await admin.database().ref('/courses/')
       .orderByChild('authorId')
       .equalTo(id)
       .once('value', data => {

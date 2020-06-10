@@ -15,6 +15,7 @@ import { EnrollBtnComponent } from './courses/course/enroll-btn/enroll-btn.compo
 import { CommentComponent } from './courses/course-detail/comment/comment.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CourseStudentComponent } from './courses/course-detail/course-student/course-student.component';
+import { CoursePreviewComponent } from './course-preview/course-preview.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { CourseStudentComponent } from './courses/course-detail/course-student/c
     EnrollBtnComponent,
     CommentComponent,
     CourseStudentComponent,
+    CoursePreviewComponent,
   ],
   imports: [
     CommonModule,
@@ -37,7 +39,8 @@ import { CourseStudentComponent } from './courses/course-detail/course-student/c
     NgxPaginationModule,
   ],
   exports: [
-    CourseComponent
+    CourseComponent,
+    CoursePreviewComponent
   ]
 })
 export class CoursesModule { }

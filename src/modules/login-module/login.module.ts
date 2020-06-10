@@ -12,6 +12,7 @@ import { MaterialModule } from '../material-module/material.module';
 import { LoginRoutingModule } from './login-routing.module';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared-module/shared.module';
+import { CoursesModule } from '../courses-module/courses.module';
 
 
 const LoginModuleComponents = [
@@ -31,7 +32,8 @@ const LoginModuleComponents = [
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    CoursesModule
   ],
   exports: [LoginModuleComponents]
 })
