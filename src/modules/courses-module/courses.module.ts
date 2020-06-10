@@ -14,6 +14,7 @@ import { SharedModule } from '../shared-module/shared.module';
 import { EnrollBtnComponent } from './courses/course/enroll-btn/enroll-btn.component';
 import { CommentComponent } from './courses/course-detail/comment/comment.component';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { CourseStudentComponent } from './courses/course-detail/course-student/course-student.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
     LikeButtonComponent,
     EnrollBtnComponent,
     CommentComponent,
+    CourseStudentComponent,
   ],
   imports: [
     CommonModule,

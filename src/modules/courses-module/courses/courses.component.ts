@@ -25,6 +25,8 @@ export class CoursesComponent implements OnInit, OnDestroy {
   page = 1;
   maxItemsPerPage = 12;
 
+  hideInactive = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private pagination: PaginationService
@@ -45,6 +47,10 @@ export class CoursesComponent implements OnInit, OnDestroy {
   public onSortValChange(data: any) {
     this.field = data.field;
     this.order = data.order;
+  }
+
+  public onToggleStatusChange(checked: boolean) {
+    this.hideInactive = checked;
   }
 
   public pageChanged(data: number) {

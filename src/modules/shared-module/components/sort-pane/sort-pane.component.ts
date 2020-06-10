@@ -55,7 +55,7 @@ export class SortPaneComponent implements OnInit, OnDestroy, AfterViewInit {
     const savedOptions = this.storage.getItem(this.sortRef);
     if (savedOptions) {
       this.sortValue = savedOptions.field;
-      this.sortOrder = savedOptions.order === 'ASC' ;
+      this.sortOrder = savedOptions.order !== 'ASC';
       this.emitSortVal();
     }
   }

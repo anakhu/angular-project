@@ -29,7 +29,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
   exports: [
     FollowButtonComponent,
     UserPicComponent,
-    UserComponent
+    UserComponent,
   ]
 })
 export class UsersModule { }

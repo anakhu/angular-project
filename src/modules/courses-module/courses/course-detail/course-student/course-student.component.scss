@@ -1,0 +1,39 @@
+@import 'variables';
+@import 'mixins';
+
+@include title();
+
+.student {
+  position: relative;
+  border: 2px solid $light;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  margin: 5px;
+  padding: 5px;
+
+  button {
+    position: absolute;
+    bottom: -5%;
+    right: -5%;
+    mat-icon {
+      color: $warn;
+    }
+  }
+} 
+
+
+.students {
+  margin: 40px auto;
+  max-width: 900px;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.show-more-btn {
+  position: absolute;
+  right: -2%;
+  bottom: -2%;
+  font-size: 30px;
+  opacity: .6;
+}

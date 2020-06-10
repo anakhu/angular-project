@@ -39,7 +39,7 @@ exports.onCourseEnroll = functions.database.ref('/courses/{id}/students/')
           const notitcation = {
             type: 'USER_ENROLLED', 
             message: 'The following users are interested in your course',
-            payload: [...filtered],
+            payload: filtered[0],
             date: new Date().toString(),
             isRead: false,
           }
@@ -70,7 +70,7 @@ exports.onCourseAdded = functions.database.ref('/courses/{id}/')
         const notification = { 
           type: 'COURSE_ADDED',
           message: 'The user you follow added a new course',
-          payload: [courseId],
+          payload: courseId,
           date: new Date().toString(),
           isRead: false,
         }
@@ -97,7 +97,7 @@ exports.onFollow = functions.database.ref(`/followers/{id}`)
     const notification = {
       type: 'FOLLOWER_ADDED',
       message: 'One of the users started following you',
-      payload: [followerId],
+      payload: followerId,
       date: new Date().toString(),
       isRead: false,
     }
@@ -138,8 +138,20 @@ exports.onUserDeleted = functions.auth.user().onDelete((user) => {
       }
    })
 
+   const ref3 = await admin.database().ref('/courses/')
+      .orderByChild('authorId')
+      .equalTo(id)
+      .once('value', data => {
+        if (data) {
+          data.forEach(entry => {
+            updates[`/courses/${entry.key}/isActive`] = false; 
+        })
+      }
+    })
+
     await ref1;
     await ref2;
+    await ref3;
 
     updates[`/users/${id}/`] = null;
   }

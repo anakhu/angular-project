@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Course } from './course-model';
-import { Observable, of, from, Subject } from 'rxjs';
+import { Observable, of, from, Subject, BehaviorSubject } from 'rxjs';
 import { find, switchMap, map, exhaustMap, catchError } from 'rxjs/operators';
 import { ApiService } from '../api/api.service';
 import { routes } from '../../../../environments/environment';
@@ -24,7 +24,7 @@ export class CoursesService {
   }
 
   private courses: Course[] = [];
-  private coursesSubject = new Subject<Course[]>();
+  private coursesSubject = new BehaviorSubject<Course[]>([]);
 
   public loadCourses(): Observable<Course[]> {
     return this.api.getCollectionEntries(routes.courses)
@@ -56,6 +56,14 @@ export class CoursesService {
           return of(found);
         })
       );
+  }
+
+  public deleteCourseEntry(reference: string): Observable<any> {
+    return this.api.deleteEntry(reference);
+  }
+
+  public updateCourseEntry(reference: string, update: any): Observable<any> {
+    return this.api.updateEntry(reference, update);
   }
 
   public addCourse(courseData: any, authorId: string): Observable<any> {

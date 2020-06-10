@@ -15,6 +15,9 @@ import { SortPaneComponent } from './components/sort-pane/sort-pane.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { RouterModule } from '@angular/router';
+import { UserThumbComponent } from './components/user-thumb/user-thumb.component';
+import { FilterToggleComponent } from './components/filter-toggle/filter-toggle.component';
+import { TogglePipe } from './pipes/toggle.pipe';
 
 const sharedComponents = [
   CountrySelectComponent,
@@ -28,6 +31,9 @@ const sharedComponents = [
   SortPipe,
   SortPaneComponent,
   ErrorPageComponent,
+  UserThumbComponent,
+  FilterToggleComponent,
+  TogglePipe,
 ];
 
 @NgModule({

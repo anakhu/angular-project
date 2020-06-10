@@ -4,7 +4,7 @@ import {
   of,
   from,
   Observable,
-  Subject,
+  BehaviorSubject,
 } from 'rxjs';
 import {
   find,
@@ -22,7 +22,6 @@ import { AppService } from '../app/app.service';
 import { Follower } from '../followers/follower.interface';
 import { NewUser } from './user';
 import { UploadService, UploadUpdate } from '../upload/upload.service';
-import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { Update } from '../../models/update';
 
 @Injectable({
@@ -31,7 +30,7 @@ import { Update } from '../../models/update';
 
 export class UsersService {
   private users: User[] = [];
-  private userSubject = new Subject<User[]>();
+  private userSubject = new BehaviorSubject<User[]>([]);
 
   constructor(
     private api: ApiService,
@@ -59,7 +58,6 @@ export class UsersService {
     return this.users;
   }
 
-
   private _setUsers(users: User[]): void {
     this.users = users;
     this.userSubject.next(this.users);
@@ -82,23 +80,13 @@ export class UsersService {
     return from(this.createAccount(payloadData))
       .pipe(
         tap((user: User) => {
+          console.log(user);
           this.users.push(user);
+          console.log(this.users);
           this._setUsers(this.users);
         })
       );
   }
-
-  // public deleteUser(userId: string): Observable<boolean> {
-  //   return this.deleteAccount(userId)
-  //     .pipe(
-  //       map((response: boolean) => {
-  //         if (response) {
-  //           this.updateLocalUsers(userId);
-  //         }
-  //         return response;
-  //       })
-  //     );
-  // }
 
   public getUser(id: string): Observable<User | null> {
     return from(this.users)
@@ -143,28 +131,6 @@ export class UsersService {
     return this.api.updateEntry(`${routes.users}/${userId}/`, { isActive: false});
   }
 
-
-  // public deleteAccount(userId: string): Observable<any> {
-  //   return this.blockAccount(userId)
-  //     .pipe(
-  //       concatMap((result) => {
-  //         if (!(result instanceof Error)) {
-  //           return this.getFollowersOnDelete(userId);
-  //         }
-  //       }),
-  //       map((data: Update[]) => {
-  //         const userRef: Update = {
-  //           collection: routes.users,
-  //           docs: userId,
-  //         };
-  //         return [...data, userRef];
-  //       }),
-  //       concatMap((updates: Update[]) => {
-  //         return this.api.deleteSimultaneously(updates);
-  //       })
-  //     );
-  // }
-
   public createAccount(payloadData: Partial<User>): Observable<User> {
     const {id, name, country, occupation } = payloadData;
     const newUser = new NewUser(id, name, country, occupation, true, null);
@@ -187,6 +153,16 @@ export class UsersService {
           }
         })
       );
+  }
+
+  public updateLoacalUsersOnDelete(userId: string): void {
+    const index = this.users.findIndex((user: User) => user.id === userId);
+    if (index) {
+      console.log('beforedelete', this.users);
+      this.users.splice(index, 1);
+      console.log('afterdelete', this.users);
+      this._setUsers(this.users);
+    }
   }
 
   private updateLocalUsers(userId: string, updatedUser: User = null) {

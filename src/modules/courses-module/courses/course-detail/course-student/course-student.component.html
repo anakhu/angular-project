@@ -1,0 +1,33 @@
+<ng-container *ngIf="students.length">
+  <div class="container students">
+    <h1 *ngIf="studentsIds.length" class="header-title">Enrolled Students</h1>
+    <ng-container *ngIf="studentsIds.length >= defaultStudentsMax">
+      <app-search-field 
+      [filterStr]="filterStr"
+      [name]="filterField"
+      (newKeyEvent)="onFilterValChange($event)"
+      ></app-search-field>
+    </ng-container>
+    <div class="row justify-content-center">
+    <ng-container 
+      *ngFor="let student of students
+      | filter:filterStr:filterField
+      | slice:0:displayedStudents
+      ; let i = index">
+      <ng-container *ngIf="studentsIds.includes(student.id)">
+        <div class="student col-2">
+          <app-user-thumb [user]="student"></app-user-thumb>
+        </div> 
+      </ng-container>
+    </ng-container>
+    </div>
+    <ng-container *ngIf="activeStudents > defaultStudentsMax">
+      <button
+        class="show-more-btn"
+        mat-fab color="primary"
+        (click)=onClick()>
+        <mat-icon>visibility</mat-icon>
+      </button>
+    </ng-container>
+  </div>
+</ng-container>

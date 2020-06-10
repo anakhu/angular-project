@@ -6,13 +6,24 @@
       (newKeyEvent)="onFilterValChange($event)"
       >
     </app-search-field>
-    <app-sort-pane
-      [sortRef]="sortRef"
-      (sortValChange)="onSortValChange($event)"
-      >
-    </app-sort-pane>
+    <div class="row justify-content-center course-utility-pane">
+      <app-filter-toggle 
+        (toggleStatusChange)="onToggleStatusChange($event)"
+        [storageRef]="'course-toggle'"
+        [label]="'Hide Inactive'"
+        >
+      </app-filter-toggle>
+      <span style="flex: 1 1 auto"></span>
+      <app-sort-pane
+        [sortRef]="sortRef"
+        (sortValChange)="onSortValChange($event)"
+        >
+      </app-sort-pane>
+    </div>
+    
     <div class="card-group">
       <ng-container *ngFor="let course of courses
+        | toggle:'isActive':hideInactive
         | sort:field:order:courses 
         | paginate: { itemsPerPage: maxItemsPerPage, currentPage: page }
         | filter:filterStr:filterField

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, from, of } from 'rxjs';
-import { tap, concatMap, exhaustMap, catchError, mapTo } from 'rxjs/operators';
+import { tap, concatMap, exhaustMap, catchError, mapTo, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../../models/user';
 import { UsersService } from '../users/users.service';
@@ -72,14 +72,19 @@ export class AuthService {
           if (loginUser) {
             return from(user.delete())
               .pipe(
-                tap(x => console.log(x)),
-                mapTo(true),
+                mapTo(loginUser.uid),
             );
           }
         }),
         catchError((error: Error) => {
           this.errors.handleError(error);
           return of(false);
+        }),
+        map((response: any) => {
+          if (typeof response === 'string') {
+            this.users.updateLoacalUsersOnDelete(response);
+            return of(true);
+          }
         })
       );
   }

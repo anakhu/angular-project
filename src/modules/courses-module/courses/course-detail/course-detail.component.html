@@ -1,7 +1,7 @@
-<ng-container *ngIf="course; else notFound">
+<ng-container *ngIf="course; else notFound"> 
   <div class="container">
     <div class="row justify-content-center">
-      <mat-card class="col-xs-12 col-sm-11 col-md-8 col-lg-8">
+      <mat-card class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
         <mat-card-header>
           <div mat-card-avatar class="example-header-image">
             <img *ngIf="author?.image" src="{{author?.image}}" alt="author's thumbnail" [routerLink]="['/users', author.id]">
@@ -16,6 +16,10 @@
         <img  mat-card-image src="{{course.image}}" alt="course banner">
         <mat-card-content>
           <div class="content">{{course.content}}</div>
+          <p *ngIf=students>
+            <mat-icon>group</mat-icon>
+            {{students}}
+          </p>
           <p class="date">
             {{course.startDate | date}} - {{course.endDate | date}}
           </p>
@@ -36,6 +40,13 @@
       </mat-card>
     </div> 
   </div>
+  <ng-container *ngIf="course.students?.length">
+    <app-course-student 
+      (studentsValueChanged)="onStudentsLengthChange($event)"
+      [courseId]="course.id"
+      [authorId]="course.authorId">
+    </app-course-student>
+  </ng-container>
   <ng-container *ngIf="course">
     <app-comment [entryId]="course.id"></app-comment>
   </ng-container>
