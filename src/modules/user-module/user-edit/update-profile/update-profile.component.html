@@ -1,5 +1,12 @@
 <form [formGroup]="editForm" (ngSubmit)="submit()">
   <app-profile-form formControlName="profile"></app-profile-form>
-  <button mat-raised-button color="primary" [disabled]="editForm.invalid">Update</button>
+  <button
+    type="submit"
+    [disabled]="isLoading || editForm.invalid"
+    mat-raised-button color="primary" 
+  >
+    <span *ngIf="isLoading" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+  Update
+  </button>
 </form>
 

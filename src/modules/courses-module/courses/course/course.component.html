@@ -28,6 +28,14 @@
           {{ course.likes }}
         </span>
        </p>
+       <p class="text-muted">
+        <span class="material-icons">
+          schedule
+        </span>
+        <span>
+          {{ course.startDate | date}}
+        </span>
+        </p>
     </mat-card-content>
     <mat-card-actions class="card-footer">
       <app-like-button (statusChanged)="detectChanges($event)" [courseId]="course.id"></app-like-button>

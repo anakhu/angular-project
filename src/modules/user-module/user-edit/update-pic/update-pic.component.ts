@@ -4,7 +4,7 @@ import { AuthService, FireBaseUser } from 'src/app/shared/services/auth/auth.ser
 import { Subscription } from 'rxjs';
 import { UsersService } from 'src/app/shared/services/users/users.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { finalize } from 'rxjs/operators';
+import { finalize, tap } from 'rxjs/operators';
 import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
 import { FileValidator } from 'ngx-material-file-input';
 
@@ -17,6 +17,7 @@ export class UpdatePicComponent implements OnInit, OnDestroy{
   imageForm: FormGroup;
   authSubscription: Subscription;
   authUserId: string;
+  isLoading = false;
 
   readonly maxSize = 400000;
 
@@ -24,7 +25,6 @@ export class UpdatePicComponent implements OnInit, OnDestroy{
     private fb: FormBuilder,
     private auth: AuthService,
     private users: UsersService,
-    private ngxService: NgxUiLoaderService,
     private notifications: NotificationsService,
   ) {}
 
@@ -42,15 +42,15 @@ export class UpdatePicComponent implements OnInit, OnDestroy{
   }
 
   public submit() {
-    this.ngxService.start();
+    this.isLoading = true;
     const file = this.imageForm.value.image.files[0];
     this.users.changeProfilePicture(this.authUserId, file)
       .pipe(
-        finalize(() => this.ngxService.stop())
+        finalize(() => this.isLoading = false)
       )
       .subscribe(() => {
         this.notifications
-          .createNotification('Picture successfully updated. Reload the page to see the result');
+          .createNotification('Picture successfully updated.');
         this.imageForm.reset();
       });
   }

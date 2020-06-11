@@ -17,7 +17,7 @@ export const USER_SORT_OPTIONS: SortOptions[] = [
     tooltip: {
       ASC: 'Users who authored less courses go first',
       DESC: 'Users who authored more courses go first'
-    }
+    },
   },
 ];
 
@@ -48,6 +48,15 @@ export const COURSE_SORT_OPTIONS: SortOptions[] = [
     tooltip: {
       ASC: 'Courses with less students go first',
       DESC: 'Courses with more students go first'
+    }
+  },
+  {
+    field: 'startDate',
+    alias: 'start date',
+    order: 'ASC',
+    tooltip: {
+      ASC: 'Courses that start sooner go first',
+      DESC: 'Courses that start later go first'
     }
   },
 ];

@@ -40,7 +40,7 @@
       </mat-card>
     </div> 
   </div>
-  <ng-container *ngIf="course.students?.length">
+  <ng-container *ngIf="course && course.isActive">
     <app-course-student 
       (studentsValueChanged)="onStudentsLengthChange($event)"
       [courseId]="course.id"

@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnDestroy, ChangeDetectionStrategy, ChangeDet
 import { UsersService } from 'src/app/shared/services/users/users.service';
 import { Subscription, Observable, of } from 'rxjs';
 import { User } from 'src/app/shared/models/user';
-import { map, switchMap, take, mergeAll, filter, toArray, pluck, exhaustMap, mapTo} from 'rxjs/operators';
+import { map, switchMap, take, mergeAll, filter, toArray, pluck, exhaustMap, mapTo, tap} from 'rxjs/operators';
 import { CoursesService } from 'src/app/shared/services/courses/courses.service';
 import { routes } from 'src/environments/environment';
 import { Course } from 'src/app/shared/services/courses/course-model';
@@ -91,7 +91,11 @@ export class CourseStudentComponent implements OnInit, AfterContentInit, OnDestr
         pluck('students'),
       )
       .subscribe((ids: string[]) => {
-        this.studentsIds = ids.reverse();
+        if (ids?.length) {
+          this.studentsIds = ids.reverse();
+        } else {
+          this.studentsIds = [];
+        }
         this._getStudents();
       });
   }

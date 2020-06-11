@@ -3,4 +3,5 @@ export interface SortOptions {
   alias: string;
   order?: string;
   tooltip?: { ASC: string; DESC: string};
+  convertVal?: string;
 }

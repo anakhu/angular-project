@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { User } from '../../../app/shared/models/user';
 import { UsersService } from 'src/app/shared/services/users/users.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AuthService, FireBaseUser } from '../../../app/shared/services/auth/auth.service';
 import { UserEditComponent } from '../user-edit/user-edit.component';
 import { UserNotificationsComponent } from '../notifications/user-notifications.component';
+import { mergeAll, filter, take, first } from 'rxjs/operators';
 
 const COMPONENT_MAP = {
   1: UserEditComponent,
-  2: UserNotificationsComponent,
 };
 
 @Component({
@@ -22,10 +22,10 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   userId: string;
   user: User;
   authUserId: string;
+  currentUser$: Observable<User>;
 
   routerSubscription: Subscription;
   authSubscription: Subscription;
-  userSubscription: Subscription;
 
   constructor(
     private users: UsersService,
@@ -68,13 +68,10 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   }
 
   private _setUser(): void {
-    this.users
-      .getUser(this.userId)
-        .subscribe(
-          (user: User) => {
-            this.user = user;
-          },
-          (error: Error) => this.router.navigate(['/404']),
+    this.currentUser$ = this.users.createSubscription()
+      .pipe(
+        mergeAll(),
+        filter((user: User) => this.userId === user.id),
       );
   }
 }

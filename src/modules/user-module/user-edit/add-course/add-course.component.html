@@ -12,6 +12,7 @@
   <div *ngIf="name.touched && name.invalid">
     <mat-hint *ngIf="name.errors?.required">Please, provide a name for your course</mat-hint>
     <mat-hint *ngIf="name.errors?.minlength">Name is too short</mat-hint>
+    <mat-hint *ngIf="name.errors?.maxlength">Please, choose a shorter name to make it easy to read</mat-hint>
   </div>
 
   <mat-form-field appearance="outline">
@@ -86,12 +87,21 @@
     <mat-hint>Maximum image size exceeded</mat-hint>
   </div>
 
-  <button 
-    [disabled]="courseForm.invalid"
+  <!-- <button 
+    [disabled]="isLoading || courseForm.invalid"
     mat-raised-button
     type="submit"
     color="primary"
     >Add course
+  </button> -->
+
+  <button
+    type="submit"
+    [disabled]="isLoading || courseForm.invalid"
+    mat-raised-button color="primary" 
+  >
+    <span *ngIf="isLoading" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+  Add
   </button>
 
 </form>

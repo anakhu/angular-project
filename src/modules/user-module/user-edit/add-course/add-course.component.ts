@@ -22,6 +22,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
   courseForm: FormGroup;
   authorId: string;
+  isLoading = false;
   authSubscription: Subscription;
   readonly maxSize = 400000;
 
@@ -30,7 +31,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     private ngZone: NgZone,
     private courses: CoursesService,
     private auth: AuthService,
-    private ngxService: NgxUiLoaderService,
+    // private ngxService: NgxUiLoaderService,
     private notifications: NotificationsService,
     private router: Router
   ) { }
@@ -50,11 +51,12 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   }
 
   public submitForm(): void {
-    this.ngxService.start();
+    // this.ngxService.start();
+    this.isLoading = true;
     this.courses.addCourse(this.courseForm.value, this.authorId)
       .pipe(
         switchMap((result: string) => result),
-        finalize(() => this.ngxService.stop())
+        finalize(() => this.isLoading = false)
       )
       .subscribe((key: string) => {
         this.notifications.createNotification('Course successfully added');

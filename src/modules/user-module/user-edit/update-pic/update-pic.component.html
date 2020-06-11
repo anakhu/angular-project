@@ -7,5 +7,12 @@
     style="color: #dd2c00"
     >Picture size is bigger than {{ maxSize / 1000}}</mat-hint>
   </div>
-  <button mat-raised-button color="primary" type="submit" [disabled]="imageForm.invalid">Upload</button>
-</form>
+  <button
+    type="submit"
+    [disabled]="isLoading || imageForm.invalid"
+    mat-raised-button color="primary" 
+  >
+  <span *ngIf="isLoading" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+    Upload
+  </button>
+ </form>

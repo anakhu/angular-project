@@ -10,6 +10,9 @@
   @include mQ(600px) {
     max-width: 100%;
   }
+  .card-body {
+    padding: 0;
+  }
 
   img {
     max-height: 50%;
@@ -32,3 +35,19 @@
 .course-preview {
   padding: 30px 10px;
 }
+
+.card.appear {
+  animation-duration: 2s;
+  animation-name: appear;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+   opacity: 1;
+  }
+}
+
