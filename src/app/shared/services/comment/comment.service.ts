@@ -1,18 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '../api/api.service';
-import { UserComment} from 'src/app/shared/models/comment';
+import { UserComment} from 'src/app/shared/models/comments/comment';
 import { routes } from 'src/environments/environment';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { UsersService } from '../users/users.service';
-import { mergeAll, concatMap, map, toArray, tap } from 'rxjs/operators';
-import { User } from '../../models/user';
+import { mergeAll, concatMap, map, toArray, first } from 'rxjs/operators';
+import { User } from '../../models/user/user';
 import { AppService } from '../app/app.service';
+import { DisplayedComment } from '../../models/comments/displayedComment';
 
-
-export interface DisplayedComment extends UserComment {
-  name: string;
-  userPic?: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +35,7 @@ export class CommentService {
   public loadComments(entryId: string): void {
     this.api.getCollectionEntries(`${routes.comments}/${entryId}`)
       .pipe(
+        first(),
         mergeAll(),
         concatMap((comment: UserComment) => {
           return this._getCommentAuthorName(comment);
@@ -57,10 +54,14 @@ export class CommentService {
     return this.api.pushEntry(`${routes.comments}/${entryId}/`, comment);
   }
 
-  private _listenToNewCommentEvents(entryId: string): Observable<any> {
-    return this.app.getFirebaseReference()
+  public clearComments() {
+    this.commentSubject.next(null);
+  }
+
+  private _listenToNewCommentEvents(entryId: string): void {
+    this.app.getFirebaseReference()
       .ref(`${routes.comments}/${entryId}`)
-      .on('child_added', (data: any) => {
+      .on('child_added', (data: firebase.database.DataSnapshot) => {
         const newComment = {id: data.key, ...data.val()};
         const existingComment = this.comments
           .find((entry: DisplayedComment) => entry.id === newComment.id);
@@ -86,9 +87,5 @@ export class CommentService {
           return  {...comment, name: null } as DisplayedComment;
         })
       );
-  }
-
-  public clearComments() {
-    this.commentSubject.next(null);
   }
 }

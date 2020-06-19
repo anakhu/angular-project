@@ -1,16 +1,7 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { map, concatMap } from 'rxjs/operators';
 import { AppService } from '../app/app.service';
-
-export interface UploadedTaskSnapshot {
-  bytesTransferred: number;
-  metadata: any;
-  ref: any;
-  state: string;
-  task: any;
-  totalBytes: number;
-}
 
 export interface UploadUpdate {
   senderId: string;
@@ -22,7 +13,7 @@ export interface UploadUpdate {
   providedIn: 'root'
 })
 export class UploadService {
-  fireStorage: any;
+  private fireStorage: firebase.storage.Storage;
 
   constructor(
     private app: AppService,
@@ -34,14 +25,14 @@ export class UploadService {
     const ref = this._createReference(`${reference}/${senderId}/${file.name}`);
     return from(ref.put(file))
       .pipe(
-        concatMap((result: UploadedTaskSnapshot) => {
+        concatMap((result: firebase.storage.UploadTaskSnapshot) => {
           if (result.state === 'success') {
             return from(ref.getDownloadURL());
           } else {
             throw Error('File wasn\'t uploaded');
           }
         }),
-        map((link: any) => {
+        map((link: string) => {
           const image = decodeURI(link).toString();
           return {
             senderId,
@@ -52,7 +43,7 @@ export class UploadService {
     );
   }
 
-  private _createReference(path: string) {
+  private _createReference(path: string): firebase.storage.Reference {
     return this.fireStorage.ref(path);
   }
 }

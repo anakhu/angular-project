@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { AuthService, FireBaseUser } from '../auth/auth.service';
-import { User } from 'src/app/shared/models/user';
+import { AuthService } from '../auth/auth.service';
+import { User } from 'src/app/shared/models/user/user';
 import { UsersService } from '../users/users.service';
 import { Subscription } from 'rxjs';
 import { routes } from 'src/environments/environment';
 import { AppService } from '../app/app.service';
 import { API_ERRORS } from '../api/api-errors';
-import { CustomError } from '../../models/custom-error';
+import { CustomError } from '../../models/api/custom-error';
+import { LoggedInUser } from '../../models/user/loggedInUser';
 
 @Injectable({
   providedIn: 'root'
@@ -101,7 +102,7 @@ export class LikesService {
 
   private _authSubscribe(): void {
     this.authService.createSubscription()
-      .subscribe((loginUser: FireBaseUser) => {
+      .subscribe((loginUser: LoggedInUser) => {
         if (loginUser) {
           this.authUserId = loginUser.uid;
           this.usersService.getUser(this.authUserId)
@@ -128,7 +129,7 @@ export class LikesService {
       });
   }
 
-  private _processUserStatus(coursesIds: string[], courseId): any {
+  private _processUserStatus(coursesIds: string[], courseId): {coursesIds: string[], coursesCount: number} {
     if (coursesIds?.length && coursesIds.includes(courseId)) {
       const index = coursesIds.indexOf(courseId);
       coursesIds.splice(index, 1);
@@ -147,7 +148,7 @@ export class LikesService {
     }
   }
 
-  private _processCourseLikes(likesNumber: number, point: number) {
+  private _processCourseLikes(likesNumber: number, point: number): number {
     if (likesNumber < 1) {
       likesNumber = 1;
       return likesNumber;
@@ -159,7 +160,7 @@ export class LikesService {
     }
   }
 
-  private _updateCoursesOnEnroll(students: string[], userId: string,  point: number) {
+  private _updateCoursesOnEnroll(students: string[], userId: string,  point: number): string[] {
     if (!(students?.length)) {
       students = [];
       students.push(userId);

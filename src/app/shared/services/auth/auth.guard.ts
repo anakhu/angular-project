@@ -1,8 +1,9 @@
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { AuthService, FireBaseUser } from './auth.service';
+import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
+import { LoggedInUser } from '../../models/user/loggedInUser';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +20,8 @@ export class AuthGuard implements CanActivate {
       return this.authService.createSubscription()
         .pipe(
           take(1),
-          map((user: FireBaseUser | null) => {
+          map((user: LoggedInUser | null) => {
             if (user) {
-              console.log('false');
               this.router.navigate(['/courses']);
               return false;
             } else {

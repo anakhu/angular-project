@@ -4,23 +4,21 @@ import { map, catchError } from 'rxjs/operators';
 import { FirebaseError } from 'firebase/app';
 import { AppService } from '../app/app.service';
 import { API_ERRORS } from './api-errors';
-import { CustomError } from '../../models/custom-error';
-import { Update } from '../../models/update';
+import { CustomError } from '../../models/api/custom-error';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  fireBase: any;
+  fireBase: firebase.database.Database;
   constructor(
-    private app: AppService,
+    private app: AppService
     ) {
     this.fireBase = this.app.getFirebaseReference();
   }
 
   public getCollectionEntries<T>(reference: string): Observable<T[]> {
-
     return from(this.fireBase.ref(reference).once('value'))
       .pipe(
         map((data: firebase.database.DataSnapshot) => {
@@ -78,26 +76,6 @@ export class ApiService {
       .pipe(
         map((data: firebase.database.DataSnapshot) => {
           return this._processDataOnLoad(data);
-        })
-      );
-  }
-
-  public deleteSimultaneously(data: Update[]): Observable<boolean> {
-    const updates = {};
-
-    for (const entry of data) {
-      updates[`/${entry.collection}/` + entry.docs] = entry.data ? entry.data : null;
-    }
-
-    return from(this.fireBase.ref().update(updates))
-      .pipe(
-        map((response: any) => {
-          console.log(response);
-          if (response instanceof Error) {
-            const err: CustomError = {...API_ERRORS.delete};
-            return false;
-          }
-          return true;
         })
       );
   }

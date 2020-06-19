@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FollowersService } from './followers.service';
-import { Follower } from './follower.interface';
+import { Follower } from '../../models/followers/follower';
 import { take } from 'rxjs/operators';
 
 

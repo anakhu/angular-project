@@ -1,4 +1,4 @@
-import { Course } from './course-model';
+import { Course } from '../../models/courses/course';
 
 export class NewCourse implements Course {
   constructor(

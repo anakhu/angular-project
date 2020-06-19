@@ -1,11 +1,13 @@
-export const API_ERRORS = {
+import { ApiErrors } from '../../models/api/apiErrors';
+
+export const API_ERRORS: ApiErrors = {
   add: {
     code: 'api/update-failed',
-    message: 'Updated were not applied',
+    message: 'Updates were not applied',
   },
   update: {
     code: 'api/update-failed',
-    message: 'Updated were not applied',
+    message: 'Updates were not applied',
   },
   push: {
     code: 'api/push-failed',

@@ -1,0 +1,59 @@
+<div class="login-page">
+  <ng-container [ngSwitch]="displayedComponent">
+    <div *ngSwitchCase="'sign-in'">
+      <app-login-form></app-login-form>
+    </div>
+
+    <div *ngSwitchCase="'sign-up'">
+      <app-auth-form></app-auth-form>
+    </div>
+
+    <div *ngSwitchDefault>
+      <div class="login-page-main">
+        <div class="login-banner">
+          <div class="login-banner-content">
+            <h1><strong>Welcome to Online Academy!</strong>></h1>
+
+            <h5>
+              Join our fast growing community for free!
+            </h5>
+
+            <div class="login-banner-actions">
+              <a
+                mat-flat-button="mat-flat-button"
+                color="accent"
+                [routerLink]="['/login']"
+                [queryParams]="{ action: 'sign-up'}"
+              >Sign Up</a>
+
+              <a
+                mat-flat-button="mat-flat-button"
+                color="accent"
+                [routerLink]="['/login']"
+                [queryParams]="{ action: 'sign-in'}"
+              >Sign In</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-about">
+          <div class="container">
+            <h3 class="header-title row col-12 justify-content-center">Why Online Academy?</h3>
+            <ul class="login-icons-pane row col-12 justify-content-center">
+              <ng-container *ngFor="let icon of loginIcons">
+                <li class="login-info-item col-xs-6 col-sm-6 col-md-4 col-lg-2">
+                  <img class="img-responsive" src="{{icon.src}}" alt="{{icon.alt}}">
+                  <span>{{icon.caption}}</span>
+                </li>
+              </ng-container>
+            </ul>
+          </div>
+
+          <app-about>
+            <app-course-preview></app-course-preview>
+          </app-about>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

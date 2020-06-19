@@ -1,4 +1,4 @@
-import { Follower } from './follower.interface';
+import { Follower } from '../../models/followers/follower';
 
 export class NewFollower implements Follower {
   constructor(

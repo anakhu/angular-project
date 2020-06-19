@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AuthService, FireBaseUser } from './shared/services/auth/auth.service';
+import { AuthService } from './shared/services/auth/auth.service';
 import { Observable, Subscription } from 'rxjs';
-import { map, shareReplay, tap  } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { LoggedInUser } from './shared/models/user/loggedInUser';
 
 @Component({
   selector: 'app-root',
@@ -14,12 +15,11 @@ export class AppComponent implements OnInit {
   isHandset$: Observable<boolean> = this.breakpointObserver
   .observe(Breakpoints.Handset)
     .pipe(
-      tap((res) => console.log(res)),
       map(result => result.matches),
       shareReplay()
     );
+
   @ViewChild('toolbar', {static: true}) toolbar: ElementRef;
-  mediaSub: Subscription;
   authSubscription: Subscription;
   authUserId: string;
   firebase: any;
@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
 
   private _subscribeToAuthChange(): void {
     this.authSubscription = this.authService.createSubscription()
-      .subscribe((user: FireBaseUser) => {
+      .subscribe((user: LoggedInUser) => {
       this.authUserId = user ? user.uid : null;
     });
   }

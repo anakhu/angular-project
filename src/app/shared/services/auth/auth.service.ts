@@ -2,24 +2,20 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, from, of } from 'rxjs';
 import { tap, concatMap, exhaustMap, catchError, mapTo, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { User } from '../../models/user';
+import { User } from '../../models/user/user';
 import { UsersService } from '../users/users.service';
 import { AppService } from '../app/app.service';
-import { ErrorService } from 'src/modules/error-handler/error.service/error.service';
+import { ErrorService } from 'src/app/modules/error-handler/error.service/error.service';
+import { LoggedInUser } from '../../models/user/loggedInUser';
+import { FirebaseError } from 'firebase';
 
-
-export interface FireBaseUser {
-  uid: string;
-  email: string;
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  fireBaseAuth: any;
-  fireBaseRef: any;
-  firebaseUser = new BehaviorSubject<FireBaseUser>(null);
+  private fireBaseAuth: firebase.auth.Auth;
+  private firebaseUser = new BehaviorSubject<LoggedInUser>(null);
 
   constructor(
     private router: Router,
@@ -30,16 +26,18 @@ export class AuthService {
     this._setFireAuthRef();
   }
 
-  public createSubscription(): Observable<FireBaseUser> {
+  public createSubscription(): Observable<LoggedInUser> {
     return this.firebaseUser.asObservable();
   }
 
-  public signUp(email: string, password: string, payload: any = {}): Observable<User> {
+  public signUp(email: string, password: string, payload: Partial<User>): Observable<User> {
     return from(this.fireBaseAuth.createUserWithEmailAndPassword(email, password))
       .pipe(
-        exhaustMap((response: any) => {
-          const id = response.user.uid;
-          return this.users.addUser({...payload, id });
+        exhaustMap((response: firebase.auth.UserCredential) => {
+          if (response?.user.uid) {
+            const id = response.user.uid;
+            return this.users.addUser({...payload, id });
+          }
         }),
         tap((user: User) => user?.id
           ? this.router.navigate(['/users', user.id])
@@ -47,28 +45,30 @@ export class AuthService {
       );
   }
 
-  public login(email: string, password: string) {
+  public login(email: string, password: string): Observable<string | null> {
     return from(this.fireBaseAuth.signInWithEmailAndPassword(email, password))
       .pipe(
-        tap((response: any) => {
-          if (!(response instanceof Error)) {
+        map((response: firebase.auth.UserCredential) => {
+          if (response?.user) {
             this.router.navigate(['/users', response.user.uid]);
+            return response?.user.uid;
           }
+          return null;
         })
       );
   }
 
-  public logout() {
+  public logout(): void {
     this.fireBaseAuth.signOut();
     this.firebaseUser.next(null);
     this.router.navigate(['/login']);
   }
 
-  public deleteUserAccount(): Observable<any> {
+  public deleteUserAccount(): Observable<boolean> {
     const user = this.fireBaseAuth.currentUser;
     return of(user)
       .pipe(
-        concatMap((loginUser: any) => {
+        concatMap((loginUser: firebase.User | null) => {
           if (loginUser) {
             return from(user.delete())
               .pipe(
@@ -76,14 +76,16 @@ export class AuthService {
             );
           }
         }),
-        catchError((error: Error) => {
+        catchError((error: FirebaseError) => {
           this.errors.handleError(error);
           return of(false);
         }),
-        map((response: any) => {
+        map((response: string | boolean) => {
           if (typeof response === 'string') {
             this.users.updateLoacalUsersOnDelete(response);
-            return of(true);
+            return true;
+          } else {
+            return response;
           }
         })
       );
@@ -91,15 +93,14 @@ export class AuthService {
 
   private _setFireAuthRef(): void {
     this.fireBaseAuth = this.app.getFireBaseAuthReference();
-    this.fireBaseAuth.onAuthStateChanged((user: any) => {
+    this.fireBaseAuth.onAuthStateChanged((user: firebase.User | null) => {
       if (user) {
         const { uid, email } = user;
-        const loginUser: FireBaseUser = { uid, email };
-        this.firebaseUser.next(loginUser);
+        const authUser: LoggedInUser = { uid, email };
+        this.firebaseUser.next(authUser);
       } else {
         this.firebaseUser.next(null);
       }
     });
   }
-
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User } from '../../models/user';
+import { User } from '../../models/user/user';
 import {
   of,
   from,
@@ -19,7 +19,7 @@ import {
 import { ApiService } from '../api/api.service';
 import { routes } from '../../../../environments/environment';
 import { AppService } from '../app/app.service';
-import { Follower } from '../followers/follower.interface';
+import { Follower } from '../../models/followers/follower';
 import { NewUser } from './user';
 import { UploadService, UploadUpdate } from '../upload/upload.service';
 import { Update } from '../../models/update';
@@ -66,7 +66,7 @@ export class UsersService {
   private _listenToChanges() {
     return this.app.getFirebaseReference()
       .ref(routes.users)
-      .on('child_changed', (data: any) => {
+      .on('child_changed', (data: firebase.database.DataSnapshot) => {
         this.updateLocalUsers(data.key, data.val());
       });
   }
@@ -76,7 +76,7 @@ export class UsersService {
     return this.api.updateEntry(`${routes.users}/${id}/`, updatedUser);
   }
 
-  public addUser(payloadData: Partial<User>): Observable<any> {
+  public addUser(payloadData: Partial<User>): Observable<User> {
     return from(this.createAccount(payloadData))
       .pipe(
         tap((user: User) => {
@@ -142,7 +142,7 @@ export class UsersService {
       );
   }
 
-  public changeProfilePicture(userId: string, image: File ) {
+  public changeProfilePicture(userId: string, image: File ): Observable<UploadUpdate> {
     return this.uploads.sendFile(image, routes.users, userId)
       .pipe(
         exhaustMap((data: UploadUpdate) => {
@@ -156,14 +156,12 @@ export class UsersService {
   public updateLoacalUsersOnDelete(userId: string): void {
     const index = this.users.findIndex((user: User) => user.id === userId);
     if (index) {
-      console.log('beforedelete', this.users);
       this.users.splice(index, 1);
-      console.log('afterdelete', this.users);
       this._setUsers(this.users);
     }
   }
 
-  private updateLocalUsers(userId: string, updatedUser: User = null) {
+  private updateLocalUsers(userId: string, updatedUser: User = null): void {
     const index = this.users.findIndex((entry: User) => entry.id === userId);
     if (index !== -1) {
       if (updatedUser) {

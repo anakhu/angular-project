@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Course } from './course-model';
-import { Observable, of, from, Subject, BehaviorSubject } from 'rxjs';
-import { find, switchMap, map, exhaustMap, catchError } from 'rxjs/operators';
+import { Course } from '../../models/courses/course';
+import { Observable, of, from, BehaviorSubject } from 'rxjs';
+import { find, switchMap, map, exhaustMap, catchError, mapTo } from 'rxjs/operators';
 import { ApiService } from '../api/api.service';
 import { routes } from '../../../../environments/environment';
 import { AppService } from '../app/app.service';
 import { UploadService, UploadUpdate } from '../upload/upload.service';
 import { NewCourse } from './course';
 import { API_ERRORS } from '../api/api-errors';
-import { CustomError } from '../../models/custom-error';
+import { CustomError } from '../../models/api/custom-error';
+import { CourseFormData } from '../../models/courses/courseFormData';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,7 @@ export class CoursesService {
       );
   }
 
-  public createSubscription(): Observable<any> {
+  public createSubscription(): Observable<Course[]> {
     return this.coursesSubject.asObservable();
   }
 
@@ -66,7 +67,7 @@ export class CoursesService {
     return this.api.updateEntry(reference, update);
   }
 
-  public addCourse(courseData: any, authorId: string): Observable<any> {
+  public addCourse(courseData: CourseFormData, authorId: string): Observable<string> {
     let file;
     try {
       file = courseData.image.files[0];
@@ -103,10 +104,10 @@ export class CoursesService {
       );
   }
 
-  private _listenToChanges() {
-    return this.app.getFirebaseReference()
+  private _listenToChanges(): void {
+    this.app.getFirebaseReference()
       .ref(routes.courses)
-      .on('child_changed', (data: any) => {
+      .on('child_changed', (data: firebase.database.DataSnapshot) => {
         this._updateLocalCourses(data.key, {id: data.key, ...data.val()});
       });
   }
@@ -117,8 +118,9 @@ export class CoursesService {
   }
 
   private _updateLocalCourses(courseId: string, updatedCourse: Course = null): Course {
+    const index = this.courses
+      .findIndex((entry: Course) => entry.id === courseId);
 
-    const index = this.courses.findIndex((entry: Course) => entry.id === courseId);
     if (index !== -1) {
       if (updatedCourse) {
         this.courses.splice(index, 1, updatedCourse);
@@ -136,11 +138,12 @@ export class CoursesService {
     let authoredCourses;
 
     const userRef = firebase.ref(`/${routes.users}/${userId}/authoredCourses`);
-    await userRef.once('value').then((response: any) => {
-      authoredCourses = response.val()?.length
-        ? response.val()
-        : [];
-    });
+    await userRef.once('value')
+      .then((response: firebase.database.DataSnapshot) => {
+        authoredCourses = response.val()?.length
+          ? response.val()
+          : [];
+      });
 
     const newCourseKey = await firebase.ref().child(routes.courses).push().key;
     authoredCourses.push(newCourseKey);
@@ -156,7 +159,7 @@ export class CoursesService {
           const err: CustomError = {...API_ERRORS.add};
           throw err;
         }),
-       map((response: any) => newCourseKey)
+       mapTo(newCourseKey)
       );
   }
 }

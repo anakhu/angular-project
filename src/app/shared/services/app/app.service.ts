@@ -10,10 +10,9 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AppService {
-  fireBase: any;
-  fireStorage: any;
-  fireBaseAuth: any;
-  fb: any;
+  fireBase: firebase.database.Database;
+  fireStorage: firebase.storage.Storage;
+  fireBaseAuth: firebase.auth.Auth;
 
   constructor() {
     this.initApp();
@@ -23,26 +22,21 @@ export class AppService {
     firebase.initializeApp({
       ...environment
     });
-    this.fb = firebase;
     this.fireBase = firebase.database();
     this.fireStorage = firebase.storage();
     this.fireBaseAuth = firebase.auth();
   }
 
-  public getFirebaseReference() {
+  public getFirebaseReference(): firebase.database.Database {
     return this.fireBase;
   }
 
-  public getFireStorageReference() {
+  public getFireStorageReference(): firebase.storage.Storage {
     return this.fireStorage;
   }
 
-  public getFireBaseAuthReference() {
+  public getFireBaseAuthReference(): firebase.auth.Auth {
     return this.fireBaseAuth;
-  }
-
-  public getFirebase() {
-    return this.fb;
   }
 
   public getAuthUser(): Promise<any>{
