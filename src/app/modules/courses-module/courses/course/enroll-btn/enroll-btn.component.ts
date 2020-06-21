@@ -1,11 +1,14 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
 import { LikesService } from 'src/app/shared/services/likes/likes.service';
-import { of } from 'rxjs';
-import { delay, exhaustMap, tap, finalize, take } from 'rxjs/operators';
+import { of, Observable } from 'rxjs';
+import { delay, exhaustMap, tap, finalize, take, mapTo, map } from 'rxjs/operators';
 import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
 import { Router } from '@angular/router';
 import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.reducer';
+import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
 
 @Component({
   selector: 'app-enroll-btn',
@@ -15,32 +18,30 @@ import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
 export class EnrollBtnComponent implements OnInit, OnDestroy{
   @Input() courseId: string;
   @Input() courseAuthorId: string;
-  public authUserId: string;
   public isLoading: boolean;
   public isEnrolled = false;
-  private authSubscription: any;
+  public authUserId$: Observable<string>;
 
   constructor(
-    private auth: AuthService,
     private likesService: LikesService,
     private notifications: NotificationsService,
-    private router: Router
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {
-    this._createAuthSubscription();
+    this.authUserId$ = this.store.select(selectAuthUserUid)
+      .pipe(
+        tap((userId: string) => {
+          if (userId) {
+            this._setUserEnrollStatus();
+          }
+        })
+      );
   }
 
-  ngOnDestroy(): void {
-    this.authSubscription.unsubscribe();
-  }
+  ngOnDestroy(): void {}
 
   public enroll(event: Event) {
-    if (!this.authUserId) {
-      this.router.navigate(['/login'], { queryParams: { action: 'sign-in' } });
-      return;
-    }
-
     this.isLoading = true;
     of(event)
       .pipe(
@@ -54,16 +55,6 @@ export class EnrollBtnComponent implements OnInit, OnDestroy{
         if (this.isEnrolled) {
           this.notifications.createNotification('You successfully enrolled in the course. The author will contact you');
         }
-    });
-  }
-
-  private _createAuthSubscription(): void {
-    this.authSubscription = this.auth.createSubscription()
-      .subscribe((user: LoggedInUser) => {
-       this.authUserId = user ? user.uid : null;
-       if (this.authUserId) {
-         this._setUserEnrollStatus();
-       }
     });
   }
 

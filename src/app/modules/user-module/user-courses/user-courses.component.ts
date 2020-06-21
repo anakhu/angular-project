@@ -4,7 +4,7 @@ import { CoursesService } from 'src/app/shared/services/courses/courses.service'
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users/users.service';
 import { from } from 'rxjs';
-import { map, switchMap, filter,toArray } from 'rxjs/operators';
+import { map, switchMap, filter,toArray, take } from 'rxjs/operators';
 import { User } from 'src/app/shared/models/user/user';
 
 const HEADERS = {
@@ -54,6 +54,7 @@ export class UserCoursesComponent implements OnInit, OnChanges {
   private _getfilteredCourses(){
     return from(this.users.getUser(this.userId))
       .pipe(
+        take(1),
         map((user: User) => {
           if (user) {
             return user[this.filterValue];

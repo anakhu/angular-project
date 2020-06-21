@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, OnChanges } from '@angular/core';
 import { of, Observable } from 'rxjs';
 import { FollowersService } from '../../../shared/services/followers/followers.service';
-import { exhaustMap, delay, map, finalize } from 'rxjs/operators';
+import { exhaustMap, delay, map, finalize, take } from 'rxjs/operators';
 import { Follower } from '../../../shared/models/followers/follower';
 
 @Component({
@@ -32,6 +32,7 @@ export class FollowButtonComponent implements OnInit, OnDestroy, OnChanges {
     this.isLoading = true;
     of(event)
       .pipe(
+        take(1),
         exhaustMap((e: Event) => this._changeFollowersStatus()),
         delay(1000),
         map((result: Follower | null) => this._getFollowersStatus()),

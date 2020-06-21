@@ -7,6 +7,9 @@ import { AuthService } from '../../../shared/services/auth/auth.service';
 import { UserEditComponent } from '../user-edit/user-edit.component';
 import { mergeAll, filter } from 'rxjs/operators';
 import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
 
 const COMPONENT_MAP = {
   1: UserEditComponent,
@@ -21,38 +24,28 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   componentList = COMPONENT_MAP;
   userId: string;
   user: User;
-  authUserId: string;
   currentUser$: Observable<User>;
-
   routerSubscription: Subscription;
-  authSubscription: Subscription;
+  authUserId$: Observable<string>;
 
   constructor(
     private users: UsersService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private authService: AuthService,
+    private store: Store<AppState>,
   ) {}
 
   ngOnInit(): void {
-    this._authSubscribe();
+    this.authUserId$ = this.store.select(selectAuthUserUid);
     this._subscribeOnParamsChange();
   }
 
   ngOnDestroy(): void {
     this.routerSubscription.unsubscribe();
-    this.authSubscription.unsubscribe();
   }
 
   public processClick(path: string, content: string) {
     this.router.navigate(['/users', this.userId, path], { queryParams: { base: content}});
-  }
-
-  private _authSubscribe(): void {
-    this.authSubscription = this.authService.createSubscription()
-      .subscribe((user: LoggedInUser) => {
-        this.authUserId = user?.uid || null;
-      });
   }
 
   private _subscribeOnParamsChange(): void {

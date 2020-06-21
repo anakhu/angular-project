@@ -4,6 +4,9 @@ import { ServerNotificationsService } from 'src/app/shared/services/server-notif
 import { ServerNotification } from 'src/app/shared/models/notifications/serverNotifications';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
 import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.reducer';
+import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
 
 @Component({
   selector: 'app-user-notifications',
@@ -17,11 +20,12 @@ export class UserNotificationsComponent implements OnInit, OnDestroy {
 
   constructor(
     private notificationsService: ServerNotificationsService,
-    private auth: AuthService
+    private store: Store<AppState>,
   ) {}
 
   ngOnInit(): void {
-    this._authSubscribe();
+    this.authSubscription = this.store.select(selectAuthUserUid)
+      .subscribe((userId: string) => this.userId = userId ? userId : null);
     this.notificationsService.listenToChanges(this.userId);
     this.notifications$ = this.notificationsService.getNotifications();
   }
@@ -33,13 +37,6 @@ export class UserNotificationsComponent implements OnInit, OnDestroy {
 
   public markAsRead(index: number): void {
     this.notificationsService.markMessageAsRead(this.userId, index);
-  }
-
-  private _authSubscribe(): void {
-    this.authSubscription = this.auth.createSubscription()
-      .subscribe((user: LoggedInUser) => {
-        this.userId = user?.uid || null;
-    });
   }
 
 }

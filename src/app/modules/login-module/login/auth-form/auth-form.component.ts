@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { AuthService } from '../../../../shared/services/auth/auth.service';
-import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
-import { User } from 'src/app/shared/models/user/user';
-import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { finalize } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.reducer';
+import * as fromAuthReducer from 'src/app/store/auth/auth.actions';
+import { UserFormData } from 'src/app/shared/models/user/userFormData';
 
 @Component({
   selector: 'app-auth-form',
@@ -17,9 +16,7 @@ export class AuthFormComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private notificationService: NotificationsService,
-    private ngxService: NgxUiLoaderService,
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {
@@ -27,18 +24,10 @@ export class AuthFormComponent implements OnInit {
   }
 
   public submit(): void {
-    this.ngxService.start();
     const { email, password } = this.authForm.controls.credentials.value;
-    const payload = this.authForm.controls.profile.value;
-    this.authService.signUp(email, password, payload)
-      .pipe(
-        finalize( () => this.ngxService.stop())
-      )
-      .subscribe((data: User)  => {
-        return data
-          ? this.notificationService.createNotification('Sign up success')
-          : null;
-      });
+    const userData = this.authForm.controls.profile.value;
+    const newUser: UserFormData = { email, password, userData };
+    this.store.dispatch(new fromAuthReducer.SignUpStartAction(newUser));
   }
 
   private _initAuthForm(): void {

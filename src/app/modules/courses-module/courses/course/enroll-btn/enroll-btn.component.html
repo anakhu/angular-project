@@ -1,5 +1,5 @@
-<ng-container *ngIf="courseId">
-  <ng-container *ngIf="authUserId !== courseAuthorId">
+<ng-container *ngIf="courseId && (authUserId$ | async)">
+  <ng-container *ngIf="(authUserId$ | async) !== courseAuthorId">
     <button
       [disabled]="isLoading"
       mat-button color="primary" 

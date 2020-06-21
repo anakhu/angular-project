@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, from, of } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { tap, concatMap, exhaustMap, catchError, mapTo, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../../models/user/user';
@@ -8,35 +8,33 @@ import { AppService } from '../app/app.service';
 import { ErrorService } from 'src/app/modules/error-handler/error.service/error.service';
 import { LoggedInUser } from '../../models/user/loggedInUser';
 import { FirebaseError } from 'firebase';
-
+import { Store } from '@ngrx/store';
+import * as fromAuthReducer from 'src/app/store/auth/auth.actions';
+import { AppState } from 'src/app/store/app.reducer';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private fireBaseAuth: firebase.auth.Auth;
-  private firebaseUser = new BehaviorSubject<LoggedInUser>(null);
 
   constructor(
     private router: Router,
     private users: UsersService,
     private app: AppService,
-    private errors: ErrorService
+    private errors: ErrorService,
+    private store: Store<AppState>,
   ) {
     this._setFireAuthRef();
   }
 
-  public createSubscription(): Observable<LoggedInUser> {
-    return this.firebaseUser.asObservable();
-  }
-
-  public signUp(email: string, password: string, payload: Partial<User>): Observable<User> {
+  public signUp(email: string, password: string, userData: Partial<User>): Observable<User> {
     return from(this.fireBaseAuth.createUserWithEmailAndPassword(email, password))
       .pipe(
         exhaustMap((response: firebase.auth.UserCredential) => {
           if (response?.user.uid) {
             const id = response.user.uid;
-            return this.users.addUser({...payload, id });
+            return this.users.addUser({...userData, id });
           }
         }),
         tap((user: User) => user?.id
@@ -45,23 +43,12 @@ export class AuthService {
       );
   }
 
-  public login(email: string, password: string): Observable<string | null> {
-    return from(this.fireBaseAuth.signInWithEmailAndPassword(email, password))
-      .pipe(
-        map((response: firebase.auth.UserCredential) => {
-          if (response?.user) {
-            this.router.navigate(['/users', response.user.uid]);
-            return response?.user.uid;
-          }
-          return null;
-        })
-      );
+  public login(email: string, password: string): Observable<firebase.auth.UserCredential> {
+    return from(this.fireBaseAuth.signInWithEmailAndPassword(email, password));
   }
 
   public logout(): void {
     this.fireBaseAuth.signOut();
-    this.firebaseUser.next(null);
-    this.router.navigate(['/login']);
   }
 
   public deleteUserAccount(): Observable<boolean> {
@@ -94,13 +81,12 @@ export class AuthService {
   private _setFireAuthRef(): void {
     this.fireBaseAuth = this.app.getFireBaseAuthReference();
     this.fireBaseAuth.onAuthStateChanged((user: firebase.User | null) => {
-      if (user) {
-        const { uid, email } = user;
-        const authUser: LoggedInUser = { uid, email };
-        this.firebaseUser.next(authUser);
-      } else {
-        this.firebaseUser.next(null);
-      }
-    });
-  }
+        if (user) {
+          const loggedInUser: LoggedInUser = { uid: user.uid, email: user.email };
+          this.store.dispatch(new fromAuthReducer.LoginSuccessAction(loggedInUser));
+        } else {
+          this.store.dispatch(new fromAuthReducer.LogoutEndAction());
+        }
+      });
+    }
 }

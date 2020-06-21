@@ -16,6 +16,12 @@ import { UploadModule } from 'src/app/modules/upload-module/upload.module';
 import { CoursesModule } from 'src/app/modules/courses-module/courses.module';
 import { UserModule } from 'src/app/modules/user-module/user.module';
 import { SharedModule } from 'src/app/modules/shared-module/shared.module';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { environment } from 'src/environments/environment';
+import { appReducer } from './store/app.reducer';
+import { AuthEffects } from './store/auth/auth.effects';
 
 
 export function get_auth_status(appService: AppService) {
@@ -43,6 +49,10 @@ export function get_auth_status(appService: AppService) {
     CoursesModule,
     UserModule,
     SharedModule,
+    StoreModule.forRoot(appReducer),
+    EffectsModule.forRoot([AuthEffects]),
+    StoreDevtoolsModule.instrument({logOnly: environment.production}),
+
   ],
   providers: [
     {provide: APP_INITIALIZER, useFactory: get_auth_status, deps: [AppService], multi: true},

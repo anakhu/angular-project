@@ -8,6 +8,9 @@ import { AppService } from '../app/app.service';
 import { API_ERRORS } from '../api/api-errors';
 import { CustomError } from '../../models/api/custom-error';
 import { LoggedInUser } from '../../models/user/loggedInUser';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
 
 @Injectable({
   providedIn: 'root'
@@ -21,9 +24,10 @@ export class LikesService {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-    private app: AppService
+    private app: AppService,
+    private store: Store<AppState>,
   ) {
-    this._authSubscribe();
+    this.authSubscribe();
   }
 
   public getUserStatus(courseId: string, key: string): boolean {
@@ -100,22 +104,22 @@ export class LikesService {
     }
   }
 
-  private _authSubscribe(): void {
-    this.authService.createSubscription()
-      .subscribe((loginUser: LoggedInUser) => {
-        if (loginUser) {
-          this.authUserId = loginUser.uid;
-          this.usersService.getUser(this.authUserId)
-            .subscribe((user: User) => this.authUser = user);
-          this._userSubscribe();
-        } else {
-          this.authUserId = null;
-          this.authUser = null;
-          if (this.userSubscription) {
-            this.userSubscription.unsubscribe();
-          }
+  private authSubscribe(): void {
+    this.store.select(selectAuthUserUid)
+    .subscribe((userId: string) => {
+      if (userId) {
+        this.authUserId = userId;
+        this.usersService.getUser(userId)
+          .subscribe((user: User) => this.authUser = user);
+        this._userSubscribe();
+      } else {
+        this.authUserId = null;
+        this.authUser = null;
+        if (this.userSubscription) {
+          this.userSubscription.unsubscribe();
         }
-      });
+      }
+    });
   }
 
   private _userSubscribe(): void {

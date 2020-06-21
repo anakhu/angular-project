@@ -24,7 +24,7 @@
         <mat-icon>account_circle</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <app-update-profile [userId]="authUser.uid"></app-update-profile>
+    <app-update-profile [userId]="(authUserId$ | async)"></app-update-profile>
   </mat-expansion-panel>
 
 

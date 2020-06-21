@@ -33,52 +33,55 @@
   
 </div>
 
-<div class="comment-form-wrapper">
-  <mat-accordion>
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          Add a comment
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <div class="container comment-container">
-        <div class="row justify-content-center">
-          <form class="col-xs-12 col-sm-11 col-md-8 col-lg-8 comment-form" #form="ngForm" (ngSubmit)="onPost(form)">
-            <mat-form-field appearance="outline">
-              <mat-label>Comment</mat-label>
-              <textarea 
-                matInput
-                name="comment"
-                ngModel
-                #comment="ngModel"
-                cdkTextareaAutosize
-                #textArea="cdkTextareaAutosize"
-                cdkAutosizeMinRows="5"
-                cdkAutosizeMaxRows="10"
-                required
-                minlength="1"
-                maxlength="800"
-                >
-              </textarea>
-            </mat-form-field>
-            <div *ngIf="comment.touched && comment.invalid">
-              <mat-hint *ngIf="comment.errors?.required">Type your comment here</mat-hint>
-              <mat-hint *ngIf="comment.errors?.maxlength">300 characters is max comment length</mat-hint>
-            </div>
-            <button
-              [disabled]="form.invalid"
-              type="submit"
-              mat-stroked-button
-              color="primary"
-            >
-             Add comment 
-            </button>
-          </form>
+<ng-container *ngIf="(authUserId$ | async)">
+  <div class="comment-form-wrapper">
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Add a comment
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="container comment-container">
+          <div class="row justify-content-center">
+            <form class="col-xs-12 col-sm-11 col-md-8 col-lg-8 comment-form" #form="ngForm" (ngSubmit)="onPost(form)">
+              <mat-form-field appearance="outline">
+                <mat-label>Comment</mat-label>
+                <textarea 
+                  matInput
+                  name="comment"
+                  ngModel
+                  #comment="ngModel"
+                  cdkTextareaAutosize
+                  #textArea="cdkTextareaAutosize"
+                  cdkAutosizeMinRows="5"
+                  cdkAutosizeMaxRows="10"
+                  required
+                  minlength="1"
+                  maxlength="800"
+                  >
+                </textarea>
+              </mat-form-field>
+              <div *ngIf="comment.touched && comment.invalid">
+                <mat-hint *ngIf="comment.errors?.required">Type your comment here</mat-hint>
+                <mat-hint *ngIf="comment.errors?.maxlength">300 characters is max comment length</mat-hint>
+              </div>
+              <button
+                [disabled]="form.invalid"
+                type="submit"
+                mat-stroked-button
+                color="primary"
+              >
+               Add comment 
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
-    </mat-expansion-panel>
-  </mat-accordion>
-</div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</ng-container>
+
 
 
 

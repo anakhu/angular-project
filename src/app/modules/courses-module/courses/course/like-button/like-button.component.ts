@@ -1,9 +1,12 @@
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { LikesService } from 'src/app/shared/services/likes/likes.service';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
-import { Subscription, of } from 'rxjs';
+import { Subscription, of, Observable } from 'rxjs';
 import { exhaustMap, delay, tap, finalize, first } from 'rxjs/operators';
 import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
 
 @Component({
   selector: 'app-like-button',
@@ -11,27 +14,30 @@ import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
   styleUrls: ['./like-button.component.scss']
 })
 export class LikeButtonComponent implements OnInit, OnDestroy {
-
   @Input() courseId: string;
   @Output() statusChanged = new EventEmitter();
-  public authUserId: string;
   public isLiked: boolean;
   public isLoading = false;
-  private authSubscription: Subscription;
+  public authUserId$: Observable<string>;
 
   constructor(
     private likesService: LikesService,
-    private authService: AuthService,
     private cdr: ChangeDetectorRef,
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {
-    this._createAuthSubscription();
+    this.authUserId$ = this.store.select(selectAuthUserUid)
+      .pipe(
+        tap((userId: string) => {
+          if (userId) {
+            this._setUserLikeStatus();
+          }
+        })
+      );
   }
 
-  ngOnDestroy(): void {
-    this.authSubscription.unsubscribe();
-  }
+  ngOnDestroy(): void {}
 
   public likeCourse(event: Event): void {
     this.isLoading = true;
@@ -47,20 +53,14 @@ export class LikeButtonComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         })
       )
-      .subscribe(() => this.statusChanged.emit(this.authUserId));
+      .subscribe(() => {
+        this.authUserId$.subscribe((userId: string) => {
+          this.statusChanged.emit(userId);
+        });
+      });
   }
 
   private _setUserLikeStatus(): void {
     this.isLiked = this.likesService.getUserStatus(this.courseId, 'likedCourses');
-  }
-
-  private _createAuthSubscription(): void {
-    this.authSubscription = this.authService.createSubscription()
-      .subscribe((user: LoggedInUser) => {
-       this.authUserId = user ? user.uid : null;
-       if (this.authUserId) {
-         this._setUserLikeStatus();
-       }
-    });
   }
 }

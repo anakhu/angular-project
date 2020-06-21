@@ -1,17 +1,20 @@
 import { Component, OnInit, NgZone, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { take, finalize, exhaustMap } from 'rxjs/operators';
+import { take, finalize, exhaustMap, switchMapTo, switchMap } from 'rxjs/operators';
 import { CoursesService } from 'src/app/shared/services/courses/courses.service';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
 import { dateValidator } from './date.validator';
 import { dateConflictValidator } from './date-conflict.validator';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, EMPTY } from 'rxjs';
 import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
 import { Router } from '@angular/router';
 import { FileValidator } from 'ngx-material-file-input';
 import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
 import { CourseFormData } from 'src/app/shared/models/courses/courseFormData';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
 
 
 @Component({
@@ -22,28 +25,26 @@ import { CourseFormData } from 'src/app/shared/models/courses/courseFormData';
 export class AddCourseComponent implements OnInit, OnDestroy {
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
   courseForm: FormGroup;
-  authorId: string;
   isLoading = false;
   authSubscription: Subscription;
+  authUserId$: Observable<string>;
   readonly maxSize = 400000;
 
   constructor(
     private fb: FormBuilder,
     private ngZone: NgZone,
     private courses: CoursesService,
-    private auth: AuthService,
     private notifications: NotificationsService,
-    private router: Router
+    private router: Router,
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {
     this._initForm();
-    this._subscribe();
+    this.authUserId$ = this.store.select(selectAuthUserUid);
   }
 
-  ngOnDestroy(): void {
-    this.authSubscription.unsubscribe();
-  }
+  ngOnDestroy(): void {}
 
   public triggerResize(): void {
     this.ngZone.onStable.pipe(take(1))
@@ -52,15 +53,24 @@ export class AddCourseComponent implements OnInit, OnDestroy {
 
   public submitForm(): void {
     this.isLoading = true;
-    this.courses.addCourse(this.courseForm.value as CourseFormData, this.authorId)
+    this.authUserId$
       .pipe(
         take(1),
-        exhaustMap((result: string) => result),
-        finalize(() => this.isLoading = false)
+        exhaustMap((userId: string) => {
+          if (userId) {
+            return this.courses.addCourse(this.courseForm.value as CourseFormData, userId);
+          }
+          return null;
+        }),
+        switchMap((newCourseId: string | null) => newCourseId),
+        finalize(() => this.isLoading = false),
+
       )
-      .subscribe((key: string) => {
-        this.notifications.createNotification('Course successfully added');
-        this.router.navigate(['/courses', key]);
+      .subscribe((newCourseId: string | null) => {
+        if (newCourseId) {
+          this.notifications.createNotification('Course successfully added');
+          this.router.navigate(['/courses', newCourseId]);
+        }
       });
   }
 
@@ -102,11 +112,6 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       certificate: [''],
       image: ['', [Validators.required, FileValidator.maxContentSize(this.maxSize)]],
     }, { validator: dateConflictValidator() });
-  }
-
-  private _subscribe() {
-    this.authSubscription = this.auth.createSubscription()
-      .subscribe((user: LoggedInUser | null) => user ? this.authorId = user.uid : null);
   }
 
 }

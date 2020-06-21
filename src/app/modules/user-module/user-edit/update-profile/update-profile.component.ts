@@ -40,8 +40,10 @@ export class UpdateProfileComponent implements OnInit {
         finalize(() => this.isLoading = false)
       )
       .subscribe((user: User ) => {
-        this.notifications.createNotification('User detail updated');
-        this.editForm.reset();
+        if (user) {
+          this.notifications.createNotification('User detail updated');
+          this.editForm.reset();
+        }
       });
   }
 

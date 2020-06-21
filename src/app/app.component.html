@@ -17,8 +17,8 @@
         </span>
        Users
       </a>
-      <ng-container *ngIf="authUserId">
-        <a mat-list-item [routerLink]="['/users', authUserId]">
+      <ng-container *ngIf="(authUserId$ | async)">
+        <a mat-list-item [routerLink]="['/users', (authUserId$ | async)]">
           <span class="material-icons">
             perm_identity
           </span>
@@ -40,7 +40,7 @@
       </button>
       <span>OnlineAcademy</span>
       <span class="space"></span>
-      <ng-container *ngIf="authUserId">
+      <ng-container *ngIf="(authUserId$ | async)">
         <a mat-list-item (click)="logout()">
           <span class="material-icons">
             perm_identity
@@ -48,7 +48,7 @@
          Log out
         </a>
       </ng-container>
-      <ng-container *ngIf="!authUserId">
+      <ng-container *ngIf="!(authUserId$ | async)">
         <a mat-list-item routerLink="/login">
           <span class="material-icons">
             perm_identity

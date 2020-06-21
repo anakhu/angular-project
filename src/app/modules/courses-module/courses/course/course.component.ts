@@ -2,10 +2,12 @@ import { Component, OnInit, Input, OnDestroy, ChangeDetectionStrategy, ChangeDet
 import { Course } from 'src/app/shared/models/courses/course';
 import { User } from 'src/app/shared/models/user/user';
 import { UsersService } from 'src/app/shared/services/users/users.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { CoursesService } from '../../../../shared/services/courses/courses.service';
-import { AuthService } from 'src/app/shared/services/auth/auth.service';
-import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-course',
@@ -16,32 +18,33 @@ import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
 export class CourseComponent implements OnInit, OnDestroy {
   @Input() course: Course;
   public author: User;
-  public authUser: LoggedInUser;
   private coursesSubscription: Subscription;
-  private authSubscription: Subscription;
+  private authUserId$: Observable<string>;
 
   constructor(
     private usersService: UsersService,
     private coursesService: CoursesService,
     private cdr: ChangeDetectorRef,
-    private auth: AuthService
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {
     this._createCoursesSubscribtion();
-    this._createAuthSubscription();
-    this._getUser(this.course.authorId);
+    this._getUser();
+    this.authUserId$ = this.store.select(selectAuthUserUid);
   }
 
   ngOnDestroy(): void {
     this.coursesSubscription.unsubscribe();
-    this.authSubscription.unsubscribe();
   }
 
-  public detectChanges(data) {
-    if (this.authUser && this.authUser.uid === data) {
-      this.cdr.detectChanges();
-    }
+  public detectChanges(userId: string) {
+    this.authUserId$.pipe(take(1))
+      .subscribe((authUserId: string) => {
+        if (authUserId && authUserId === userId) {
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   private _createCoursesSubscribtion(): void {
@@ -56,13 +59,8 @@ export class CourseComponent implements OnInit, OnDestroy {
       });
   }
 
-  private _createAuthSubscription(): void {
-    this.authSubscription = this.auth.createSubscription()
-      .subscribe((user: LoggedInUser) => this.authUser = user ? user : null );
-  }
-
-  private _getUser(id: string): void {
-    this.usersService.getUser(this.course.authorId)
+  private _getUser(): void {
+    this.usersService.getUser(this.course.authorId).pipe(take(1))
       .subscribe((user: User) => this.author = user);
   }
 }

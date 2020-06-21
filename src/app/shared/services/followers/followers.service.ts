@@ -8,6 +8,9 @@ import { ApiService } from '../api/api.service';
 import { NewFollower } from './follower';
 import { routes } from '../../../../environments/environment';
 import { LoggedInUser } from '../../models/user/loggedInUser';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +21,10 @@ export class FollowersService {
   public authUserId: string;
   private followers: Follower[] = [];
   private followersSubject = new Subject<Follower[]>();
-  private authSubscription: Subscription;
 
   constructor(
-    private authService: AuthService,
     private api: ApiService,
+    private store: Store<AppState>,
   ) {
     this._init();
   }
@@ -106,8 +108,8 @@ export class FollowersService {
   }
 
   private _init(): void {
-    this.authSubscription = this.authService.createSubscription()
-      .subscribe((user: LoggedInUser) => this.authUserId = user ? user.uid : null);
+    this.store.select(selectAuthUserUid)
+      .subscribe((userId: string) => this.authUserId = userId);
   }
 
   private _setFollowers(followers: Follower[]){

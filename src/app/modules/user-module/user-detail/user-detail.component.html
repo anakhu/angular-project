@@ -1,7 +1,7 @@
 <ng-container *ngIf="(currentUser$ | async); else noUser">
   <div class="container main">
 
-    <div *ngIf="authUserId && authUserId === userId"class="notifications">
+    <div *ngIf="(authUserId$ | async) && (authUserId$ | async) === userId"class="notifications">
       <app-user-notifications></app-user-notifications>
     </div>
 
@@ -9,12 +9,12 @@
       
         <section class="col-xs-10 col-sm-10 col-md-5 col-lg-5 user-card">
           <app-user-pic [user]="(currentUser$ | async)"></app-user-pic>
-          <ng-container *ngIf="authUserId && authUserId === userId">
+          <ng-container *ngIf="(authUserId$ | async) && (authUserId$ | async) === userId">
             <app-wizard class="button-abs" [componentList]="componentList" [name]="'settings'">
               <mat-icon>settings</mat-icon>
             </app-wizard>
           </ng-container>
-          <ng-container *ngIf="authUserId && authUserId !== userId">
+          <ng-container *ngIf="(authUserId$ | async) && (authUserId$ | async) !== userId">
             <app-follow-button class="button-abs" [userId]="userId"></app-follow-button>
           </ng-container>
         </section>

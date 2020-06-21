@@ -15,7 +15,6 @@ import { UserCoursesComponent } from './user-courses/user-courses.component';
 import { UsersModule } from '../users-module/users.module';
 import { CoursesModule } from '../courses-module/courses.module';
 import { UploadModule } from '../upload-module/upload.module';
-import { UserRoutingModule } from './user-routing.module';
 import { SharedModule } from '../shared-module/shared.module';
 import { UserNotificationsComponent } from './notifications/user-notifications.component';
 
@@ -43,7 +42,6 @@ import { UserNotificationsComponent } from './notifications/user-notifications.c
     CoursesModule,
     UploadModule,
     SharedModule,
-    UserRoutingModule
   ]
 })
 export class UserModule { }

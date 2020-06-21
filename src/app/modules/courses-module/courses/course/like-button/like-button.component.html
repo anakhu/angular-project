@@ -1,4 +1,4 @@
-<ng-container *ngIf="authUserId">
+<ng-container *ngIf="(authUserId$ | async)">
   <button
     [disabled]="isLoading"
     mat-button color="accent" 

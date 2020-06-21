@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AuthService } from './shared/services/auth/auth.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { LoggedInUser } from './shared/models/user/loggedInUser';
+import { Store } from '@ngrx/store';
+import { selectAuthUserUid } from './store/auth/auth.selectors';
+import { AppState } from './store/app.reducer';
+import * as fromAuthReducer from 'src/app/store/auth/auth.actions';
 
 @Component({
   selector: 'app-root',
@@ -20,30 +21,19 @@ export class AppComponent implements OnInit {
     );
 
   @ViewChild('toolbar', {static: true}) toolbar: ElementRef;
-  authSubscription: Subscription;
-  authUserId: string;
-  firebase: any;
+  authUserId$: Observable<string>;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private authService: AuthService,
-    private router: Router,
+    private store: Store<AppState>,
   ) {}
 
 
   ngOnInit(): void {
-    this._subscribeToAuthChange();
+    this.authUserId$ = this.store.select(selectAuthUserUid);
   }
 
-  private _subscribeToAuthChange(): void {
-    this.authSubscription = this.authService.createSubscription()
-      .subscribe((user: LoggedInUser) => {
-      this.authUserId = user ? user.uid : null;
-    });
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
+  public logout(): void {
+    this.store.dispatch(new fromAuthReducer.LogoutStartAction());
   }
 }
