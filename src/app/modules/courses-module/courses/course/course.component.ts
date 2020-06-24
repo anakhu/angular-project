@@ -2,12 +2,14 @@ import { Component, OnInit, Input, OnDestroy, ChangeDetectionStrategy, ChangeDet
 import { Course } from 'src/app/shared/models/courses/course';
 import { User } from 'src/app/shared/models/user/user';
 import { UsersService } from 'src/app/shared/services/users/users.service';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, from } from 'rxjs';
 import { CoursesService } from '../../../../shared/services/courses/courses.service';
 import { AppState } from 'src/app/store/app.reducer';
-import { Store } from '@ngrx/store';
+import { Store, ActionsSubject, Action } from '@ngrx/store';
 import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
-import { take } from 'rxjs/operators';
+import { take, mergeAll, first, tap, filter, pluck } from 'rxjs/operators';
+import { selectCoursebyId } from 'src/app/store/courses/courses.selectors';
+import { UPDATE_COURSE_SUCCESS } from 'src/app/store/courses/courses.actions';
 
 @Component({
   selector: 'app-course',
@@ -23,15 +25,15 @@ export class CourseComponent implements OnInit, OnDestroy {
 
   constructor(
     private usersService: UsersService,
-    private coursesService: CoursesService,
     private cdr: ChangeDetectorRef,
     private store: Store<AppState>,
+    private actionSbj: ActionsSubject
   ) { }
 
   ngOnInit(): void {
-    this._createCoursesSubscribtion();
     this._getUser();
     this.authUserId$ = this.store.select(selectAuthUserUid);
+    this._subscribeToCourseUpdates();
   }
 
   ngOnDestroy(): void {
@@ -47,16 +49,17 @@ export class CourseComponent implements OnInit, OnDestroy {
       });
   }
 
-  private _createCoursesSubscribtion(): void {
-    this.coursesSubscription = this.coursesService.createSubscription()
-      .subscribe((courses: Course[]) => {
-        const currentCourse = courses
-          .find((course: Course) => course.id === this.course.id );
-
-        if (currentCourse) {
-          this.course = currentCourse;
-        }
-      });
+  private _subscribeToCourseUpdates(): void {
+    this.coursesSubscription = this.actionSbj
+      .pipe(
+        filter((action: any) => {
+          return action.type === UPDATE_COURSE_SUCCESS && action.payload?.id === this.course.id;
+          }
+        ),
+        pluck('payload'),
+        pluck('update')
+      )
+      .subscribe((update: Course) => this.course = update);
   }
 
   private _getUser(): void {

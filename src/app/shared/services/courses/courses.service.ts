@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Course } from '../../models/courses/course';
-import { Observable, of, from, BehaviorSubject } from 'rxjs';
-import { find, switchMap, map, exhaustMap, catchError, mapTo } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { map, exhaustMap, catchError } from 'rxjs/operators';
 import { ApiService } from '../api/api.service';
 import { routes } from '../../../../environments/environment';
 import { AppService } from '../app/app.service';
@@ -10,6 +10,10 @@ import { NewCourse } from './course';
 import { API_ERRORS } from '../api/api-errors';
 import { CustomError } from '../../models/api/custom-error';
 import { CourseFormData } from '../../models/courses/courseFormData';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.reducer';
+import { ErrorService } from 'src/app/modules/error-handler/error.service/error.service';
+import * as fromCoursesActions from 'src/app/store/courses/courses.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -20,43 +24,10 @@ export class CoursesService {
     private api: ApiService,
     private app: AppService,
     private uploads: UploadService,
+    private errors: ErrorService,
+    private store: Store<AppState>,
     ) {
     this._listenToChanges();
-  }
-
-  private courses: Course[] = [];
-  private coursesSubject = new BehaviorSubject<Course[]>([]);
-
-  public loadCourses(): Observable<Course[]> {
-    return this.api.getCollectionEntries(routes.courses)
-      .pipe(
-        map((courses: Course[]) => {
-          courses.reverse();
-          this._setCourses(courses);
-          return this.courses;
-        })
-      );
-  }
-
-  public createSubscription(): Observable<Course[]> {
-    return this.coursesSubject.asObservable();
-  }
-
-  public getCourses(): Course[] {
-    return this.courses;
-  }
-
-  public getById(id: string): Observable<Course | null> {
-    return from(this.courses)
-      .pipe(
-        find(({id: courseId}: Course) => courseId === id),
-        switchMap((found: Course | undefined) => {
-          if (!found) {
-            return [];
-          }
-          return of(found);
-        })
-      );
   }
 
   public deleteCourseEntry(reference: string): Observable<any> {
@@ -67,7 +38,7 @@ export class CoursesService {
     return this.api.updateEntry(reference, update);
   }
 
-  public addCourse(courseData: CourseFormData, authorId: string): Observable<string> {
+  public addCourse(courseData: CourseFormData, authorId: string): Observable<Course> {
     let file;
     try {
       file = courseData.image.files[0];
@@ -98,8 +69,22 @@ export class CoursesService {
           );
           return newCourse;
         }),
-        exhaustMap((course: Course) => {
-          return this._addNewCourse(course, authorId);
+        exhaustMap((course: Partial<Course>) => {
+          return from(this._addNewCourse(course, authorId))
+            .pipe(
+              catchError(() => {
+                const err: CustomError = {...API_ERRORS.add};
+                this.errors.handleError(err);
+                return undefined;
+              }),
+              map((newCourseId: string | undefined)  => {
+                if (newCourseId) {
+                  const createdCourse = { ...course, id: newCourseId} as Course;
+                  return createdCourse;
+                }
+                return undefined;
+              })
+            );
         }),
       );
   }
@@ -112,27 +97,16 @@ export class CoursesService {
       });
   }
 
-  private _setCourses(coursesArr: Course[]): void {
-    this.courses = coursesArr;
-    this.coursesSubject.next(this.courses);
-  }
-
   private _updateLocalCourses(courseId: string, updatedCourse: Course = null): Course {
-    const index = this.courses
-      .findIndex((entry: Course) => entry.id === courseId);
-
-    if (index !== -1) {
-      if (updatedCourse) {
-        this.courses.splice(index, 1, updatedCourse);
-      } else {
-        this.courses.splice(index, 1);
-      }
-      this.coursesSubject.next(this.courses);
-    }
+    const update: {id: string, update: Course} = {
+      id: courseId,
+      update: updatedCourse,
+    };
+    this.store.dispatch(new fromCoursesActions.UpdateCourseStartAction(update));
     return updatedCourse;
   }
 
-  private async _addNewCourse(course: Course, userId: string): Promise<any> {
+  private async _addNewCourse(course: Partial<Course>, userId: string): Promise<any> {
     const firebase = this.app.getFirebaseReference();
 
     let authoredCourses;
@@ -152,15 +126,8 @@ export class CoursesService {
     updates[`/${routes.courses}/${newCourseKey}`] = course;
     updates[`/${routes.users}/${userId}/authoredCourses`] = authoredCourses;
 
-
-    return from(firebase.ref().update(updates))
-      .pipe(
-        catchError((error: Error) => {
-          const err: CustomError = {...API_ERRORS.add};
-          throw err;
-        }),
-       mapTo(newCourseKey)
-      );
+    return firebase.ref().update(updates)
+      .then(() => newCourseKey);
   }
 }
 

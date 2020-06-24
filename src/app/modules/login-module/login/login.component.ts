@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { pluck } from 'rxjs/operators';
+import { pluck, tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { LOGIN_THUMBS, ThumbIcon } from './loginPageIcons';
 
@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private _createQueryParamsSubscription(): void {
     this.queryParamsSubscription = this.route.queryParamMap
       .pipe(
+        tap(x => console.log(x)),
         pluck('params'),
         pluck('action'),
       )

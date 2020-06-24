@@ -1,12 +1,13 @@
-import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { CoursesService } from '../../../../shared/services/courses/courses.service';
+import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Course } from '../../../../shared/models/courses/course';
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users/users.service';
 import { User } from 'src/app/shared/models/user/user';
 import { map, concatMap, mergeAll, filter, first } from 'rxjs/operators';
 import { CourseStudentComponent } from './course-student/course-student.component';
-import { Observable } from 'rxjs';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectCourses } from 'src/app/store/courses/courses.selectors';
 
 @Component({
   selector: 'app-course-detail',
@@ -21,13 +22,12 @@ export class CourseDetailComponent implements OnInit, AfterViewInit {
   author: User;
   isCourseActive: boolean;
   students: number;
-  course$: Observable<Course>;
 
   constructor(
-    private coursesService: CoursesService,
     private activatedRoute: ActivatedRoute,
     private users: UsersService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {
@@ -48,7 +48,7 @@ export class CourseDetailComponent implements OnInit, AfterViewInit {
   }
 
   private _getCourse(id: string): void {
-    this.coursesService.createSubscription()
+    this.store.select(selectCourses)
       .pipe(
         mergeAll(),
         filter((course: Course) => course.id === id),

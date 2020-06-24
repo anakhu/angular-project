@@ -2,9 +2,10 @@ import { Component, OnInit, Input, OnDestroy, Output, EventEmitter, AfterContent
 import { UsersService } from 'src/app/shared/services/users/users.service';
 import { Subscription, of } from 'rxjs';
 import { User } from 'src/app/shared/models/user/user';
-import { map, switchMap, take, mergeAll, filter,  pluck, } from 'rxjs/operators';
-import { CoursesService } from 'src/app/shared/services/courses/courses.service';
-import { Course } from 'src/app/shared/models/courses/course';
+import { map, switchMap, take, pluck } from 'rxjs/operators';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectCoursebyId } from 'src/app/store/courses/courses.selectors';
 
 @Component({
   selector: 'app-course-student',
@@ -22,12 +23,12 @@ export class CourseStudentComponent implements OnInit, AfterContentInit, OnDestr
   filterStr = '';
   filterField = 'name';
   displayedStudents = 5;
-  courseSubscription: Subscription;
+  coursesSubscription: Subscription;
   readonly defaultStudentsMax = 5;
 
   constructor(
     private users: UsersService,
-    private courses: CoursesService,
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {}
@@ -37,7 +38,7 @@ export class CourseStudentComponent implements OnInit, AfterContentInit, OnDestr
   }
 
   ngOnDestroy(): void {
-    this.courseSubscription.unsubscribe();
+    this.coursesSubscription.unsubscribe();
     this.studentsIds = [];
   }
 
@@ -81,15 +82,13 @@ export class CourseStudentComponent implements OnInit, AfterContentInit, OnDestr
   }
 
   private _getCourseSubscription() {
-    this.courseSubscription = this.courses.createSubscription()
+    this.coursesSubscription = this.store.select(selectCoursebyId, {id: this.courseId})
       .pipe(
-        mergeAll(),
-        filter((course: Course) => course.id === this.courseId),
         pluck('students'),
       )
       .subscribe((ids: string[]) => {
         if (ids?.length) {
-          this.studentsIds = ids.reverse();
+          this.studentsIds = [...ids].reverse();
         } else {
           this.studentsIds = [];
         }

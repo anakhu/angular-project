@@ -1,20 +1,16 @@
 import { Component, OnInit, NgZone, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { take, finalize, exhaustMap, switchMapTo, switchMap } from 'rxjs/operators';
-import { CoursesService } from 'src/app/shared/services/courses/courses.service';
-import { AuthService } from 'src/app/shared/services/auth/auth.service';
+import { take, tap, filter } from 'rxjs/operators';
 import { dateValidator } from './date.validator';
 import { dateConflictValidator } from './date-conflict.validator';
-import { Subscription, Observable, EMPTY } from 'rxjs';
-import { NotificationsService } from 'src/app/shared/services/notifications/notifications.service';
-import { Router } from '@angular/router';
+import { Subscription, Observable } from 'rxjs';
 import { FileValidator } from 'ngx-material-file-input';
-import { LoggedInUser } from 'src/app/shared/models/user/loggedInUser';
 import { CourseFormData } from 'src/app/shared/models/courses/courseFormData';
 import { AppState } from 'src/app/store/app.reducer';
-import { Store } from '@ngrx/store';
+import { Store, Action, ActionsSubject } from '@ngrx/store';
 import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
+import * as fromCoursesActions from 'src/app/store/courses/courses.actions';
 
 
 @Component({
@@ -24,27 +20,28 @@ import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
 })
 export class AddCourseComponent implements OnInit, OnDestroy {
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
-  courseForm: FormGroup;
-  isLoading = false;
-  authSubscription: Subscription;
-  authUserId$: Observable<string>;
+  public courseForm: FormGroup;
+  public isLoading = false;
+  public authUserId$: Observable<string>;
+  private actionSubjSubscription: Subscription;
   readonly maxSize = 400000;
 
   constructor(
     private fb: FormBuilder,
     private ngZone: NgZone,
-    private courses: CoursesService,
-    private notifications: NotificationsService,
-    private router: Router,
     private store: Store<AppState>,
+    private actionSbj: ActionsSubject
   ) { }
 
   ngOnInit(): void {
     this._initForm();
+    this._createActionSubjSubscription();
     this.authUserId$ = this.store.select(selectAuthUserUid);
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.actionSubjSubscription.unsubscribe();
+  }
 
   public triggerResize(): void {
     this.ngZone.onStable.pipe(take(1))
@@ -56,22 +53,16 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     this.authUserId$
       .pipe(
         take(1),
-        exhaustMap((userId: string) => {
+        tap((userId: string) => {
           if (userId) {
-            return this.courses.addCourse(this.courseForm.value as CourseFormData, userId);
-          }
-          return null;
-        }),
-        switchMap((newCourseId: string | null) => newCourseId),
-        finalize(() => this.isLoading = false),
-
+            const newCourseData: {courseData: CourseFormData, authorId: string} = {
+              courseData: this.courseForm.value as CourseFormData,
+              authorId: userId,
+            };
+            this.store.dispatch(new fromCoursesActions.AddCourseStartAction(newCourseData));
+        }})
       )
-      .subscribe((newCourseId: string | null) => {
-        if (newCourseId) {
-          this.notifications.createNotification('Course successfully added');
-          this.router.navigate(['/courses', newCourseId]);
-        }
-      });
+      .subscribe();
   }
 
   get name() {
@@ -112,6 +103,17 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       certificate: [''],
       image: ['', [Validators.required, FileValidator.maxContentSize(this.maxSize)]],
     }, { validator: dateConflictValidator() });
+  }
+
+  private _createActionSubjSubscription(): void {
+    this.actionSubjSubscription = this.actionSbj
+      .pipe(
+        filter((action: Action) => {
+          const { ADD_COURSE_SUCCESS, ADD_COURSE_FAILED } = fromCoursesActions;
+          return action.type === ADD_COURSE_SUCCESS ||  action.type === ADD_COURSE_FAILED;
+        })
+      )
+      .subscribe(() => this.isLoading = false);
   }
 
 }

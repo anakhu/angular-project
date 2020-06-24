@@ -13,7 +13,6 @@ import {
 import { MaterialModule } from '../material-module/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { CoursesRoutingModule } from './courses-routing';
 import { SharedModule } from '../shared-module/shared.module';
 import { NgxPaginationModule } from 'ngx-pagination';
 
@@ -35,7 +34,6 @@ import { NgxPaginationModule } from 'ngx-pagination';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    CoursesRoutingModule,
     SharedModule,
     NgxPaginationModule,
   ],

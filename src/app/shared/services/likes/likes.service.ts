@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
 import { User } from 'src/app/shared/models/user/user';
 import { UsersService } from '../users/users.service';
 import { Subscription } from 'rxjs';
@@ -7,7 +6,6 @@ import { routes } from 'src/environments/environment';
 import { AppService } from '../app/app.service';
 import { API_ERRORS } from '../api/api-errors';
 import { CustomError } from '../../models/api/custom-error';
-import { LoggedInUser } from '../../models/user/loggedInUser';
 import { AppState } from 'src/app/store/app.reducer';
 import { Store } from '@ngrx/store';
 import { selectAuthUserUid } from 'src/app/store/auth/auth.selectors';
@@ -22,7 +20,6 @@ export class LikesService {
   private userSubscription: Subscription;
 
   constructor(
-    private authService: AuthService,
     private usersService: UsersService,
     private app: AppService,
     private store: Store<AppState>,
@@ -55,7 +52,7 @@ export class LikesService {
         const { coursesIds, coursesCount } = this._processUserStatus(likedCourses, courseId);
         result = coursesCount;
         return coursesIds;
-      }, (error, committed, snapshot) => {
+      }, (error, committed) => {
 
         if (!committed) {
           const err: CustomError = { ...API_ERRORS.update };
@@ -84,7 +81,7 @@ export class LikesService {
         const { coursesIds, coursesCount } = this._processUserStatus(enrolledCourses, courseId);
         result = coursesCount;
         return coursesIds;
-      }, (error, committed, snapshot) => {
+      }, (error, committed) => {
 
         if (!committed) {
           const err: CustomError = { ...API_ERRORS.update };
@@ -106,19 +103,19 @@ export class LikesService {
 
   private authSubscribe(): void {
     this.store.select(selectAuthUserUid)
-    .subscribe((userId: string) => {
-      if (userId) {
-        this.authUserId = userId;
-        this.usersService.getUser(userId)
-          .subscribe((user: User) => this.authUser = user);
-        this._userSubscribe();
-      } else {
-        this.authUserId = null;
-        this.authUser = null;
-        if (this.userSubscription) {
-          this.userSubscription.unsubscribe();
+      .subscribe((userId: string) => {
+        if (userId) {
+          this.authUserId = userId;
+          this.usersService.getUser(userId)
+            .subscribe((user: User) => this.authUser = user);
+          this._userSubscribe();
+        } else {
+          this.authUserId = null;
+          this.authUser = null;
+          if (this.userSubscription) {
+            this.userSubscription.unsubscribe();
+          }
         }
-      }
     });
   }
 

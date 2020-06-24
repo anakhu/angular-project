@@ -22,6 +22,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { environment } from 'src/environments/environment';
 import { appReducer } from './store/app.reducer';
 import { AuthEffects } from './store/auth/auth.effects';
+import { CoursesEffects } from './store/courses/courses.effects';
 
 
 export function get_auth_status(appService: AppService) {
@@ -50,7 +51,7 @@ export function get_auth_status(appService: AppService) {
     UserModule,
     SharedModule,
     StoreModule.forRoot(appReducer),
-    EffectsModule.forRoot([AuthEffects]),
+    EffectsModule.forRoot([AuthEffects, CoursesEffects]),
     StoreDevtoolsModule.instrument({logOnly: environment.production}),
 
   ],

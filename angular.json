@@ -99,6 +99,11 @@
               "./src/app/styles/custom-theme.scss",
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+              "src/app/styles"
+              ]
+            },
             "scripts": []
           }
         },

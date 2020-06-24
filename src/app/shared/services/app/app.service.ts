@@ -39,9 +39,9 @@ export class AppService {
     return this.fireBaseAuth;
   }
 
-  public getAuthUser(): Promise<any>{
+  public getAuthUser(): Promise<firebase.User>{
     return new Promise((resolve, reject) => {
-      this.fireBaseAuth.onAuthStateChanged((user: any) => {
+      this.fireBaseAuth.onAuthStateChanged((user: firebase.User) => {
         setTimeout(() => resolve(user), 100);
       });
     });

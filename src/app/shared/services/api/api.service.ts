@@ -80,7 +80,7 @@ export class ApiService {
       );
   }
 
-  private _processDataOnLoad<T>(response: any): T[] {
+  private _processDataOnLoad<T>(response: firebase.database.DataSnapshot): T[] {
     const data: T[] = [];
     response.forEach((child: any) => {
       const id = child.key;

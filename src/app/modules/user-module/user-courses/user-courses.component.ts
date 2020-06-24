@@ -1,11 +1,14 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
 import { Course } from '../../../shared/models/courses/course';
 import { CoursesService } from 'src/app/shared/services/courses/courses.service';
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users/users.service';
-import { from } from 'rxjs';
-import { map, switchMap, filter,toArray, take } from 'rxjs/operators';
+import { from, Subscription } from 'rxjs';
+import { map, switchMap, filter,toArray, take, mergeAll, first, distinctUntilChanged } from 'rxjs/operators';
 import { User } from 'src/app/shared/models/user/user';
+import { AppState } from 'src/app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { selectCourses } from 'src/app/store/courses/courses.selectors';
 
 const HEADERS = {
   authoredCourses: 'Authored Courses',
@@ -18,23 +21,39 @@ const HEADERS = {
   templateUrl: './user-courses.component.html',
   styleUrls: ['./user-courses.component.scss']
 })
-export class UserCoursesComponent implements OnInit, OnChanges {
+export class UserCoursesComponent implements OnInit, OnDestroy {
   @Input() courses: Course [];
   header: string;
   userId: string;
   filterValue: string;
   filterStr = '';
   filterField = 'name';
+  private paramsSubscription: Subscription;
 
   constructor(
-    private coursesService: CoursesService,
     private route: ActivatedRoute,
     private users: UsersService,
+    private store: Store<AppState>,
   ) {}
 
   ngOnInit(): void {
     this.userId = this.route.parent.snapshot.params.id;
-    this.route.queryParamMap
+    this._createQueryParamSubscription();
+  }
+
+  ngOnDestroy() {
+    this.paramsSubscription.unsubscribe();
+  }
+
+  onFilterValChange(data: string) {
+    this.filterStr = data;
+  }
+
+  private _createQueryParamSubscription(): void {
+    this.paramsSubscription = this.route.queryParamMap
+      .pipe(
+        distinctUntilChanged()
+      )
       .subscribe(params => {
         const value = params.get('base');
         if (value !== this.filterValue) {
@@ -43,12 +62,6 @@ export class UserCoursesComponent implements OnInit, OnChanges {
           this._getfilteredCourses();
         }
       });
-  }
-
-  ngOnChanges(): void {}
-
-  onFilterValChange(data: string) {
-    this.filterStr = data;
   }
 
   private _getfilteredCourses(){
@@ -61,8 +74,10 @@ export class UserCoursesComponent implements OnInit, OnChanges {
           }
         }),
         switchMap((ids: string[]) => {
-          return from(this.coursesService.getCourses())
+          return this.store.select(selectCourses)
             .pipe(
+              take(1),
+              mergeAll(),
               filter((course: Course) => ids?.includes(course.id)),
               toArray(),
             );

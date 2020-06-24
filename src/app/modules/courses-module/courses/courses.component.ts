@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Course } from '../../../shared/models/courses/course';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { PaginationService } from 'src/app/shared/services/pagination/pagination.service';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.reducer';
 
 @Component({
   selector: 'app-courses',
@@ -12,6 +14,7 @@ import { PaginationService } from 'src/app/shared/services/pagination/pagination
 export class CoursesComponent implements OnInit, OnDestroy {
   @ViewChild('container', {static: false}) container: ElementRef;
   courses: Course[] = [];
+  courses$: Observable<Course>;
   routeSubscription: Subscription;
 
   filterStr = '';
@@ -29,7 +32,8 @@ export class CoursesComponent implements OnInit, OnDestroy {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private pagination: PaginationService
+    private pagination: PaginationService,
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {
